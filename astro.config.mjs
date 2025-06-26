@@ -7,8 +7,8 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://noviceengineerstudio.github.io/NoviceEngineerStudio/',
-  base: '/NoviceEngineerStudio/',
+  site: 'https://noviceengineerstudio.github.io/',
+  base: '/',
   trailingSlash: 'always',
   integrations: [mdx(), sitemap()],
 

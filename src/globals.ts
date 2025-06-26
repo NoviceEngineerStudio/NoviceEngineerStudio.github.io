@@ -1,4 +1,4 @@
-export const homePage = "/NoviceEngineerStudio";
+export const homePage = "/";
 export const blogPage = `${homePage}/blog`;
 export const untitledUniversePage = `${homePage}/untitled_universe`;
 
