@@ -1,0 +1,24 @@
+---
+import "../styles/global.css";
+
+const { title = '' } = Astro.props;
+
+const pageTitle = title ? `Novice Engineer - ${title}` : 'Novice Engineer';
+---
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="description" content="The personal website and blog of a novice engineer.">
+        <meta name="author" content="Novice Engineer">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="icon" href="/icons/SpaceBoy.ico" type="image/x-icon">
+
+        <title>{pageTitle}</title>
+    </head>
+    <body class="m-0 bg-black text-white font-mono">
+        <slot/>
+    </body>
+</html>
