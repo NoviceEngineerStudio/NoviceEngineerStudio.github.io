@@ -4,6 +4,8 @@ const { href, addClass } = Astro.props;
 const pageStyles = href === Astro.url.pathname
     ? 'text-[#0dee4d] font-bold'
     : 'text-white';
+
+console.log(Astro.url);
 ---
 
 <a
