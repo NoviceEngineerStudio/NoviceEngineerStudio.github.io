@@ -1,13 +1,15 @@
 ---
 import RootLayout from "./RootLayout.astro";
 import NavLink from "../components/NavLink.astro";
-import { homePage, navbarPages } from "../globals";
+import PageFooter from "../components/PageFooter.astro";
+
+import { homePage, navbarPages } from "../globals.ts";
 
 const { title = '' } = Astro.props;
 ---
 
 <RootLayout title={title}>
-    <nav 
+    <nav
         class="flex text-xl items-center justify-between pt-8 pl-4 pr-4 pb-2 sticky top-0 z-50 bg-[#212121] shadow-xl/100 border-white border-b-2"
     >
         <div class="flex items-center gap-4">
@@ -44,13 +46,15 @@ const { title = '' } = Astro.props;
         {navbarPages.map((value, index) => (<>
             <NavLink addClass="w-full text-right pr-4" href={value.path}>{value.name}</NavLink>
             {index < navbarPages.length - 1 && (
-                <div class="h-0.5 bg-gradient-to-r from-[#99999900] to-[#999999FF] w-full"></div>
+                <div class="h-0.5 bg-gradient-to-r from-[#999999]/0 to-[#999999] w-full"></div>
             )}
         </>))}
     </div>
 
     <slot/>
 
+    <PageFooter/>
+    
     <script type="module" is:inline>
         const mobileMenu = document.getElementById('mobile-menu');
         const mobileMenuButton = document.getElementById('mobile-menu-button');
