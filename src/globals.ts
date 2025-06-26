@@ -1,6 +1,6 @@
 export const homePage = "/";
-export const blogPage = `${homePage}/blog`;
-export const untitledUniversePage = `${homePage}/untitled_universe`;
+export const blogPage = "/blog";
+export const untitledUniversePage = "/untitled_universe";
 
 export const navbarPages = [
     { name: "Home", path: homePage },
