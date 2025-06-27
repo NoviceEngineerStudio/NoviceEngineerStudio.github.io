@@ -1,0 +1,64 @@
+---
+import NavLink from "./NavLink.astro";
+import { homePage, navbarPages } from "../globals.ts";
+---
+
+<nav
+    class="flex text-xl items-center justify-between pt-8 pl-4 pr-4 pb-2 sticky top-0 z-50 bg-[#212121] shadow-xl/50 border-white border-b-2"
+>
+    <div class="flex items-center gap-4">
+        <div
+            class="absolute top-6 mask-radial-at-center mask-radial-from-100% w-24 h-24 bg-[url(/images/SpaceBoy.webp)] bg-center bg-cover rounded-full shadow-xl/100 border-2 border-white"
+        ></div>
+        <a href={homePage} class="pl-28 text-shadow-md/100">Novice Engineer</a>
+    </div>
+
+    <div class="flex">
+        <div class="hidden md:flex items-center gap-2">
+            {navbarPages.map((value, index) => (<>
+                <NavLink href={value.path}>{value.name}</NavLink>
+                {index < navbarPages.length - 1 && (
+                    <div class="border-l-2 border-[#999999] h-6 mx-2"></div>
+                )}
+            </>))}
+        </div>
+
+        <div class="md:hidden">
+            <button
+                id="mobile-menu-button"
+                class="flex flex-col gap-1.5 cursor-pointer"
+            >
+                <div id="mmb1" class="w-6 h-1 bg-white rounded-full transition-transform duration-300 ease-in-out shadow-xl/100"></div>
+                <div id="mmb2" class="w-6 h-1 bg-white rounded-full transition-transform duration-300 ease-in-out shadow-xl/100"></div>
+                <div id="mmb3" class="w-6 h-1 bg-white rounded-full transition-transform duration-300 ease-in-out shadow-xl/100"></div>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<div id="mobile-menu" class="scale-x-0 transition-transform duration-50 ease-in-out  flex text-xl fixed flex-col z-40 top-18 right-0 bg-[#212121] w-64 h-full pt-8 shadow-xl/100 border-l-2 border-white gap-4">
+    {navbarPages.map((value, index) => (<>
+        <NavLink addClass="w-full text-right pr-4" href={value.path}>{value.name}</NavLink>
+        {index < navbarPages.length - 1 && (
+            <div class="h-0.5 bg-gradient-to-r from-[#999999]/0 to-[#999999] w-full"></div>
+        )}
+    </>))}
+</div>
+
+<script type="module" is:inline>
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+
+    const bar1 = document.getElementById('mmb1');
+    const bar2 = document.getElementById('mmb2');
+    const bar3 = document.getElementById('mmb3');
+
+    mobileMenuButton.addEventListener('click', () => {
+        bar1.classList.toggle('-rotate-45');
+        bar2.classList.toggle('rotate-45');
+        bar2.classList.toggle('-translate-y-2.5');
+        bar3.classList.toggle('scale-y-0');
+
+        mobileMenu.classList.toggle('scale-x-0');
+    });
+</script>
