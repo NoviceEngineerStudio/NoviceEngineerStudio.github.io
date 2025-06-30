@@ -4,8 +4,8 @@ export const untitledUniversePage = "/untitled_universe/";
 
 export const navbarPages = [
     { name: "Home", path: homePage },
-    { name: "Blog", path: blogPage },
-    { name: "Untitled Universe", path: untitledUniversePage },
+    // { name: "Blog", path: blogPage },
+    // { name: "Untitled Universe", path: untitledUniversePage },
 ];
 
 export const socialLinks = [
