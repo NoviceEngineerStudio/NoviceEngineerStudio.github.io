@@ -1,24 +1,45 @@
 ---
 import "../styles/global.css";
 
-const { title = '' } = Astro.props;
+type RootLayoutProps = {
+    title?: string;
+};
 
-const pageTitle = title ? `Novice Engineer - ${title}` : 'Novice Engineer';
+type SiteMetaData = {
+    title: string;
+    description: string;
+    authors: string[];
+    icon_path: string;
+};
+
+const { title = '' } = Astro.props as RootLayoutProps;
+
+const meta_data: SiteMetaData = {
+    title: title ? `Novice Engineer - ${title}` : 'Novice Engineer',
+    description: "",
+    authors: [
+        "Novice Engineer",
+    ],
+    icon_path: "favicon.ico",
+};
 ---
 
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <meta name="description" content="The personal website and blog of a novice engineer.">
-        <meta name="author" content="Novice Engineer">
+        <meta name="description" content={meta_data.description}>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <link rel="icon" href="/icons/SpaceBoy.ico" type="image/x-icon">
+        {meta_data.authors.map((author: string) => {
+            <meta name="author" content={author}>
+        })}
 
-        <title>{pageTitle}</title>
+        <link rel="icon" href={meta_data.icon_path} type="image/x-icon">
+
+        <title>{meta_data.title}</title>
     </head>
-    <body class="flex flex-col m-0 bg-black text-white font-mono overflow-x-hidden max-w-screen min-w-screen min-h-screen">
+    <body>
         <slot/>
     </body>
 </html>

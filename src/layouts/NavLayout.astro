@@ -1,17 +1,13 @@
 ---
 import RootLayout from "./RootLayout.astro";
-import NavBar from "../components/navigation/NavBar.astro";
-import PageFooter from "../components/navigation/PageFooter.astro";
 
-const { title = '' } = Astro.props;
+type NavLayoutProps = {
+    title?: string;
+};
+
+const { title = '' } = Astro.props as NavLayoutProps;
 ---
 
 <RootLayout title={title}>
-    <NavBar/>
-
-    <main class="flex-grow">
-        <slot/>
-    </main>
-
-    <PageFooter/>
+    <slot/>
 </RootLayout>
