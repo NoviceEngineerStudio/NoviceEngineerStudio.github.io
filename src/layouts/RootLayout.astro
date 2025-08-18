@@ -1,9 +1,11 @@
 ---
 import "../styles/global.css";
 
-type RootLayoutProps = {
+type Props = {
     title?: string;
 };
+
+export type RootLayoutProps = Props;
 
 type SiteMetaData = {
     title: string;
@@ -12,15 +14,20 @@ type SiteMetaData = {
     icon_path: string;
 };
 
-const { title = '' } = Astro.props as RootLayoutProps;
-
 const meta_data: SiteMetaData = {
-    title: title ? `Novice Engineer - ${title}` : 'Novice Engineer',
-    description: "",
+    title: Astro.props.title
+        ? `Novice Engineer - ${Astro.props.title}`
+        : 'Novice Engineer Studio',
+    description: (
+        "Welcome to the Novice Engineering Studio! This website serves as a " +
+        "hub for all of our current and prior projects; A fun place to document " +
+        "our continued growth as a studio, as well as announce what we're up to. " +
+        "Hope to see you there!"
+    ),
     authors: [
         "Novice Engineer",
     ],
-    icon_path: "favicon.ico",
+    icon_path: "/favicon.ico",
 };
 ---
 

@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+.bg-checkerboard {
+    background-image:
+        linear-gradient(45deg, #ffffff88 25%, transparent 25%),
+        linear-gradient(135deg, #ffffff88 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #ffffff88 75%),
+        linear-gradient(135deg, transparent 75%, #ffffff88 75%);
+}

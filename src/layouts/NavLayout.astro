@@ -1,13 +1,15 @@
 ---
-import RootLayout from "./RootLayout.astro";
+import RootLayout, { type RootLayoutProps } from "./RootLayout.astro";
 
-type NavLayoutProps = {
-    title?: string;
+interface Props extends RootLayoutProps {
+    class?: string;
 };
 
-const { title = '' } = Astro.props as NavLayoutProps;
+export type NavLayoutProps = Props;
 ---
 
-<RootLayout title={title}>
-    <slot/>
+<RootLayout title={Astro.props.title}>
+    <main class={Astro.props.class}>
+        <slot/>
+    </main>
 </RootLayout>
