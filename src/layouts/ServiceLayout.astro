@@ -1,0 +1,139 @@
+---
+import { Image } from "astro:assets";
+import type { ServiceTier } from "../data/types/ServiceTier";
+import RootLayout, { type RootLayoutProps } from "./RootLayout.astro";
+
+interface Props extends RootLayoutProps {
+    class?: string;
+
+    tiers: ServiceTier[];
+};
+
+export type ServiceLayoutProps = Props;
+---
+
+<RootLayout title={Astro.props.title} additional_links={Astro.props.additional_links}>
+    <main class={Astro.props.class}>
+        <slot/>
+
+        <service-hamburger>
+            <div
+                id="hamburger-menu"
+                class="hidden fixed top-0 left-0 w-screen h-screen bg-black/50 transition duration-150 ease-in-out"
+            >
+                <div class="absolute top-12 right-16 px-8 py-4 bg-blue-300 border-6 border-blue-500 rounded-xl w-fit flex flex-wrap gap-4">
+                    {Astro.props.tiers.map((tier, index) => (
+                        <a href={tier.href}>
+                            <Image
+                                src={tier.emblem}
+                                alt={`Tier-${index}`}
+                                class={`${
+                                    Astro.url.pathname.replaceAll('/', '') ===
+                                    tier.href.replaceAll('/', '')
+                                    || "grayscale hover:grayscale-0 hover:drop-shadow-lg/50 transition duration-300"
+                                } size-25`}
+                            />
+                        </a>
+                    ))}
+                </div>
+            </div>
+
+            <div
+                id="hamburger-button"
+                class="fixed top-8 right-8 bg-blue-500 rounded-full p-3 cursor-pointer"
+            >
+                <div
+                    id="hamburger-bar-1"
+                    class="h-1 w-5 rounded-full bg-white transition duration-300"
+                />
+                <div
+                    id="hamburger-bar-2"
+                    class="h-1 w-5 rounded-full bg-white transition duration-300 my-1"
+                />
+                <div
+                    id="hamburger-bar-3"
+                    class="h-1 w-5 rounded-full bg-white transition duration-300"
+                />
+            </div>
+        </service-hamburger>
+    </main>
+</RootLayout>
+
+<script>
+    class ServiceHamburger extends HTMLElement {
+        constructor() {
+            super();
+            this.setupMenuOpenEvent();
+        }
+
+        setupMenuOpenEvent() {
+            let btn: Element | null = null;
+            let menu: Element | null = null;
+
+            for (let idx: number = 0; idx < this.children.length; ++idx) {
+                let current_element = this.children.item(idx);
+                if (current_element === null) {
+                    continue;
+                }
+
+                switch (current_element.id) {
+                    case "hamburger-button":
+                        btn = current_element;
+                        break;
+                    case "hamburger-menu":
+                        menu = current_element;
+                        break;
+                }
+            }
+
+            if (
+                btn === null ||
+                menu === null
+            ) {
+                return;
+            }
+
+            let bar_1: Element | null = null;
+            let bar_2: Element | null = null;
+            let bar_3: Element | null = null;
+
+            for (let idx: number = 0; idx < btn.children.length; ++idx) {
+                let current_element = btn.children.item(idx);
+                if (current_element === null) {
+                    continue;
+                }
+
+                switch (current_element.id) {
+                    case "hamburger-bar-1":
+                        bar_1 = current_element;
+                        break;
+                    case "hamburger-bar-2":
+                        bar_2 = current_element;
+                        break;
+                    case "hamburger-bar-3":
+                        bar_3 = current_element;
+                        break;
+                }
+            }
+
+            if (
+                bar_1 === null ||
+                bar_2 === null ||
+                bar_3 === null
+            ) {
+                return;
+            }
+
+            btn.addEventListener("click", () => {
+                bar_1.classList.toggle("-rotate-45");
+                bar_1.classList.toggle("translate-y-2");
+                bar_2.classList.toggle("rotate-45");
+                bar_3.classList.toggle("scale-y-0");
+
+                menu.classList.toggle("hidden");
+            });
+        }
+    }
+
+    customElements.define("service-hamburger", ServiceHamburger);
+</script>

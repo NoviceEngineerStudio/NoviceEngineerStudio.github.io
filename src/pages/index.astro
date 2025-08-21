@@ -2,7 +2,7 @@
 import NavLayout from "../layouts/NavLayout.astro";
 ---
 
-<NavLayout class="bg-checkerboard bg-blue-500 bg-size-[50px_50px] flex justify-center w-screen h-screen">
+<NavLayout class="bg-checkerboard bg-blue-500 bg-size-[75px_75px] flex justify-center w-screen h-screen bg-center">
     <threejs-panel />
 </NavLayout>
 
@@ -66,8 +66,8 @@ export default class Sketch extends HTMLElement {
 
 	render(){
 		this.time += 0.05
-		this.mesh.rotation.x = this.time / 20;
-		this.mesh.rotation.y = this.time / 10;
+		this.mesh.rotation.x = this.time;
+		this.mesh.rotation.y = this.time;
 
 		this.renderer.render( this.scene, this.camera );
         

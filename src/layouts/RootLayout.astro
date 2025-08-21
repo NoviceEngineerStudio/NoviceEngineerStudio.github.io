@@ -3,6 +3,10 @@ import "../styles/global.css";
 
 type Props = {
     title?: string;
+    additional_links?: {
+        rel: string;
+        href: string;
+    }[];
 };
 
 export type RootLayoutProps = Props;
@@ -17,7 +21,7 @@ type SiteMetaData = {
 const meta_data: SiteMetaData = {
     title: Astro.props.title
         ? `Novice Engineer - ${Astro.props.title}`
-        : 'Novice Engineer Studio',
+        : 'Novice Engineering Studio',
     description: (
         "Welcome to the Novice Engineering Studio! This website serves as a " +
         "hub for all of our current and prior projects; A fun place to document " +
@@ -38,11 +42,15 @@ const meta_data: SiteMetaData = {
         <meta name="description" content={meta_data.description}>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        {meta_data.authors.map((author: string) => {
+        {meta_data.authors.map((author: string) => (
             <meta name="author" content={author}>
-        })}
+        ))}
 
         <link rel="icon" href={meta_data.icon_path} type="image/x-icon">
+
+        {Astro.props.additional_links?.map((link) => (
+            <link rel={link.rel} href={link.href}>
+        ))}
 
         <title>{meta_data.title}</title>
     </head>
