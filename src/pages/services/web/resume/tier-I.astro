@@ -1,17 +1,19 @@
 ---
 import { Image } from "astro:assets";
-import resume_tiers from "../../../../data/tiers/resume_tiers";
+import resume_links from "../../../../data/tiers/resume_links";
 import ServiceLayout from "../../../../layouts/ServiceLayout.astro";
 import example_resume from "../../../../data/examples/example_resume";
 ---
 
 <ServiceLayout
-    title="Portfolio and Resume"
-    class="bg-gray-50 px-8 sm:px-16 py-16"
+    title="Portfolio & Resume Tier I"
+    class="bg-gray-100 px-8 sm:px-16 py-16"
     additional_links={[
         { rel: "stylesheet", href: "https://fonts.googleapis.com/icon?family=Material+Icons" }
     ]}
-    tiers={resume_tiers}
+
+    tier={1}
+    links={resume_links}
 >
     <!-- * Business Card * -->
     <div class="bg-white flex flex-col md:flex-row shadow-lg">
