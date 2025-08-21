@@ -16,7 +16,7 @@ export type ServiceLayoutProps = Props;
     <main class={Astro.props.class}>
         <slot/>
 
-        <service-hamburger class="fixed top-0 left-0 w-screen h-screen z-999 transition duration-150">
+        <service-hamburger class="fixed top-0 left-0 z-999 transition duration-150">
             {Astro.props.title !== undefined &&
                 <div class="fixed bottom-0 left-0 rounded-tr-full bg-black/75 text-white pl-4 pr-8 py-1 text-sm max-w-[60vw]">
                     <p class="truncate">{Astro.props.title}</p>
@@ -126,6 +126,8 @@ export type ServiceLayoutProps = Props;
             const toggleMenuOpen = () => {
                 this.is_menu_open = !this.is_menu_open;
 
+                this.classList.toggle("w-screen");
+                this.classList.toggle("h-screen");
                 this.classList.toggle("bg-black/75");
 
                 menu.classList.toggle("translate-x-full");
@@ -137,6 +139,23 @@ export type ServiceLayoutProps = Props;
             };
 
             btn.addEventListener("click", toggleMenuOpen);
+            document.addEventListener("click", (ev: PointerEvent) => {
+                if (!this.is_menu_open) {
+                    return;
+                }
+
+                const target = ev.target as Node | null;
+                
+                if (target === null) {
+                    return;
+                }
+
+                if (btn.contains(target) || menu.contains(target)) {
+                    return;
+                }
+
+                toggleMenuOpen();
+            });
         }
     }
 

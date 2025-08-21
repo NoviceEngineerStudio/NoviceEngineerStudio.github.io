@@ -1,13 +1,77 @@
 ---
+import { Image } from "astro:assets";
 import landing_links from "../../../../data/tiers/landing_links";
 import ServiceLayout from "../../../../layouts/ServiceLayout.astro";
+
+import example_hero from "../../../../assets/images/examples/example_hero.webp";
+import example_cutout from "../../../../assets/images/examples/example_cutout.webp";
+import example_review_1 from "../../../../assets/images/examples/example_review_1.webp";
+import example_review_2 from "../../../../assets/images/examples/example_review_2.webp";
 ---
 
 <ServiceLayout
     title="Landing Page Tier I"
+    additional_links={[
+        { rel: "stylesheet", href: "https://fonts.googleapis.com/icon?family=Material+Icons" }
+    ]}
 
     tier={1}
     links={landing_links}
 >
-    <div>TIER 1</div>
+    <!-- * Navigation Bar * -->
+    <nav>
+        
+    </nav>
+
+    <!-- * Hero Section * -->
+    <div style={`background-image: url('${example_hero.src}');`}>
+        <div>
+            <h1>Lorenzo's Digital Pizzeria</h1>
+            <h2>Pizza Done Right</h2>
+        </div>
+    </div>
+     
+    <!-- * Introduction * -->
+    <div class="mt-8 mx-8 sm:mx-16 flex flex-wrap">
+        <Image
+            src={example_cutout}
+            alt="Example-Owner-Cutout"
+            widths={[640, 360]}
+            format="webp"
+            quality={80}
+            loading="eager"
+        />
+
+        <div>
+            <h2>Welcome!</h2>
+            <p>Lorem ipsum solom dolor.</p>
+        </div>
+    </div>
+
+    <!-- * Scrolling Decoration * -->
+    <div class="mt-8">
+        
+    </div>
+
+    <!-- * Reviews * -->
+    <div class="mt-8 mx-8 sm:mx-16">
+        
+    </div>
+
+    <!-- * Contact Form * -->
+    <div class="mt-8">
+
+    </div>
+
+    <!-- * Footer * -->
+    <footer class="mt-8">
+        <div>
+
+        </div>
+
+        <div>
+            <h3>HOURS</h3>
+            
+        </div>
+    </footer>
 </ServiceLayout>
