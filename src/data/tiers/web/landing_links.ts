@@ -1,4 +1,4 @@
-import type { ServiceLink } from "../types/ServiceLink";
+import type { ServiceLink } from "../../types/ServiceLink";
 
 const landing_links: ServiceLink[] = [
     {
