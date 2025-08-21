@@ -19,35 +19,39 @@ import example_resume from "../../../../data/examples/example_resume";
             src={example_resume.person.headshot}
             alt="Business-Professional-Headshot"
             class="w-full max-w-none md:w-auto min-w-50 md:max-w-125 object-cover"
+            widths={[640, 360]}
+            format="webp"
+            quality={80}
+            loading="eager"
         />
 
-        <div class="border-t-8 md:border-t-0 md:border-l-8 border-red-400 px-8 py-8 flex flex-col justify-center">
-            <h1 class="text-4xl lg:text-5xl text-red-400 font-bold mb-4">{example_resume.person.name}</h1>
+        <div class="border-t-8 md:border-t-0 md:border-l-8 border-red-700 px-8 py-8 flex flex-col justify-center">
+            <h1 class="text-4xl lg:text-5xl text-red-700 font-bold mb-4">{example_resume.person.name}</h1>
 
             {example_resume.person.position !== undefined &&
                 <div class="flex mt-4">
-                    <i class="material-icons mr-4 text-red-400">business_center</i>
+                    <i class="material-icons mr-4 text-red-700">business_center</i>
                     <p class="text-lg">{example_resume.person.position}</p>
                 </div>
             }
 
             {example_resume.person.address !== undefined &&
                 <div class="flex mt-4">
-                    <i class="material-icons mr-4 text-red-400">home</i>
+                    <i class="material-icons mr-4 text-red-700">home</i>
                     <p class="text-lg">{example_resume.person.address}</p>
                 </div>
             }
 
             {example_resume.person.email !== undefined &&
                 <div class="flex mt-4">
-                    <i class="material-icons mr-4 text-red-400">email</i>
+                    <i class="material-icons mr-4 text-red-700">email</i>
                     <p class="text-lg">{example_resume.person.email}</p>
                 </div>
             }
 
             {example_resume.person.phone !== undefined &&
                 <div class="flex mt-4">
-                    <i class="material-icons mr-4 text-red-400">phone</i>
+                    <i class="material-icons mr-4 text-red-700">phone</i>
                     <p class="text-lg">{example_resume.person.phone}</p>
                 </div>
             }
@@ -58,7 +62,7 @@ import example_resume from "../../../../data/examples/example_resume";
     <div class="bg-white mt-8 px-8 py-8 shadow-lg">
         <div class="flex items-center mb-4">
             <i
-                class="material-icons mr-4 text-red-400"
+                class="material-icons mr-4 text-red-700"
                 style="font-size: 38px; vertical-align: middle;"
             >emergency</i>
             <h2 class="text-3xl text-gray-500">Skills</h2>
@@ -69,10 +73,10 @@ import example_resume from "../../../../data/examples/example_resume";
                 <div class="flex flex-col items-center">
                     <div
                         class="rounded-full"
-                        style={`background: conic-gradient(#ff6467 ${skill.confidence * 100}%, #e5e7eb 0);`}
+                        style={`background: conic-gradient(#c10007 ${skill.confidence * 100}%, #e5e7eb 0);`}
                     >
                         <i
-                            class="material-icons text-red-400 bg-white rounded-full p-4 m-2"
+                            class="material-icons text-red-700 bg-white rounded-full p-4 m-2"
                             style="font-size: 60px;"
                         >{skill.icon_name}</i>
                     </div>
@@ -88,7 +92,7 @@ import example_resume from "../../../../data/examples/example_resume";
         <div class="bg-white px-8 py-8 shadow-lg flex-grow">
             <div class="flex items-center mb-4">
                 <i
-                    class="material-icons mr-4 text-red-400"
+                    class="material-icons mr-4 text-red-700"
                     style="font-size: 38px; vertical-align: middle;"
                 >school</i>
                 <h2 class="text-3xl text-gray-500">Education</h2>
@@ -97,12 +101,12 @@ import example_resume from "../../../../data/examples/example_resume";
             {example_resume.education.map((education) => (
                 <div class="mt-4">
                     <p class="text-xl text-gray-500">{education.institution}&nbsp;/&nbsp;{education.degree}</p>
-                    <div class="flex flex-wrap gap-4 text-red-400 font-bold mt-2">
+                    <div class="flex flex-wrap gap-4 text-red-700 font-bold mt-2">
                         <div class="flex">
                             <i class="material-icons mr-2">calendar_month</i>
                             <p>{education.start_year}&nbsp;-&nbsp;</p>
                             {education.end_year === undefined
-                                ? <div class="bg-red-400 text-white rounded-lg px-2">Current</div>
+                                ? <div class="bg-red-700 text-white rounded-lg px-2">Current</div>
                                 : <p>{education.end_year}</p>
                             }
                         </div>
@@ -119,7 +123,7 @@ import example_resume from "../../../../data/examples/example_resume";
         <div class="bg-white px-8 py-8 shadow-lg flex-grow">
             <div class="flex items-center mb-4">
                 <i
-                    class="material-icons mr-4 text-red-400"
+                    class="material-icons mr-4 text-red-700"
                     style="font-size: 38px; vertical-align: middle;"
                 >work</i>
                 <h2 class="text-3xl text-gray-500">Work Experience</h2>
@@ -128,11 +132,11 @@ import example_resume from "../../../../data/examples/example_resume";
             {example_resume.work_experience.map((job) => (
                 <div class="mt-4">
                     <p class="text-xl text-gray-500">{job.business}&nbsp;/&nbsp;{job.position}</p>
-                    <div class="flex text-red-400 font-bold mt-2">
+                    <div class="flex text-red-700 font-bold mt-2">
                         <i class="material-icons mr-2">calendar_month</i>
                         <p>{job.start_year}&nbsp;-&nbsp;</p>
                         {job.end_year === undefined
-                            ? <div class="bg-red-400 text-white rounded-lg px-2">Current</div>
+                            ? <div class="bg-red-700 text-white rounded-lg px-2">Current</div>
                             : <p>{job.end_year}</p>
                         }
                     </div>
@@ -150,7 +154,7 @@ import example_resume from "../../../../data/examples/example_resume";
     <div class="bg-white mt-8 px-8 py-8 shadow-lg">
         <div class="flex items-center mb-4">
             <i
-                class="material-icons mr-4 text-red-400"
+                class="material-icons mr-4 text-red-700"
                 style="font-size: 38px; vertical-align: middle;"
             >volunteer_activism</i>
             <h2 class="text-3xl text-gray-500">Projects</h2>
@@ -159,7 +163,7 @@ import example_resume from "../../../../data/examples/example_resume";
         {example_resume.projects.map((project) => (
             <div class="mt-4">
                 <p class="text-xl text-gray-500">{project.title}</p>
-                <div class="flex text-red-400 font-bold mt-2">
+                <div class="flex text-red-700 font-bold mt-2">
                     <i class="material-icons mr-2">calendar_month</i>
                     <p>
                         {project.month && `${project.month}, `}
@@ -178,7 +182,7 @@ import example_resume from "../../../../data/examples/example_resume";
     <!-- * References * -->
     <div class="bg-white flex items-center mt-8 px-8 py-4 shadow-lg">
         <i
-            class="material-icons mr-4 text-red-400"
+            class="material-icons mr-4 text-red-700"
             style="font-size: 38px; vertical-align: middle;"
         >attribution</i>
         <h2 class="text-3xl text-gray-500">References</h2>
@@ -189,7 +193,7 @@ import example_resume from "../../../../data/examples/example_resume";
             <div class="bg-white px-8 py-8 shadow-lg">
                 <div class="flex justify-center mb-2">
                     <i
-                        class="material-icons border-2 text-red-400 rounded-full p-2"
+                        class="material-icons border-2 text-red-700 rounded-full p-2"
                         style="font-size: 60px;"
                     >person</i>
                 </div>
@@ -197,12 +201,12 @@ import example_resume from "../../../../data/examples/example_resume";
                 <p class="text-center text-sm">{reference.relation}</p>
 
                 <div class="flex mt-2">
-                    <i class="material-icons mr-4 text-red-400">email</i>
+                    <i class="material-icons mr-4 text-red-700">email</i>
                     <p>{reference.email}</p>
                 </div>
 
                 <div class="flex mt-2">
-                    <i class="material-icons mr-4 text-red-400">phone</i>
+                    <i class="material-icons mr-4 text-red-700">phone</i>
                     <p>{reference.phone || "N/A"}</p>
                 </div>
             </div>
