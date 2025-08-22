@@ -1,13 +1,213 @@
 ---
 import three_links from "../../../../data/tiers/web/three_links";
 import ServiceLayout from "../../../../layouts/ServiceLayout.astro";
+
+import brazil from "../../../../assets/images/examples/countries/brazil.webp";
+import china from "../../../../assets/images/examples/countries/china.webp";
+import germany from "../../../../assets/images/examples/countries/germany.webp";
+import india from "../../../../assets/images/examples/countries/india.webp";
+import japan from "../../../../assets/images/examples/countries/japan.webp";
+import spain from "../../../../assets/images/examples/countries/spain.webp";
+import uk from "../../../../assets/images/examples/countries/uk.webp";
+import us from "../../../../assets/images/examples/countries/us.webp";
+
+interface CountryData {
+    name: string;
+    banner: ImageMetadata;
+    player_count: number;
+};
+
+function randomPlayerCount(): number {
+    return Math.round(1000 + 10000 * Math.random());
+}
+
+const countries: CountryData[] = [
+    {
+        name: "Brazil",
+        banner: brazil,
+        player_count: randomPlayerCount(),
+    }, {
+        name: "China",
+        banner: china,
+        player_count: randomPlayerCount(),
+    }, {
+        name: "Germany",
+        banner: germany,
+        player_count: randomPlayerCount(),
+    }, {
+        name: "India",
+        banner: india,
+        player_count: randomPlayerCount(),
+    }, {
+        name: "Japan",
+        banner: japan,
+        player_count: randomPlayerCount(),
+    }, {
+        name: "Spain",
+        banner: spain,
+        player_count: randomPlayerCount(),
+    }, {
+        name: "United Kingdom",
+        banner: uk,
+        player_count: randomPlayerCount(),
+    }, {
+        name: "United States",
+        banner: us,
+        player_count: randomPlayerCount(),
+    },
+];
 ---
 
 <ServiceLayout
     title="ThreeJS Tier I"
+    class="w-screen h-screen bg-linear-to-tr to-black from-blue-950 relative"
 
     tier={1}
     links={three_links}
 >
-    <div>TIER 1</div>
+    <world-panel>
+        <div
+            class="absolute top-1/2 -translate-y-1/2 right-8 md:right-16 text-white bg-zinc-800/75 shadow-lg/50 w-fit"
+            id="country-list"
+        >
+            {countries.map((country) => (
+                <div id="country-banner">
+                    <div
+                        id="country-display"
+                        class="max-h-0 overflow-hidden"
+                    >
+                        <div
+                            class="flex items-end justify-between gap-4 pt-8 pb-2 px-2 bg-center bg-cover bg-blend-multiply bg-black/25"
+                            style={`background-image: url('${country.banner.src}');`}
+                        >
+                            <h1 class="font-bold text-lg sm:text-xl md:text-2xl text-shadow-lg/50">{country.name}</h1>
+
+                            <h2 class="text-md sm:text-lg md:text-xl text-shadow-lg/50">{country.player_count}&nbsp;Online</h2>
+                        </div>
+                    </div>
+
+                    <h1
+                        class="hover:font-bold cursor-pointer text-lg sm:text-xl md:text-2xl mx-2"
+                        id="country-link"
+                    >
+                        {country.name}
+                    </h1>
+                </div>
+            ))}
+        </div>
+    </world-panel>
 </ServiceLayout>
+
+<script>
+    function findElement(parent: Element, id: string): Element | null {
+        for (let idx: number = 0; idx < parent.children.length; ++idx) {
+            const cur_elem: Element | null = parent.children.item(idx);
+
+            if (cur_elem === null) {
+                continue;
+            }
+
+            if (cur_elem.id === id) {
+                return cur_elem;
+            }
+        }
+
+        return null;
+    }
+
+    function findElements(parent: Element, id: string): Element[] {
+        const results: Element[] = [];
+
+        for (let idx: number = 0; idx < parent.children.length; ++idx) {
+            const cur_elem: Element | null = parent.children.item(idx);
+
+            if (cur_elem === null) {
+                continue;
+            }
+
+            if (cur_elem.id === id) {
+                results.push(cur_elem);
+            }
+        }
+
+        return results;
+    }
+
+    class WorldPanel extends HTMLElement {
+        private nav_idx: number = 0;
+
+        constructor() {
+            super();
+            this.setupNavMenu();
+        }
+
+        private setupNavMenu(): void {
+            const banner_list: Element | null = findElement(this, "country-list");
+            if (banner_list === null) return;
+
+            const banners: Element[] = findElements(banner_list, "country-banner");
+            if (banners.length === 0) return;
+
+            let found_all_components: boolean = true;
+            const displays: Element[] = [];
+            const links: Element[] = [];
+
+            const setItem = (index: number): void => {
+                links[this.nav_idx].classList.remove("hidden");
+                displays[this.nav_idx].classList.add("max-h-0");
+
+                this.nav_idx = index;
+
+                links[this.nav_idx].classList.add("hidden");
+                displays[this.nav_idx].classList.remove("max-h-0");
+            };
+
+
+            banners.forEach((banner: Element, index: number): void => {
+                const display: Element | null = findElement(banner, "country-display");
+                const link: Element | null = findElement(banner, "country-link");
+
+                if (display === null || link === null) {
+                    found_all_components = false;
+                    return;
+                }
+
+                displays.push(display);
+                links.push(link);
+
+                link.addEventListener("click", () => {
+                    setItem(index);
+                });
+            });
+
+            if (!found_all_components) return;
+
+            const nextItem = (delta: number): void => {
+                let new_idx = (this.nav_idx + delta) % banners.length;
+
+                if (new_idx < 0) {
+                    new_idx += banners.length;
+                }
+
+                setItem(new_idx);
+            };
+
+            document.addEventListener("keydown", (ev: KeyboardEvent) => {
+                switch (ev.key) {
+                    case "w":
+                    case "ArrowUp":
+                        nextItem(-1);
+                        break;
+                    case "s":
+                    case "ArrowDown":
+                        nextItem(1);
+                        break;
+                }
+            });
+
+            setItem(0);
+        }
+    }
+
+    customElements.define("world-panel", WorldPanel);
+</script>
