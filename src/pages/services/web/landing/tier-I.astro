@@ -143,7 +143,7 @@ const food_icons: ImageMetadata[] = [
                             widths={[128]}
                             format="webp"
                             quality={50}
-                            loading="eager"
+                            loading="lazy"
                         />
                     ))}
                 </div>
@@ -187,44 +187,47 @@ const food_icons: ImageMetadata[] = [
             <tbody>
                 <tr>
                     <td class="pt-4 pr-4">
-                        <label class="font-bold">Name:</label>
+                        <label class="font-bold" for="name-input">Name:</label>
                     </td>
                     <td>
                         <input
                             placeholder="Enter your name..."
                             type="text"
                             class="mt-4 border-1 border-gray-400 p-2 rounded bg-gray-100 w-full"
+                            id="name-input"
                         />
                     </td>
                 </tr>
                 <tr>
                     <td class="pt-4 pr-4">
-                        <label class="font-bold">Email:</label>
+                        <label class="font-bold" for="email-input">Email:</label>
                     </td>
                     <td>
                         <input
                             placeholder="Enter your email..."
                             type="email"
                             class="mt-4 border-1 border-gray-400 p-2 rounded bg-gray-100 w-full"
+                            id="email-input"
                         />
                     </td>
                 </tr>
                 <tr>
                     <td class="pt-4 pr-4">
-                        <label class="font-bold">Subject:</label>
+                        <label class="font-bold" for="subject-input">Subject:</label>
                     </td>
                     <td>
                         <input
                             placeholder="Enter a subject..."
                             type="text"
                             class="mt-4 border-1 border-gray-400 p-2 rounded bg-gray-100 w-full"
+                            id="subject-input"
                         />
                     </td>
                 </tr>
 
                 <tr>
                     <td colspan={2} class="pt-4">
-                        <label class="font-bold">Message:</label>
+                        <label class="font-bold" for="message-input">Message:</label>
                     </td>
                 </tr>
                 <tr>
@@ -232,6 +235,7 @@ const food_icons: ImageMetadata[] = [
                         <textarea
                             placeholder="Enter your message..."
                             class="border-1 border-gray-400 p-2 mt-2 rounded w-full bg-gray-100"
+                            id="message-input"
                         />
                     </td>
                 </tr>
@@ -257,7 +261,7 @@ const food_icons: ImageMetadata[] = [
                 widths={[256]}
                 format="webp"
                 quality={80}
-                loading="eager"
+                loading="lazy"
             />
             <div class="sm:ml-4">
                 <h3 class="text-3xl mb-2 text-center sm:text-left font-[Great_Vibes]">Lorenzo's</h3>
@@ -267,11 +271,11 @@ const food_icons: ImageMetadata[] = [
                 </div>
                 <div class="flex mb-1">
                     <i class="material-icons pr-2">email</i>
-                    <a class="cursor-pointer hover:underline">lorenzo-pizza@example.com</a>
+                    <p class="cursor-pointer hover:underline">lorenzo-pizza@example.com</p>
                 </div>
                 <div class="flex">
                     <i class="material-icons pr-2">phone</i>
-                    <a class="cursor-pointer hover:underline">(123) 456-7890</a>
+                    <p class="cursor-pointer hover:underline">(123) 456-7890</p>
                 </div>
             </div>
         </div>
