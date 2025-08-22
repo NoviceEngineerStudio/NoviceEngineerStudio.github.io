@@ -71,20 +71,21 @@ const food_icons: ImageMetadata[] = [
             </div>
 
             <nav-hamburger class="sm:hidden">
-                <div class="p-1 cursor-pointer" id="nav-burger-btn">
+                <div class="p-1 cursor-pointer relative z-100" id="nav-burger-btn">
                     <div id="nav-burger-bar-1" class="bg-white transition duration-300 w-5 h-1" />
                     <div id="nav-burger-bar-2" class="bg-white transition duration-300 w-5 h-1 my-1" />
                     <div id="nav-burger-bar-3" class="bg-white transition duration-300 w-5 h-1" />
                 </div>
 
                 <div
-                    class="pl-6 pr-29 pt-8 absolute -right-5 top-full bg-red-900 translate-x-full transition duration-150 h-screen flex flex-col gap-4"
+                    class="pl-6 pr-24 pt-20 fixed right-0 top-0 bg-red-900 translate-x-full transition duration-150 h-screen flex flex-col gap-4"
                     id="nav-burger-menu"
                 >
                     {scroll_nav_links.map((nav_link) => (
                         <a
                             href={nav_link.href}
                             class="text-white cursor-pointer hover:underline"
+                            id="nav-burger-menu-item"
                         >
                             {nav_link.tag}
                         </a>
@@ -379,6 +380,22 @@ const food_icons: ImageMetadata[] = [
                 bar_2.classList.toggle("rotate-45");
                 bar_3.classList.toggle("scale-y-0");
             };
+
+            for (let idx: number = 0; idx < menu.children.length; ++idx) {
+                const cur_elem: Element | null = menu.children.item(idx);
+
+                if (cur_elem === null) {
+                    continue;
+                }
+
+                if (cur_elem.id === "nav-burger-menu-item") {
+                    cur_elem.addEventListener("click", () => {
+                        if (this.is_menu_open) {
+                            toggleMenuOpen();
+                        }
+                    })
+                }
+            }
 
             btn.addEventListener("click", toggleMenuOpen);
             document.addEventListener("click", (ev: PointerEvent) => {
