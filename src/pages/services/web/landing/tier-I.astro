@@ -3,15 +3,43 @@ import { Image } from "astro:assets";
 import landing_links from "../../../../data/tiers/web/landing_links";
 import ServiceLayout from "../../../../layouts/ServiceLayout.astro";
 
+import example_logo from "../../../../assets/images/examples/example_logo.webp";
 import example_hero from "../../../../assets/images/examples/example_hero.webp";
 import example_cutout from "../../../../assets/images/examples/example_cutout.webp";
-import example_review_1 from "../../../../assets/images/examples/example_review_1.webp";
-import example_review_2 from "../../../../assets/images/examples/example_review_2.webp";
+
+import cheese from "../../../../assets/images/examples/food/cheese.webp";
+import garlic from "../../../../assets/images/examples/food/garlic.webp";
+import mushroom from "../../../../assets/images/examples/food/mushroom.webp";
+import pepperoni from "../../../../assets/images/examples/food/pepperoni.webp";
+import tomato from "../../../../assets/images/examples/food/tomato.webp";
+
+import example_reviews from "../../../../data/examples/example_reviews";
+
+const scroll_nav_links: {
+    tag: string;
+    href: string;
+}[] = [
+    { tag: "Home", href: "#hero-section", },
+    { tag: "Intro", href: "#intro-section", },
+    { tag: "Reviews", href: "#review-section", },
+    { tag: "Contact", href: "#contact-section", },
+];
+
+const food_icons: ImageMetadata[] = [
+    cheese,
+    garlic,
+    mushroom,
+    pepperoni,
+    tomato
+];
 ---
 
 <ServiceLayout
     title="Landing Page Tier I"
     additional_links={[
+        { rel: "preconnect", href: "https://fonts.googleapis.com" },
+        { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: true },
+        { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" },
         { rel: "stylesheet", href: "https://fonts.googleapis.com/icon?family=Material+Icons" }
     ]}
 
@@ -19,23 +47,48 @@ import example_review_2 from "../../../../assets/images/examples/example_review_
     links={landing_links}
 >
     <!-- * Navigation Bar * -->
-    <nav>
-        
+    <nav class="fixed bg-red-900 top-0 left-0 w-screen py-4 px-8 z-99 shadow-lg/50">
+        <div class="relative flex justify-end">
+            <Image
+                src={example_logo}
+                alt="Example-NavBar-Logo"
+                class="size-20 absolute left-0 top-0 bg-yellow-100 border-4 border-red-900 rounded-full p-1 shadow-lg/50"
+                widths={[128]}
+                format="webp"
+                quality={80}
+                loading="eager"
+            />
+
+            <div class="flex gap-4">
+                {scroll_nav_links.map((nav_link) => (
+                    <a
+                        href={nav_link.href}
+                        class="text-white cursor-pointer hover:underline"
+                    >
+                        {nav_link.tag}
+                    </a>
+                ))}
+            </div>
+        </div>
     </nav>
 
     <!-- * Hero Section * -->
     <div
-        class="h-[70vh] bg-cover bg-top text-white"
+        class="h-[50vh] sm:h-[70vh] bg-black/50 bg-blend-multiply bg-cover bg-center text-white flex items-center justify-center mt-8"
         style={`background-image: url('${example_hero.src}');`}
+        id="hero-section"
     >
-        <div>
-            <h1>Lorenzo's Digital Pizzeria</h1>
-            <h2>Pizza Done Right</h2>
+        <div class="font-[Great_Vibes] text-shadow-lg/100 w-fit">
+            <h1 class="text-3xl sm:text-5xl md:text-6xl lg:text-8xl mb-4">Lorenzo's Digital Pizzeria</h1>
+            <h2 class="text-xl sm:text-3xl md:text-4xl lg:text-6xl text-center">Pizza Done Right</h2>
         </div>
     </div>
      
     <!-- * Introduction * -->
-    <div class="mt-8 mx-8 sm:mx-16 flex items-center justify-around flex-col md:flex-row gap-8">
+    <div
+        class="mt-8 mx-8 sm:mx-16 flex items-center justify-around flex-col md:flex-row gap-8"
+        id="intro-section"
+    >
         <Image
             src={example_cutout}
             alt="Example-Owner-Cutout"
@@ -47,44 +100,101 @@ import example_review_2 from "../../../../assets/images/examples/example_review_
         />
 
         <div class="w-full md:w-[50vw] max-w-150">
-            <h2 class="text-4xl mb-4">Welcome!</h2>
+            <h2 class="text-6xl mb-4 font-[Great_Vibes]">Welcome!</h2>
             <p class="text-lg">
-                My name is Lorenzo, owner and operator of Lorenzo's Digital Pizzeria! Since as far back as I can remember, I've always loved the art of creating the perfect pizza. As a child I'd help my grandfather every morning to prepare dough for our community's pizzeria. The smiles shown on every satisfied customer's face taught me the importance of sharing a good meal. That's why I opened the world's first fully digital pizzeria, so I can share my grandfather's beloved recipe with the world!
+                My name is Lorenzo, owner and operator of Lorenzo's Digital Pizzeria! Since as far back as I can remember, I've always loved the art of creating the perfect pizza. As a child, I'd help my grandfather every morning to prepare dough for our community's pizzeria. The smiles shown on every satisfied customer's face taught me the importance of sharing a good meal. That's why I opened the world's first fully digital pizzeria; so I can share my grandfather's beloved recipe with the world!
             </p>
         </div>
     </div>
 
     <!-- * Scrolling Decoration * -->
-    <div class="mt-8">
-        
+    <div class="mt-16 py-4 bg-black border-y-12 border-red-900 overflow-x-hidden">
+        <div class="flex">
+            {Array.from({ length: 2 }).map((_, iter_index) => (
+                <div class="flex justify-around w-screen shrink-0 animate-[inf-scroll_20s_linear_infinite]">
+                    {food_icons.map((icon, index) => (
+                        <Image
+                            src={icon}
+                            alt={`Food-Icon-${iter_index}-${index}`}
+                            class="size-20"
+                            widths={[128]}
+                            format="webp"
+                            quality={50}
+                            loading="eager"
+                        />
+                    ))}
+                </div>
+            ))}
+        </div>
     </div>
 
     <!-- * Reviews * -->
-    <div class="mt-8 mx-8 sm:mx-16">
-        
+    <div class="my-16 mx-8 sm:mx-16" id="review-section">
+        <h3 class="text-6xl mx-auto w-fit font-[Great_Vibes]">Customer Reviews</h3>
+        <div class="flex">
+            {example_reviews.map((review) => (
+                <div>
+
+                </div>
+            ))}
+        </div>
     </div>
 
     <!-- * Contact Form * -->
-    <div class="mt-8">
-
+    <div class="bg-linear-to-t from-yellow-100 to-transparent w-full h-16 mt-8" />
+    <div class="bg-yellow-100 py-16 px-8 sm:px-16" id="contact-section">
+        <h3 class="text-6xl mx-auto w-fit font-[Great_Vibes]">Get In Touch</h3>
+        <div class="flex">
+            <div class="flex flex-col">
+                <input placeholder="Enter your email..." type="email" />
+                <input placeholder="Enter message topic..." type="text" />
+            </div>
+            <input placeholder="Enter message..." type="text" />
+        </div>
+        <button>
+            Submit
+        </button>
     </div>
 
     <!-- * Footer * -->
-    <footer class="mt-8 pb-8 bg-black text-yellow-100 flex justify-around">
-        <div>
-
+    <footer class="py-8 px-8 sm:px-16 bg-black text-yellow-100 flex gap-16 justify-around flex-col md:flex-row items-center">
+        <div class="flex flex-col sm:flex-row items-center">
+            <Image
+                src={example_logo}
+                alt="Example-Footer-Logo"
+                class="size-30"
+                widths={[256]}
+                format="webp"
+                quality={80}
+                loading="eager"
+            />
+            <div class="sm:ml-4">
+                <h3 class="text-3xl mb-2 text-center sm:text-left font-[Great_Vibes]">Lorenzo's</h3>
+                <div class="flex mb-1">
+                    <i class="material-icons pr-2">home</i>
+                    <p>123 Road Ave. Town, ST 12345</p>
+                </div>
+                <div class="flex mb-1">
+                    <i class="material-icons pr-2">email</i>
+                    <a class="cursor-pointer hover:underline">lorenzo-pizza@example.com</a>
+                </div>
+                <div class="flex">
+                    <i class="material-icons pr-2">phone</i>
+                    <a class="cursor-pointer hover:underline">(123) 456-7890</a>
+                </div>
+            </div>
         </div>
 
         <div>
-            <h3>HOURS</h3>
+            <h3 class="text-center font-bold text-xl mb-2">HOURS</h3>
             <table>
                 <tbody>
                     <tr>
-                        <td>Monday&nbsp;-&nbsp;Friday:&nbsp;</td>
+                        <td class="text-right font-bold">Monday&nbsp;-&nbsp;Friday:&nbsp;</td>
                         <td>10am&nbsp;-&nbsp;10pm</td>
                     </tr>
                     <tr>
-                        <td>Saturday:&nbsp;</td>
+                        <td class="text-right font-bold">Saturday:&nbsp;</td>
                         <td>10am&nbsp;-&nbsp;1pm</td>
                     </tr>
                 </tbody>
@@ -92,3 +202,10 @@ import example_review_2 from "../../../../assets/images/examples/example_review_
         </div>
     </footer>
 </ServiceLayout>
+
+<style>
+    @keyframes inf-scroll {
+        from { transform: translateX(0%); }
+        to { transform: translateX(-100%); }
+    }
+</style>

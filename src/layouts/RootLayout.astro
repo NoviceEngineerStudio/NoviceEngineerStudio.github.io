@@ -6,6 +6,7 @@ type Props = {
     additional_links?: {
         rel: string;
         href: string;
+        crossorigin?: boolean;
     }[];
 };
 
@@ -48,8 +49,10 @@ const meta_data: SiteMetaData = {
 
         <link rel="icon" href={meta_data.icon_path} type="image/x-icon">
 
-        {Astro.props.additional_links?.map((link) => (
-            <link rel={link.rel} href={link.href}>
+        {Astro.props.additional_links?.map((link) => link.crossorigin === true ? (
+            <link rel={link.rel} href={link.href} crossorigin >
+        ) : (
+            <link rel={link.rel} href={link.href} >
         ))}
 
         <title>{meta_data.title}</title>
