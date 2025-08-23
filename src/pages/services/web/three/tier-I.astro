@@ -15,10 +15,15 @@ interface CountryData {
     name: string;
     banner: ImageMetadata;
     player_count: number;
+    rotation: { x: number; y: number; z: number; }
 };
 
 function randomPlayerCount(): number {
     return Math.round(1000 + 10000 * Math.random());
+}
+
+function degToRad(degree: number): number {
+    return degree * (Math.PI / 180.0);
 }
 
 const countries: CountryData[] = [
@@ -26,34 +31,42 @@ const countries: CountryData[] = [
         name: "Brazil",
         banner: brazil,
         player_count: randomPlayerCount(),
+        rotation: { x: degToRad(-30.0), y: degToRad(-15.0), z: degToRad(0.0), },
     }, {
         name: "China",
         banner: china,
         player_count: randomPlayerCount(),
+        rotation: { x: degToRad(10.0), y: degToRad(180.0), z: degToRad(0.0), },
     }, {
         name: "Germany",
         banner: germany,
         player_count: randomPlayerCount(),
+        rotation: { x: degToRad(25.0), y: degToRad(-85.0), z: degToRad(0.0), },
     }, {
         name: "India",
         banner: india,
         player_count: randomPlayerCount(),
+        rotation: { x: degToRad(0.0), y: degToRad(200.0), z: degToRad(0.0), },
     }, {
         name: "Japan",
         banner: japan,
         player_count: randomPlayerCount(),
+        rotation: { x: degToRad(15.0), y: degToRad(140.0), z: degToRad(0.0), },
     }, {
         name: "Spain",
         banner: spain,
         player_count: randomPlayerCount(),
+        rotation: { x: degToRad(20.0), y: degToRad(-75.0), z: degToRad(0.0), },
     }, {
         name: "United Kingdom",
         banner: uk,
         player_count: randomPlayerCount(),
+        rotation: { x: degToRad(30.0), y: degToRad(-75.0), z: degToRad(0.0), },
     }, {
         name: "United States",
         banner: us,
         player_count: randomPlayerCount(),
+        rotation: { x: degToRad(15.0), y: degToRad(15.0), z: degToRad(0.0), },
     },
 ];
 ---
@@ -71,7 +84,12 @@ const countries: CountryData[] = [
             id="country-list"
         >
             {countries.map((country) => (
-                <div id="country-banner">
+                <div
+                    id="country-banner"
+                    data-target_rotation_x={country.rotation.x}
+                    data-target_rotation_y={country.rotation.y}
+                    data-target_rotation_z={country.rotation.z}
+                >
                     <div
                         id="country-display"
                         class="max-h-0 overflow-hidden"
@@ -99,6 +117,10 @@ const countries: CountryData[] = [
 </ServiceLayout>
 
 <script>
+    import * as THREE from "three";
+    import world_texture from "../../../../assets/images/examples/world_texture.jpg";
+    import world_normal from "../../../../assets/images/examples/world_normal.jpg";
+
     function findElement(parent: Element, id: string): Element | null {
         for (let idx: number = 0; idx < parent.children.length; ++idx) {
             const cur_elem: Element | null = parent.children.item(idx);
@@ -133,24 +155,125 @@ const countries: CountryData[] = [
         return results;
     }
 
+    function lerpEuler(a: THREE.Euler, b: THREE.Vector3, t: number): THREE.Vector3 {
+        return new THREE.Vector3(
+            a.x + (b.x - a.x) * t,
+            a.y + (b.y - a.y) * t,
+            a.z + (b.z - a.z) * t
+        );
+    }
+
     class WorldPanel extends HTMLElement {
         private nav_idx: number = 0;
 
+        private render_width: number = 0;
+        private render_height: number = 0;
+
+        private scene: THREE.Scene;
+        private camera: THREE.OrthographicCamera;
+        private renderer: THREE.WebGLRenderer;
+
+        private world_mesh: THREE.Mesh;
+
+        private last_time: number = Date.now();
+        private rotation_speed: number = 2.0;
+        private target_rotation: THREE.Vector3 = new THREE.Vector3(0.0, 3.14, 0.0);
+
         constructor() {
             super();
+
+            this.render_width = window.innerWidth;
+            this.render_height = window.innerHeight;
+
+            this.scene = new THREE.Scene();
+            this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
+            this.renderer = new THREE.WebGLRenderer({
+                antialias: true,
+            });
+
+            const clearColor: THREE.Color = new THREE.Color(0, 0, 0);
+            this.renderer.setClearColor(clearColor, 0);
+            this.renderer.setPixelRatio(2);
+
+            const texture_loader: THREE.TextureLoader = new THREE.TextureLoader();
+            const earth_texture: THREE.Texture = texture_loader.load(world_texture.src);
+            const earth_normal: THREE.Texture = texture_loader.load(world_normal.src);
+
+            const sphere_resolution: number = 128;
+            const geometry: THREE.SphereGeometry = new THREE.SphereGeometry(1, sphere_resolution, sphere_resolution);
+            const material: THREE.MeshStandardMaterial = new THREE.MeshStandardMaterial({
+                map: earth_texture,
+                normalMap: earth_normal,
+            });
+
+            this.world_mesh = new THREE.Mesh(geometry, material);
+            this.world_mesh.position.set(-0.5, -0.5, -5);
+            this.scene.add(this.world_mesh);
+
+            const point_light = new THREE.PointLight(0xffffff, 50, 10);
+            point_light.position.set(2, 2, -2);
+            this.scene.add(point_light);
+
+            const directional_light = new THREE.DirectionalLight(0x0055ff, 1);
+            directional_light.position.set(2, 2, 2);
+            this.scene.add(directional_light);
+
+            const ambient_light = new THREE.AmbientLight(0x0055ff, 0.25);
+            this.scene.add(ambient_light);
+
+            this.appendChild(this.renderer.domElement);
+
+            this.onResize();
+            this.renderWorld();
+
             this.setupNavMenu();
+            
+            window.addEventListener("resize", this.onResize.bind(this));
+        }
+
+        private onResize(): void {
+            this.render_width = window.innerWidth;
+            this.render_height = window.innerHeight;
+
+            this.renderer.setSize(this.render_width, this.render_height);
+
+            const scale_view: number = this.render_height / this.render_width;
+            this.camera.top = scale_view;
+            this.camera.bottom = -scale_view;
+            this.camera.updateProjectionMatrix();
+        }
+
+        private renderWorld(): void {
+            this.renderer.render(this.scene, this.camera);
+
+            const cur_time: number = Date.now();
+            const delta_time: number = (cur_time - this.last_time) / 1000;
+            this.last_time = cur_time;
+
+            this.world_mesh.rotation.setFromVector3(lerpEuler(
+                this.world_mesh.rotation,
+                this.target_rotation,
+                delta_time * this.rotation_speed
+            ));
+        
+		    requestAnimationFrame(this.renderWorld.bind(this));
         }
 
         private setupNavMenu(): void {
             const banner_list: Element | null = findElement(this, "country-list");
             if (banner_list === null) return;
 
-            const banners: Element[] = findElements(banner_list, "country-banner");
+            const banners: HTMLElement[] = findElements(
+                banner_list,
+                "country-banner"
+            ) as HTMLElement[];
+
             if (banners.length === 0) return;
 
             let found_all_components: boolean = true;
             const displays: Element[] = [];
             const links: Element[] = [];
+            const rotations: THREE.Vector3[] = [];
 
             const setItem = (index: number): void => {
                 links[this.nav_idx].classList.remove("hidden");
@@ -160,10 +283,12 @@ const countries: CountryData[] = [
 
                 links[this.nav_idx].classList.add("hidden");
                 displays[this.nav_idx].classList.remove("max-h-0");
+
+                this.target_rotation = rotations[this.nav_idx];
             };
 
 
-            banners.forEach((banner: Element, index: number): void => {
+            banners.forEach((banner: HTMLElement, index: number): void => {
                 const display: Element | null = findElement(banner, "country-display");
                 const link: Element | null = findElement(banner, "country-link");
 
@@ -174,6 +299,12 @@ const countries: CountryData[] = [
 
                 displays.push(display);
                 links.push(link);
+
+                rotations.push(new THREE.Vector3(
+                    Number(banner.dataset.target_rotation_x) ?? 0.0,
+                    Number(banner.dataset.target_rotation_y) ?? 0.0,
+                    Number(banner.dataset.target_rotation_z) ?? 0.0,
+                ));
 
                 link.addEventListener("click", () => {
                     setItem(index);

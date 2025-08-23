@@ -13,7 +13,7 @@ const example_reviews: ReviewData[] = [
         picture: example_review_2,
         customer: "Jake Jackson",
         stars: 4,
-        description: "My husband and I are usually very picky eaters, but Lorenzo's pizza was tolerable. Great meal to spice things up between orders of chicken nuggets, french fries, and macoroni and cheese.",
+        description: "My husband and I are usually very picky eaters, but Lorenzo's pizza was tolerable. Great meal to spice things up between orders of chicken nuggets, french fries, and macaroni and cheese.",
     }
 ];
 
