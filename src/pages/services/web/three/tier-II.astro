@@ -13,10 +13,15 @@ import ServiceLayout from "../../../../layouts/ServiceLayout.astro";
     <orb-panel class="relative">
         <div
             id="orb-settings-container"
-            class="absolute left-1/2 -translate-x-1/2 bottom-16 py-4 px-8 w-[95%] text-white bg-gray-900/50 border-gray-600 border-1 rounded-lg flex gap-12 flex-wrap max-h-[30vh] overflow-y-auto"
+            class="absolute left-1/2 -translate-x-1/2 bottom-16 pb-4 w-[95vw] text-white bg-gray-900/50 border-gray-600 border-1 rounded-lg flex gap-8 flex-wrap max-h-[30vh] overflow-y-auto transition duration-300"
         >
-            <div id="scale-panel">
-                <h1 class="text-lg sm:text-xl md:text-2xl mb-4">Scale</h1>
+            <button
+                class="sticky w-full h-10 bg-zinc-600/50 hover:bg-zinc-600 cursor-pointer top-0 left-0 z-99"
+                id="menu-toggle-button"
+            >v v v</button>
+
+            <div id="scale-panel" class="px-8">
+                <h1 class="text-lg sm:text-xl md:text-2xl mb-2">Scale</h1>
                 <input
                     type="range" 
                     id="scale-slider"
@@ -26,12 +31,12 @@ import ServiceLayout from "../../../../layouts/ServiceLayout.astro";
                 />
             </div>
 
-            <div id="geometry-panel">
+            <div id="geometry-panel" class="px-8">
                 <h1 class="text-lg sm:text-xl md:text-2xl mb-4">Geometry</h1>
                 <div id="geometry-list" class="flex gap-4 flex-wrap" />
             </div>
 
-            <div id="materials-panel">
+            <div id="materials-panel" class="px-8">
                 <h1 class="text-lg sm:text-xl md:text-2xl mb-4">Material</h1>
                 <div id="materials-list" class="flex gap-4 flex-wrap" />
             </div>
@@ -341,4 +346,24 @@ import ServiceLayout from "../../../../layouts/ServiceLayout.astro";
     }
 
     customElements.define("orb-panel", OrbPanel);
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const menu: HTMLElement | null = document.getElementById("orb-settings-container");
+        const menu_button: HTMLElement | null = document.getElementById("menu-toggle-button");
+
+        if (menu === null || menu_button === null) {
+            return;
+        }
+
+        let is_menu_open: boolean = true;
+
+        menu_button.addEventListener("click", () => {
+            is_menu_open = !is_menu_open;
+            menu.classList.toggle("translate-y-full");
+            menu_button.textContent = (is_menu_open
+                ? "v v v"
+                : "^ ^ ^"
+            );
+        });
+    })
 </script>
