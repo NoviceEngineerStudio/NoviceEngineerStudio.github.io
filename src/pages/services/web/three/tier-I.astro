@@ -73,7 +73,7 @@ const countries: CountryData[] = [
 
 <ServiceLayout
     title="ThreeJS Tier I"
-    class="w-screen h-screen overflow-hidden bg-linear-to-tr to-black from-blue-950 relative"
+    class="w-screen h-screen overflow-hidden bg-linear-to-tr to-black from-blue-950"
 
     tier={1}
     links={three_links}
@@ -118,8 +118,8 @@ const countries: CountryData[] = [
 
 <script>
     import * as THREE from "three";
-    import world_texture from "../../../../assets/images/examples/world_texture.jpg";
-    import world_normal from "../../../../assets/images/examples/world_normal.jpg";
+    import earth_color from "../../../../assets/images/examples/materials/earth/color.jpg";
+    import earth_normal from "../../../../assets/images/examples/materials/earth/normal.jpg";
 
     function findElement(parent: Element, id: string): Element | null {
         for (let idx: number = 0; idx < parent.children.length; ++idx) {
@@ -191,19 +191,17 @@ const countries: CountryData[] = [
                 antialias: true,
             });
 
-            const clearColor: THREE.Color = new THREE.Color(0, 0, 0);
-            this.renderer.setClearColor(clearColor, 0);
+            const clear_color: THREE.Color = new THREE.Color(0, 0, 0);
+            this.renderer.setClearColor(clear_color, 0);
             this.renderer.setPixelRatio(2);
 
             const texture_loader: THREE.TextureLoader = new THREE.TextureLoader();
-            const earth_texture: THREE.Texture = texture_loader.load(world_texture.src);
-            const earth_normal: THREE.Texture = texture_loader.load(world_normal.src);
 
             const sphere_resolution: number = 128;
             const geometry: THREE.SphereGeometry = new THREE.SphereGeometry(1, sphere_resolution, sphere_resolution);
             const material: THREE.MeshStandardMaterial = new THREE.MeshStandardMaterial({
-                map: earth_texture,
-                normalMap: earth_normal,
+                map: texture_loader.load(earth_color.src),
+                normalMap: texture_loader.load(earth_normal.src),
             });
 
             this.world_mesh = new THREE.Mesh(geometry, material);

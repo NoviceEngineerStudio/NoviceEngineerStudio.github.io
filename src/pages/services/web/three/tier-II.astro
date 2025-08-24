@@ -5,9 +5,208 @@ import ServiceLayout from "../../../../layouts/ServiceLayout.astro";
 
 <ServiceLayout
     title="ThreeJS Tier II"
+    class="w-screen h-screen overflow-hidden bg-black"
 
     tier={2}
     links={three_links}
 >
-    <div>TIER 2</div>
+    <orb-panel>
+        <div
+            id="orb-settings-container"
+            class="absolute left-1/2 -translate-x-1/2 bottom-16 py-4 px-8 w-fit text-white bg-gray-900/50 border-gray-600 border-1 rounded-lg flex gap-8 flex-wrap items-center justify-around"
+        >
+            <div>
+                <h1 class="text-lg sm:text-xl md:text-2xl">Scale</h1>
+            </div>
+
+            <div>
+                <h1 class="text-lg sm:text-xl md:text-2xl">Geometry</h1>
+            </div>
+
+            <div>
+                <h1 class="text-lg sm:text-xl md:text-2xl">Material</h1>
+            </div>
+        </div>
+    </orb-panel>
 </ServiceLayout>
+
+<script>
+    import * as THREE from "three";
+    import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+
+    import brick_color from "../../../../assets/images/examples/materials/brick/color.jpg";
+    import brick_normal from "../../../../assets/images/examples/materials/brick/normal.jpg";
+
+    import earth_color from "../../../../assets/images/examples/materials/earth/color.jpg";
+    import earth_normal from "../../../../assets/images/examples/materials/earth/normal.jpg";
+
+    import grass_color from "../../../../assets/images/examples/materials/grass/color.jpg";
+    import grass_normal from "../../../../assets/images/examples/materials/grass/normal.jpg";
+
+    import rock_color from "../../../../assets/images/examples/materials/rock/color.jpg";
+    import rock_normal from "../../../../assets/images/examples/materials/rock/normal.jpg";
+
+    import tile_color from "../../../../assets/images/examples/materials/tile/color.jpg";
+    import tile_normal from "../../../../assets/images/examples/materials/tile/normal.jpg";
+
+    function degToRad(degree: number): number {
+        return degree * Math.PI * 0.00555555555555555555555555555556;
+    }
+
+    class OrbPanel extends HTMLElement {
+        private render_width: number = 0;
+        private render_height: number = 0;
+
+        private scene: THREE.Scene = new THREE.Scene();
+        private camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(70.0, 1, 0.1, 10);
+        private renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({ antialias: true });
+
+        private min_scale: number = 0.5;
+        private max_scale: number = 1.5;
+        private scale: number = this.min_scale + (this.max_scale - this.min_scale) * 0.5;
+
+        private mesh: THREE.Mesh = new THREE.Mesh();
+
+        private spot_radius: number = 3.0;
+        private spot_light: THREE.SpotLight = new THREE.SpotLight(0xffffff, 2, 10, degToRad(30.0), 0.5, 2);
+
+        private shapes: THREE.BufferGeometry<
+            THREE.NormalBufferAttributes,
+            THREE.BufferGeometryEventMap
+        >[] = [
+            new THREE.SphereGeometry(0.5),
+            new THREE.BoxGeometry(1.0, 1.0, 1.0),
+            new THREE.TorusGeometry(0.5, 0.25),
+            new THREE.ConeGeometry(0.5, 1),
+        ];
+
+        private materials: THREE.MeshStandardMaterial[];
+
+        private last_time: number = Date.now();
+        private orbit_control: OrbitControls;
+
+        constructor() {
+            super();
+
+            this.camera.position.z = 5;
+
+            const clear_color: THREE.Color = new THREE.Color(0, 0, 0);
+            this.renderer.setClearColor(clear_color, 0);
+            this.renderer.setPixelRatio(2);
+
+            const texture_loader: THREE.TextureLoader = new THREE.TextureLoader();
+
+            this.materials = [
+                new THREE.MeshStandardMaterial({
+                    map: texture_loader.load(brick_color.src),
+                    normalMap: texture_loader.load(brick_normal.src),
+                    roughness: 0.3,
+                    metalness: 0.1,
+                }),
+                new THREE.MeshStandardMaterial({
+                    map: texture_loader.load(earth_color.src),
+                    normalMap: texture_loader.load(earth_normal.src),
+                    roughness: 1.0,
+                    metalness: 0.0,
+                }),
+                new THREE.MeshStandardMaterial({
+                    map: texture_loader.load(grass_color.src),
+                    normalMap: texture_loader.load(grass_normal.src),
+                    roughness: 0.75,
+                    metalness: 0.1,
+                }),
+                new THREE.MeshStandardMaterial({
+                    map: texture_loader.load(rock_color.src),
+                    normalMap: texture_loader.load(rock_normal.src),
+                    roughness: 0.3,
+                    metalness: 0.1,
+                }),
+                new THREE.MeshStandardMaterial({
+                    map: texture_loader.load(tile_color.src),
+                    normalMap: texture_loader.load(tile_normal.src),
+                    roughness: 0.4,
+                    metalness: 0.1,
+                }),
+            ];
+
+            this.materials.forEach((material) => {
+                material.onBeforeCompile = (shader) => {
+                    shader.fragmentShader = shader.fragmentShader.replace(
+                        '#include <dithering_fragment>',
+                        `
+                        #include <dithering_fragment>
+
+                        float rim = 1.0 - max(dot(normalize(vNormal), normalize(vViewPosition)), 0.0);
+                        vec3 rimColor = vec3(0.1, 0.1, 0.1);
+                        gl_FragColor.rgb += rim * rimColor;
+                        `
+                    );
+                }
+            });
+
+            this.mesh.scale.set(this.scale, this.scale, this.scale);
+            this.mesh.material = this.materials[0];
+            this.mesh.geometry = this.shapes[0];
+            this.scene.add(this.mesh);
+
+            const plane: THREE.Mesh = new THREE.Mesh(
+                new THREE.PlaneGeometry(),
+                new THREE.MeshStandardMaterial()
+            );
+            plane.position.set(0.0, -1.0, 0.0);
+            plane.scale.set(100.0, 100.0, 1.0);
+            plane.rotateX(degToRad(-90.0));
+            this.scene.add(plane);
+
+            this.spot_light.position.set(0.0, this.spot_radius, 2.0);
+            this.spot_light.target = this.mesh;
+            this.scene.add(this.spot_light);
+
+            this.appendChild(this.renderer.domElement);
+
+            this.orbit_control = new OrbitControls(this.camera, this.renderer.domElement);
+            this.orbit_control.enableDamping = true;
+            this.orbit_control.maxPolarAngle = degToRad(90.0);
+
+            this.onResize();
+            this.render();
+
+            window.addEventListener("resize", this.onResize.bind(this));
+        }
+
+        private onResize(): void {
+            this.render_width = window.innerWidth;
+            this.render_height = window.innerHeight;
+
+            this.renderer.setSize(this.render_width, this.render_height);
+
+            this.camera.aspect = this.render_width / this.render_height;
+            this.camera.updateProjectionMatrix();
+        }
+
+        private render(): void {
+            const cur_time: number = Date.now();
+            const delta_time: number = (cur_time - this.last_time) * 0.001;
+            this.last_time = cur_time;
+
+            this.orbit_control.update(delta_time);
+
+            const cam_dir = new THREE.Vector3();
+            this.camera.getWorldDirection(cam_dir);
+
+            cam_dir.y = 0;
+            cam_dir.normalize();
+
+            this.spot_light.position.set(
+                this.mesh.position.x - cam_dir.x * this.spot_radius,
+                2.0,
+                this.mesh.position.z - cam_dir.z * this.spot_radius
+            )
+
+            this.renderer.render(this.scene, this.camera);
+            requestAnimationFrame(this.render.bind(this));
+        }
+    }
+
+    customElements.define("orb-panel", OrbPanel);
+</script>
