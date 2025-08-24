@@ -1,6 +1,6 @@
 import type { ResumeData } from "../types/ResumeData";
 
-import example_headshot from "../../assets/images/examples/example_headshot.webp";
+import example_headshot from "../../assets/images/examples/stock/headshot.webp";
 
 const example_resume: ResumeData = {
     person: {

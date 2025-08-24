@@ -1,7 +1,7 @@
 import type { ReviewData } from "../types/ReviewData";
 
-import example_review_1 from "../../assets/images/examples/example_review_1.webp";
-import example_review_2 from "../../assets/images/examples/example_review_2.webp";
+import example_review_1 from "../../assets/images/examples/stock/review_1.webp";
+import example_review_2 from "../../assets/images/examples/stock/review_2.webp";
 
 const example_reviews: ReviewData[] = [
     {
