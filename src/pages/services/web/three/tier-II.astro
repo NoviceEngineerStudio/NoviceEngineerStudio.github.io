@@ -6,6 +6,9 @@ import ServiceLayout from "../../../../layouts/ServiceLayout.astro";
 <ServiceLayout
     title="ThreeJS Tier II"
     class="w-screen h-screen overflow-hidden bg-black"
+    additional_links={[
+        { rel: "stylesheet", href: "https://fonts.googleapis.com/icon?family=Material+Icons" }
+    ]}
 
     tier={2}
     links={three_links}
@@ -16,15 +19,20 @@ import ServiceLayout from "../../../../layouts/ServiceLayout.astro";
             class="absolute left-1/2 -translate-x-1/2 bottom-16 pb-4 w-[95vw] text-white bg-gray-900/50 border-gray-600 border-1 rounded-lg flex gap-8 flex-wrap max-h-[30vh] overflow-y-auto transition duration-300"
         >
             <button
-                class="sticky w-full h-10 bg-zinc-700 hover:bg-zinc-600 cursor-pointer top-0 left-0 z-99 shadow-lg/50"
+                class="sticky w-full h-10 bg-zinc-700 hover:bg-zinc-600 cursor-pointer top-0 left-0 z-99 shadow-lg/50 text-zinc-500"
                 id="menu-toggle-button"
-            >v v v</button>
+            >
+                <i class="material-icons" style="vertical-align: middle;">
+                    keyboard_arrow_down&nbsp;keyboard_arrow_down&nbsp;keyboard_arrow_down
+                </i>
+            </button>
 
             <div id="scale-panel" class="px-8">
                 <h1 class="text-lg sm:text-xl md:text-2xl mb-2">Scale</h1>
                 <input
                     type="range" 
                     id="scale-slider"
+                    class="w-64"
                     step={0.05}
                     min={0.5}
                     max={1.5}
@@ -41,6 +49,13 @@ import ServiceLayout from "../../../../layouts/ServiceLayout.astro";
                 <div id="materials-list" class="flex gap-4 flex-wrap" />
             </div>
         </div>
+
+        <button
+            class="absolute top-4 right-4 text-gray-300 hover:text-white rounded-lg border-2 cursor-pointer p-2 bg-black"
+            id="orb-home-button"
+        >
+            <i class="material-icons" style="font-size: 32px; vertical-align: middle;">home</i>
+        </button>
     </orb-panel>
 </ServiceLayout>
 
@@ -68,10 +83,10 @@ import ServiceLayout from "../../../../layouts/ServiceLayout.astro";
     import tile_color from "../../../../assets/images/examples/materials/tile/color.jpg";
     import tile_normal from "../../../../assets/images/examples/materials/tile/normal.jpg";
 
-    import box_icon from "../../../../assets/images/examples/geometry/box.svg";
-    import circle_icon from "../../../../assets/images/examples/geometry/circle.svg";
-    import ring_icon from "../../../../assets/images/examples/geometry/ring.svg";
-    import triangle_icon from "../../../../assets/images/examples/geometry/triangle.svg";
+    import box_icon from "../../../../assets/icons/geometry/box.svg";
+    import circle_icon from "../../../../assets/icons/geometry/circle.svg";
+    import ring_icon from "../../../../assets/icons/geometry/ring.svg";
+    import triangle_icon from "../../../../assets/icons/geometry/triangle.svg";
 
     function degToRad(degree: number): number {
         return degree * Math.PI * 0.00555555555555555555555555555556;
@@ -122,7 +137,7 @@ import ServiceLayout from "../../../../layouts/ServiceLayout.astro";
         private render_height: number = 0;
 
         private scene: THREE.Scene = new THREE.Scene();
-        private camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(70.0, 1, 0.1, 10);
+        private camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(70.0, 1, 0.1, 30);
         private renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({ antialias: true });
 
         private last_geometry_btn: HTMLButtonElement | null = null;
@@ -157,7 +172,7 @@ import ServiceLayout from "../../../../layouts/ServiceLayout.astro";
             this.renderer.setClearColor(clear_color, 0);
             this.renderer.setPixelRatio(2);
             this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            this.renderer.toneMappingExposure = 1.5;
+            this.renderer.toneMappingExposure = 5.0;
 
             const texture_loader: THREE.TextureLoader = new THREE.TextureLoader();
 
@@ -195,6 +210,10 @@ import ServiceLayout from "../../../../layouts/ServiceLayout.astro";
             ];
 
             this.materials.forEach((material) => {
+                if (material.map !== null) {
+                    material.map.colorSpace = THREE.SRGBColorSpace;
+                }
+                
                 material.onBeforeCompile = (shader) => {
                     shader.fragmentShader = shader.fragmentShader.replace(
                         '#include <dithering_fragment>',
@@ -229,16 +248,28 @@ import ServiceLayout from "../../../../layouts/ServiceLayout.astro";
                 this.buildGeometryList(settings_panel);
                 this.buildMaterialsList(settings_panel);
             }
+            this.buildHomeButton();
             this.appendChild(this.renderer.domElement);
 
             this.orbit_control = new OrbitControls(this.camera, this.renderer.domElement);
             this.orbit_control.enableDamping = true;
             this.orbit_control.maxPolarAngle = degToRad(90.0);
+            this.orbit_control.minDistance = 2.0;
+            this.orbit_control.maxDistance = 20.0
 
             this.onResize();
             this.render();
 
             window.addEventListener("resize", this.onResize.bind(this));
+        }
+
+        private buildHomeButton() {
+            const home_button: Element | null = findElement(this, "orb-home-button");
+            if (home_button === null) return;
+
+            home_button.addEventListener("click", () => {
+                this.camera.position.set(0, 0, 5);
+            });
         }
 
         private buildScaleSlider(settings_panel: Element): void {
@@ -360,10 +391,7 @@ import ServiceLayout from "../../../../layouts/ServiceLayout.astro";
         menu_button.addEventListener("click", () => {
             is_menu_open = !is_menu_open;
             menu.classList.toggle("translate-y-full");
-            menu_button.textContent = (is_menu_open
-                ? "v v v"
-                : "^ ^ ^"
-            );
+            menu_button.classList.toggle("rotate-180");
         });
     })
 </script>
