@@ -1,7 +1,7 @@
 ---
 import "../styles/global.css";
-import type { PageLink } from "../utils/common_links";
-import buildMetaData, { type SiteMetaData } from "../config/site";
+import HeadLink from "../components/core/HeadLink.astro";
+import buildMetaData, { type SiteMetaData, type PageLink } from "../config/site";
 
 interface Props {
     title?: string;
@@ -29,10 +29,24 @@ const meta_data: SiteMetaData = buildMetaData(Astro.props.title);
 
         <link rel="icon" href={meta_data.icon_path} type="image/x-icon">
 
-        {Astro.props.additional_links?.map((link) => link.crossorigin ? (
-            <link rel={link.rel} href={link.href} crossorigin >
-        ) : (
-            <link rel={link.rel} href={link.href} >
+        {meta_data.static_links.map((link: PageLink) => (
+            <HeadLink
+                rel={link.rel}
+                href={link.href}
+                as={link.as}
+                type={link.type}
+                crossorigin={link.crossorigin}
+            />
+        ))}
+
+        {Astro.props.additional_links?.map((link: PageLink) => (
+            <HeadLink
+                rel={link.rel}
+                href={link.href}
+                as={link.as}
+                type={link.type}
+                crossorigin={link.crossorigin}
+            />
         ))}
 
         <title>{meta_data.title}</title>

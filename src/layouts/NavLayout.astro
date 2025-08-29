@@ -19,6 +19,7 @@ interface Props extends RootLayoutProps {}
     <button
         class="size-10 p-2.5 bg-black/50 hover:bg-indigo-600 rounded-lg fixed top-8 right-8 flex flex-col justify-between cursor-pointer z-999"
         id="nav-menu-btn"
+        aria-label="Navigation-Menu-Button"
     >
         <div id="nav-menu-btn-bar-1" class="bg-white w-full h-1 rounded-full transition-transform duration-150" />
         <div id="nav-menu-btn-bar-2" class="bg-white w-full h-1 rounded-full transition-transform duration-150" />
@@ -30,11 +31,14 @@ interface Props extends RootLayoutProps {}
         id="nav-menu"
     >
         {nav_links.map((nav_link: NavLink) => (
-            <a href={nav_link.href} class={
-                nav_link.href.replaceAll("/", "") === Astro.url.pathname.replaceAll("/", "")
-                ? "font-bold underline"
-                : "hover:underline"
-            }>
+            <a
+                href={nav_link.href}
+                class={`${
+                    nav_link.href.replaceAll("/", "") === Astro.url.pathname.replaceAll("/", "")
+                    ? "font-bold underline"
+                    : "hover:underline"
+                } text-lg`}
+            >
                 {nav_link.tag}
             </a>
         ))}

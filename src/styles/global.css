@@ -1,8 +1,44 @@
-@import url('https://fonts.googleapis.com/css2?family=MedievalSharp&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+@font-face {
+  font-family: 'MaterialIcons';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/material_icons/MaterialIcons-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'MedievalSharp';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/medieval_sharp/MedievalSharp-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Rubik';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/rubik/Rubik-VariableFont_wght.ttf') format('truetype');
+}
 
 @import "tailwindcss";
 
 html, body {
     margin: 0;
     font-family: "Rubik", sans-serif;
+}
+
+.material-icons {
+  font-family: 'MaterialIcons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  display: inline-block;
+  line-height: 1;
+  vertical-align: middle;
+  text-transform: none;
+  letter-spacing: normal;
+  white-space: nowrap;
+  direction: ltr;
+  font-feature-settings: 'liga';
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
 }

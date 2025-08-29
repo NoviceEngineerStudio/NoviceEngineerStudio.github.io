@@ -3,13 +3,11 @@ import { Image } from "astro:assets";
 import NavLayout from "../../../layouts/NavLayout.astro";
 import { rangeToText } from "../../../utils/number_range";
 import threejs_services from "../../../config/threejs_services";
-import { google_material_icons } from "../../../utils/common_links";
 import type { ServiceData, ServiceDeliverable } from "../../../config/services";
 ---
 
 <NavLayout
     title="ThreeJS Services"
-    additional_links={[ google_material_icons ]}
 
     bodyClass="bg-linear-to-tr to-gray-800 from-gray-950 text-white py-16 px-8 sm:px-16 md:px-32"
 >
@@ -19,7 +17,7 @@ import type { ServiceData, ServiceDeliverable } from "../../../config/services";
         <gem-canvas class="w-full sm:w-1/2 aspect-square"></gem-canvas>
         
         <div class="text-shadow-lg/50 max-w-none sm:max-w-1/2">
-            <h3 class="font-[MedievalSharp] text-2xl mb-2">What is ThreeJS?</h3>
+            <h2 class="font-[MedievalSharp] text-4xl mb-2">What is ThreeJS?</h2>
             <p>ThreeJS is a powerful tool that brings 3D graphics and animations right into a web browser—no extra software needed. With it, your website can go beyond static images and text, offering interactive experiences like dynamic product showcases, immersive backgrounds, or even mini-games that run smoothly across devices. It&apos;s a great way to capture attention, stand out from competitors, and give visitors something memorable and engaging to explore.</p>
         </div>
     </div>
@@ -44,7 +42,7 @@ import type { ServiceData, ServiceDeliverable } from "../../../config/services";
             </div>
 
             <div class="my-2">
-                <i class="material-icons mr-2" style="vertical-align: middle;">calendar_month</i>
+                <i class="material-icons mr-2">calendar_month</i>
                 <span>{rangeToText(service.time)}&nbsp;Days</span>
             </div>
 

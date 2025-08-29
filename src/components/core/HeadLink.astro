@@ -1,0 +1,21 @@
+---
+import { type PageLink } from "../../config/site";
+
+interface Props extends PageLink {}
+---
+
+{Astro.props.crossorigin
+    ? <link
+        rel={Astro.props.rel}
+        href={Astro.props.href}
+        as={Astro.props.as}
+        type={Astro.props.type}
+        crossorigin
+    >
+    : <link
+        rel={Astro.props.rel}
+        href={Astro.props.href}
+        as={Astro.props.as}
+        type={Astro.props.type}
+    >
+}

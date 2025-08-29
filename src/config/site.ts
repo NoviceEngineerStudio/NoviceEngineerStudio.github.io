@@ -1,8 +1,17 @@
+export interface PageLink {
+    rel: string;
+    href: string;
+    as?: string;
+    type?: string;
+    crossorigin: boolean;
+}
+
 export interface SiteMetaData {
     title: string;
     description: string;
     authors: string[];
     icon_path: string;
+    static_links: PageLink[];
 }
 
 export default function buildMetaData(page_title?: string): SiteMetaData {
@@ -20,5 +29,26 @@ export default function buildMetaData(page_title?: string): SiteMetaData {
             "Novice Engineer",
         ],
         icon_path: "/favicon.ico",
+        static_links: [
+            {
+                rel: "preload",
+                href: "/fonts/material_icons/MaterialIcons-Regular.ttf",
+                as: "font",
+                type: "font/ttf",
+                crossorigin: true,
+            }, {
+                rel: "preload",
+                href: "/fonts/medieval_sharp/MedievalSharp-Regular.ttf",
+                as: "font",
+                type: "font/ttf",
+                crossorigin: true,
+            }, {
+                rel: "preload",
+                href: "/fonts/rubik/Rubik-VariableFont_wght.ttf",
+                as: "font",
+                type: "font/ttf",
+                crossorigin: true,
+            }
+        ],
     }
 }
