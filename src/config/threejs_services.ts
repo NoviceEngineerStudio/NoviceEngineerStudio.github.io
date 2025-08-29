@@ -6,6 +6,8 @@ import tier_icon_3 from "../assets/icons/tiers/tier_icon_3.webp";
 import tier_icon_4 from "../assets/icons/tiers/tier_icon_4.webp";
 import tier_icon_5 from "../assets/icons/tiers/tier_icon_5.webp";
 
+import novice_preview from "../assets/previews/threejs_novice.webp";
+
 export const threejs_services: ServiceData[] = [
     { // ? Novice Tier ////////////////////////////////////////////////////////
         tier: "Novice",
@@ -38,12 +40,12 @@ export const threejs_services: ServiceData[] = [
         ],
         examples: [
             {
-                title: "Example",
-                preview: tier_icon_1,
-                month: "March",
-                year: 2002,
-                href: "https://noviceengineerstudio.github.io/services/threejs",
-                description: "It was a great project!",
+                title: "Hero Globe",
+                preview: novice_preview,
+                month: "August",
+                year: 2025,
+                href: "https://noviceengineerstudio.github.io/portfolio/threejs/novice_tier",
+                description: "This project serves as a fun example of what you can expect from our Novice tier. Showcasing a 3D model of the earth in a made-up companies hero section, you can see the subtle animations looping in the background to give the page a more whimsical feeling.",
             },
         ],
     }, { // ? Apprentice Tier /////////////////////////////////////////////////

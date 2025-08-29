@@ -1,0 +1,130 @@
+---
+import NavLayout from "../../../layouts/NavLayout.astro";
+---
+
+<NavLayout
+    title="Novice Tier ThreeJS"
+
+    bodyClass="w-screen h-screen bg-linear-to-tr to-gray-950 from-slate-800 relative"
+>
+    <earth-canvas class="absolute top-0 left-0 w-full h-full z-98" />
+
+    <div class="absolute top-0 right-0 w-full sm:w-1/2 h-full z-99 bg-linear-to-r from-transparent to-2% to-black/50 flex flex-col justify-center text-white items-start gap-2 text-shadow-lg/25 pl-12">
+        <h1 class="text-4xl md:text-5xl lg:text-6xl">EXAMPLE LLC</h1>
+        <h2 class="text-xl md:text-2xl lg:text-3xl mb-2">Showcasing our World</h2>
+        <button
+            class="bg-teal-950 px-4 py-2 rounded-xl shadow-lg/50 border-teal-900 border-2 cursor-pointer hover:bg-teal-900 hover:shadow-lg/75 transition duration-150"
+            aria-label="Example-Call-To-Action"
+        >
+            Contact Us
+        </button>
+    </div>
+</NavLayout>
+
+<script>
+    import * as THREE from "three";
+
+    import earth_day_color from "../../../assets/materials/earth/day_color.jpg";
+    import earth_normal from "../../../assets/materials/earth/normal.jpg";
+    import earth_specular from "../../../assets/materials/earth/specular.jpg";
+
+    import cloud_color from "../../../assets/materials/earth/clouds.jpg";
+
+    class EarthCanvas extends HTMLElement {
+        private scene: THREE.Scene = new THREE.Scene();
+        private renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({ antialias: true });
+        private camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(
+            70.0,
+            1.0,
+            0.1,
+            200.0
+        );
+
+        private earth: THREE.Mesh;
+        private clouds: THREE.Mesh;
+
+        private last_time: number = Date.now() * 0.001;
+        private earth_rotation_speed: number = 0.05;
+        private cloud_rotation_speed: number = 0.075;
+
+        constructor() {
+            super();
+
+            this.camera.position.set(0.0, 0.0, 150.0);
+            this.renderer.setClearAlpha(0.0);
+            this.renderer.setPixelRatio(window.devicePixelRatio);
+            this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+
+            const textureLoader: THREE.TextureLoader = new THREE.TextureLoader();
+
+            this.earth = new THREE.Mesh(
+                new THREE.IcosahedronGeometry(100.0, 12.0),
+                new THREE.MeshLambertMaterial({
+                    map: textureLoader.load(earth_day_color.src),
+                    normalMap: textureLoader.load(earth_normal.src),
+                    specularMap: textureLoader.load(earth_specular.src),
+                })
+            );
+
+            this.earth.position.set(-65.0, -50.0, 0.0);
+            this.earth.rotation.set(0.2, 3.5, 0.2);
+
+            this.scene.add(this.earth);
+
+            const cloud_material = new THREE.MeshLambertMaterial({
+                alphaMap: textureLoader.load(cloud_color.src),
+            });
+
+            cloud_material.transparent = true;
+            cloud_material.opacity = 0.75;
+
+            this.clouds = new THREE.Mesh(
+                new THREE.IcosahedronGeometry(100.1, 15.0),
+                cloud_material
+            );
+
+            this.clouds.position.copy(this.earth.position);
+            this.clouds.rotation.copy(this.earth.rotation);
+
+            this.scene.add(this.clouds);
+            
+            const directional_light: THREE.DirectionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
+            directional_light.target = this.earth;
+            directional_light.position.set(0.0, 0.0, -30.0);
+            this.scene.add(directional_light);
+
+            this.renderer.domElement.style.width = "100%";
+            this.renderer.domElement.style.height = "100%";
+            this.appendChild(this.renderer.domElement);
+
+            this.onResize();
+            window.addEventListener("resize", this.onResize.bind(this));
+
+            this.mainLoop();
+        }
+
+        private onResize(): void {
+            const width: number = this.clientWidth;
+            const height: number = this.clientHeight;
+
+            this.renderer.setSize(width, height, false);
+
+            this.camera.aspect = width / height;
+            this.camera.updateProjectionMatrix();
+        }
+
+        private mainLoop(): void {
+            const cur_time: number = Date.now() * 0.001;
+            const delta_time: number = cur_time - this.last_time;
+            this.last_time = cur_time;
+
+            this.earth.rotateY(delta_time * this.earth_rotation_speed);
+            this.clouds.rotateY(delta_time * this.cloud_rotation_speed);
+
+            this.renderer.render(this.scene, this.camera);
+            requestAnimationFrame(this.mainLoop.bind(this));
+        }
+    }
+
+    customElements.define("earth-canvas", EarthCanvas);
+</script>
