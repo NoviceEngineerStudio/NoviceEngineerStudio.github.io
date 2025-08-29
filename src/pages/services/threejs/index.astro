@@ -102,7 +102,7 @@ import type { ServiceData, ServiceDeliverable } from "../../../config/services";
             window.addEventListener("resize", this.onResize.bind(this));
 
             this.mainLoop();
-            this.loadModel("../src/assets/models/primitives/gem.glb");
+            this.loadModel("/models/primitives/gem.glb");
         }
 
         private async loadModel(model_path: string): Promise<void> {
