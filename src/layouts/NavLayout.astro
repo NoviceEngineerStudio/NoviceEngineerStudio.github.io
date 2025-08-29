@@ -1,15 +1,82 @@
 ---
+import nav_links, { type NavLink } from "../config/nav_links";
 import RootLayout, { type RootLayoutProps } from "./RootLayout.astro";
 
-interface Props extends RootLayoutProps {
-    class?: string;
-};
-
-export type NavLayoutProps = Props;
+interface Props extends RootLayoutProps {}
 ---
 
-<RootLayout title={Astro.props.title}>
-    <main class={Astro.props.class}>
-        <slot/>
-    </main>
+<RootLayout
+    title={Astro.props.title}
+    additional_links={Astro.props.additional_links}
+    
+    bodyClass={Astro.props.bodyClass}
+    bodyStyle={Astro.props.bodyStyle}
+>
+    <slot />
+
+    <div id="nav-menu-fade" class="fixed top-0 left-0 w-full h-full bg-black/80 hidden" />
+
+    <button
+        class="size-10 p-2.5 bg-black/50 hover:bg-indigo-600 rounded-lg fixed top-8 right-8 flex flex-col justify-between cursor-pointer z-999"
+        id="nav-menu-btn"
+    >
+        <div id="nav-menu-btn-bar-1" class="bg-white w-full h-1 rounded-full transition-transform duration-150" />
+        <div id="nav-menu-btn-bar-2" class="bg-white w-full h-1 rounded-full transition-transform duration-150" />
+        <div id="nav-menu-btn-bar-3" class="bg-white w-full h-1 rounded-full transition-transform duration-150" />
+    </button>
+
+    <nav
+        class="fixed top-0 right-0 z-998 transition-transform duration-150 translate-x-full pt-26 pl-8 pr-16 h-full bg-indigo-950/25 border-l border-indigo-900 flex flex-col gap-4 text-white"
+        id="nav-menu"
+    >
+        {nav_links.map((nav_link: NavLink) => (
+            <a href={nav_link.href} class={
+                nav_link.href.replaceAll("/", "") === Astro.url.pathname.replaceAll("/", "")
+                ? "font-bold underline"
+                : "hover:underline"
+            }>
+                {nav_link.tag}
+            </a>
+        ))}
+    </nav>
 </RootLayout>
+
+<script>
+    function setupNavMenu(): void {
+        const nav_btn: HTMLElement | null = document.getElementById("nav-menu-btn");
+        const nav_menu: HTMLElement | null = document.getElementById("nav-menu");
+        const nav_fade: HTMLElement | null = document.getElementById("nav-menu-fade");
+        const nav_bar_1: HTMLElement | null = document.getElementById("nav-menu-btn-bar-1");
+        const nav_bar_2: HTMLElement | null = document.getElementById("nav-menu-btn-bar-2");
+        const nav_bar_3: HTMLElement | null = document.getElementById("nav-menu-btn-bar-3");
+
+        if (
+            nav_btn === null ||
+            nav_menu === null ||
+            nav_fade === null ||
+            nav_bar_1 === null ||
+            nav_bar_2 === null ||
+            nav_bar_3 === null
+        ) {
+            return;
+        }
+
+        let is_menu_open: boolean = false;
+
+        const toggleMenuOpen = () => {
+            is_menu_open = !is_menu_open;
+            
+            nav_bar_1.classList.toggle("translate-y-2");
+            nav_bar_1.classList.toggle("-rotate-45");
+            nav_bar_2.classList.toggle("rotate-45");
+            nav_bar_3.classList.toggle("scale-y-0");
+            nav_menu.classList.toggle("translate-x-full");
+            nav_fade.classList.toggle("hidden");
+        }
+
+        nav_btn.addEventListener("click", toggleMenuOpen);
+        nav_fade.addEventListener("click", () => { if (is_menu_open) toggleMenuOpen(); })
+    }
+
+    setupNavMenu();
+</script>

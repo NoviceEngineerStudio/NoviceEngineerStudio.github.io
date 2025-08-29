@@ -1,29 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=MedievalSharp&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
 @import "tailwindcss";
 
-.bg-checkerboard {
-    background-image:
-        linear-gradient(45deg, #ffffff88 25%, transparent 25%),
-        linear-gradient(135deg, #ffffff88 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, #ffffff88 75%),
-        linear-gradient(135deg, transparent 75%, #ffffff88 75%);
-}
-
-input[type="range"] {
-  @apply appearance-none h-2 bg-gray-200 rounded-lg cursor-pointer;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-  @apply appearance-none h-4 w-4 rounded-full bg-blue-500 shadow-md;
-}
-
-input[type="range"]::-moz-range-thumb {
-  @apply h-4 w-4 rounded-full bg-blue-500 border-none shadow-md;
-}
-
-input[type="range"]::-webkit-slider-thumb:hover {
-  @apply bg-blue-400;
-}
-
-input[type="range"]::-moz-range-thumb:hover {
-  @apply bg-blue-400;
+html, body {
+    margin: 0;
+    font-family: "Rubik", sans-serif;
 }

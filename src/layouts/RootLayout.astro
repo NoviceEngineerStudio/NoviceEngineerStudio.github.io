@@ -1,39 +1,19 @@
 ---
 import "../styles/global.css";
+import type { PageLink } from "../utils/common_links";
+import buildMetaData, { type SiteMetaData } from "../config/site";
 
-type Props = {
+interface Props {
     title?: string;
-    additional_links?: {
-        rel: string;
-        href: string;
-        crossorigin?: boolean;
-    }[];
-};
+    additional_links?: PageLink[];
+
+    bodyClass?: string;
+    bodyStyle?: string | astroHTML.JSX.CSSProperties;
+}
 
 export type RootLayoutProps = Props;
 
-type SiteMetaData = {
-    title: string;
-    description: string;
-    authors: string[];
-    icon_path: string;
-};
-
-const meta_data: SiteMetaData = {
-    title: Astro.props.title
-        ? `Novice Engineer - ${Astro.props.title}`
-        : 'Novice Engineering Studio',
-    description: (
-        "Welcome to the Novice Engineering Studio! This website serves as a " +
-        "hub for all of our current and prior projects; A fun place to document " +
-        "our continued growth as a studio, as well as announce what we're up to. " +
-        "Hope to see you there!"
-    ),
-    authors: [
-        "Novice Engineer",
-    ],
-    icon_path: "/favicon.ico",
-};
+const meta_data: SiteMetaData = buildMetaData(Astro.props.title);
 ---
 
 <!DOCTYPE html>
@@ -49,7 +29,7 @@ const meta_data: SiteMetaData = {
 
         <link rel="icon" href={meta_data.icon_path} type="image/x-icon">
 
-        {Astro.props.additional_links?.map((link) => link.crossorigin === true ? (
+        {Astro.props.additional_links?.map((link) => link.crossorigin ? (
             <link rel={link.rel} href={link.href} crossorigin >
         ) : (
             <link rel={link.rel} href={link.href} >
@@ -57,7 +37,7 @@ const meta_data: SiteMetaData = {
 
         <title>{meta_data.title}</title>
     </head>
-    <body>
+    <body class={Astro.props.bodyClass} style={Astro.props.bodyStyle}>
         <slot/>
     </body>
 </html>

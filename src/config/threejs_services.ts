@@ -1,0 +1,173 @@
+import type { ServiceData } from "./services";
+
+import tier_icon_1 from "../assets/icons/tiers/tier_icon_1.webp";
+import tier_icon_2 from "../assets/icons/tiers/tier_icon_2.webp";
+import tier_icon_3 from "../assets/icons/tiers/tier_icon_3.webp";
+import tier_icon_4 from "../assets/icons/tiers/tier_icon_4.webp";
+import tier_icon_5 from "../assets/icons/tiers/tier_icon_5.webp";
+
+export const threejs_services: ServiceData[] = [
+    { // ? Novice Tier ////////////////////////////////////////////////////////
+        tier: "Novice",
+        tier_icon: tier_icon_1,
+        price: {
+            low: 30.00,
+            high: 85.00,
+        },
+        time: {
+            low: 1,
+            high: undefined,
+        },
+        deliverables: [
+            {
+                tag: "Tag",
+                description: "I will embed a 3D model into your website",
+            }, {
+                tag: "Animation",
+                description: "Simple Repetitive Loops or None",
+            }, {
+                tag: "Interactivity",
+                description: "Minimal or None",
+            }, {
+                tag: "3D Models",
+                description: "Primitive Geometry or Provided Model",
+            }, {
+                tag: "Revisions",
+                description: "1 Round",
+            },
+        ],
+        examples: [
+
+        ],
+    }, { // ? Apprentice Tier /////////////////////////////////////////////////
+        tier: "Apprentice",
+        tier_icon: tier_icon_2,
+        price: {
+            low: 100.00,
+            high: 300.00,
+        },
+        time: {
+            low: 1,
+            high: 3,
+        },
+        deliverables: [
+            {
+                tag: "Tag",
+                description: "I will embed a dynamic 3D model into your website",
+            }, {
+                tag: "Animation",
+                description: "Simple Property Changes",
+            }, {
+                tag: "Interactivity",
+                description: "Model Movement and Property Changes",
+            }, {
+                tag: "3D Models",
+                description: "1 Custom Model and Primitive Geometry",
+            }, {
+                tag: "Revisions",
+                description: "2 Rounds",
+            },
+        ],
+        examples: [
+
+        ],
+    }, { // ? Adept Tier //////////////////////////////////////////////////////
+        tier: "Adept",
+        tier_icon: tier_icon_3,
+        price: {
+            low: 400.00,
+            high: 700.00,
+        },
+        time: {
+            low: 4,
+            high: 7,
+        },
+        deliverables: [
+            {
+                tag: "Tag",
+                description: "I will create an interactive 3D website experience",
+            }, {
+                tag: "Animation",
+                description: "Simple Property Changes or Minimal Complex Animation",
+            }, {
+                tag: "Interactivity",
+                description: "Integrated and Complex Input",
+            }, {
+                tag: "3D Models",
+                description: "3 Custom Models",
+            }, {
+                tag: "Revisions",
+                description: "3 Rounds",
+            },
+        ],
+        examples: [
+
+        ],
+    }, { // ? Expert Tier /////////////////////////////////////////////////////
+        tier: "Expert",
+        tier_icon: tier_icon_4,
+        price: {
+            low: 800.00,
+            high: 1400.00,
+        },
+        time: {
+            low: 8,
+            high: 14,
+        },
+        deliverables: [
+            {
+                tag: "Tag",
+                description: "I will create a highly-interactive 3D website experience",
+            }, {
+                tag: "Animation",
+                description: "As Requested",
+            }, {
+                tag: "Interactivity",
+                description: "As Requested",
+            }, {
+                tag: "3D Models",
+                description: "8 Custom Models",
+            }, {
+                tag: "Revisions",
+                description: "4 Rounds",
+            },
+        ],
+        examples: [
+
+        ],
+    }, { // ? Master Tier /////////////////////////////////////////////////////
+        tier: "Master",
+        tier_icon: tier_icon_5,
+        price: {
+            low: 1500.00,
+            high: "+",
+        },
+        time: {
+            low: 15,
+            high: "+",
+        },
+        deliverables: [
+            {
+                tag: "Tag",
+                description: "I will create a fully-featured 3D website experience",
+            }, {
+                tag: "Animation",
+                description: "As Requested",
+            }, {
+                tag: "Interactivity",
+                description: "As Requested",
+            }, {
+                tag: "3D Models",
+                description: "As Requested",
+            }, {
+                tag: "Revisions",
+                description: "5 Rounds",
+            },
+        ],
+        examples: [
+
+        ],
+    },
+];
+
+export default threejs_services;

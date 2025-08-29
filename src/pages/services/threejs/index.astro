@@ -1,0 +1,157 @@
+---
+import { Image } from "astro:assets";
+import NavLayout from "../../../layouts/NavLayout.astro";
+import { rangeToText } from "../../../utils/number_range";
+import threejs_services from "../../../config/threejs_services";
+import { google_material_icons } from "../../../utils/common_links";
+import type { ServiceData, ServiceDeliverable } from "../../../config/services";
+---
+
+<NavLayout
+    title="ThreeJS Services"
+    additional_links={[ google_material_icons ]}
+
+    bodyClass="bg-linear-to-tr to-gray-800 from-gray-950 text-white py-16 px-8 sm:px-16 md:px-32"
+>
+    <h1 class="font-[MedievalSharp] text-center text-6xl sm:text-8xl text-amber-300 text-shadow-lg/50">ThreeJS</h1>
+
+    <div class="flex flex-col sm:flex-row justify-around items-center gap-8 my-16">
+        <gem-canvas class="w-full sm:w-1/2 aspect-square"></gem-canvas>
+        
+        <div class="text-shadow-lg/50 max-w-none sm:max-w-1/2">
+            <h3 class="font-[MedievalSharp] text-2xl mb-2">What is ThreeJS?</h3>
+            <p>ThreeJS is a powerful tool that brings 3D graphics and animations right into a web browser—no extra software needed. With it, your website can go beyond static images and text, offering interactive experiences like dynamic product showcases, immersive backgrounds, or even mini-games that run smoothly across devices. It&apos;s a great way to capture attention, stand out from competitors, and give visitors something memorable and engaging to explore.</p>
+        </div>
+    </div>
+
+    <h2 class="font-[MedievalSharp] text-4xl text-shadow-lg/50">Service Tiers</h2>
+    <hr class="text-gray-700 mb-8"/>
+    {threejs_services.map((service: ServiceData, index: number) => (
+        <div class="bg-indigo-950/25 border border-indigo-900 p-4 rounded-lg shadow-xl/25 mb-8">
+            <div class="flex justify-between">
+                <div class="flex flex-wrap items-center">
+                    <Image
+                        src={service.tier_icon}
+                        alt={`${service.tier}-Tier`}
+                        class="mr-2 size-12 drop-shadow-md/100"
+                        widths={[256, 128]}
+                        loading={index === 0 ? "eager" : "lazy"}
+                    />
+                    <h3 class="font-[MedievalSharp] text-2xl">{service.tier}</h3>
+                </div>
+
+                <span>{rangeToText(service.price, "$")}</span>
+            </div>
+
+            <div class="my-2">
+                <i class="material-icons mr-2" style="vertical-align: middle;">calendar_month</i>
+                <span>{rangeToText(service.time)}&nbsp;Days</span>
+            </div>
+
+            <ul class="list-disc ml-8">
+                {service.deliverables.map((deliverable: ServiceDeliverable) => (
+                    <li class="my-1">
+                        <span class="font-bold">{deliverable.tag}:&nbsp;</span>
+                        <span>{deliverable.description}</span>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    ))}
+</NavLayout>
+
+<script>
+    import * as THREE from "three";
+    import { GLTFLoader, type GLTF } from "three/addons/loaders/GLTFLoader.js";
+
+    class GemCanvas extends HTMLElement {
+        private scene: THREE.Scene = new THREE.Scene();
+        private renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({antialias: true});
+        private camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(
+            70.0,
+            1.0,
+            0.1,
+            20.0
+        );
+
+        private model: THREE.Group<THREE.Object3DEventMap> | null = null;
+
+        private last_time: number = Date.now() * 0.001;
+        private rotate_speed: number = 0.5;
+        private bob_height: number = 0.5;
+        private bob_speed: number = 1.25;
+        
+        constructor() {
+            super();
+
+            this.camera.position.z = 4.0;
+            this.renderer.setClearAlpha(0.0);
+            this.renderer.setPixelRatio(window.devicePixelRatio);
+
+            this.scene.add(new THREE.AmbientLight(0xffffff, 1.0));
+
+            const directional_light = new THREE.DirectionalLight(0xffffff, 5.0);
+            directional_light.position.set(5, 10, 7.5);
+            this.scene.add(directional_light);
+
+            this.renderer.domElement.style.width = "100%";
+            this.renderer.domElement.style.height = "100%";
+            this.appendChild(this.renderer.domElement);
+
+            this.onResize();
+            window.addEventListener("resize", this.onResize.bind(this));
+
+            this.mainLoop();
+            this.loadModel("../src/assets/models/primitives/gem.glb");
+        }
+
+        private async loadModel(model_path: string): Promise<void> {
+            const modelLoader = new GLTFLoader();
+
+            modelLoader.load(model_path, (model: GLTF) => {
+                this.scene.add(model.scene);
+
+                model.scene.position.set(0.0, 0.0, 0.0);
+                model.scene.rotation.set(-0.1, 0.0, 0.4);
+
+                model.scene.traverse((scene_object: THREE.Object3D<THREE.Object3DEventMap>) => {
+                    const mesh_candidate: THREE.Mesh = scene_object as THREE.Mesh;
+
+                    if (!mesh_candidate.isMesh) {
+                        return;
+                    }
+
+                    mesh_candidate.material = new THREE.MeshStandardMaterial({
+                        color: 0x24c488,
+                    });
+                });
+
+                this.model = model.scene;
+            });
+        }
+
+        private onResize(): void {
+            const width: number = this.clientWidth;
+            const height: number = this.clientHeight;
+
+            this.renderer.setSize(width, height, false);
+
+            this.camera.aspect = width / height;
+            this.camera.updateProjectionMatrix();
+        }
+
+        private mainLoop(): void {
+            const cur_time: number = Date.now() * 0.001;
+            const delta_time: number = cur_time - this.last_time;
+            this.last_time = cur_time;
+
+            this.model?.position.setY(Math.sin(cur_time * this.bob_speed) * this.bob_height);
+            this.model?.rotateY(delta_time * this.rotate_speed);
+
+            this.renderer.render(this.scene, this.camera);
+            requestAnimationFrame(this.mainLoop.bind(this));
+        }
+    }
+
+    customElements.define("gem-canvas", GemCanvas);
+</script>
