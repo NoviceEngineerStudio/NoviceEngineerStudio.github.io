@@ -3,7 +3,7 @@ import { Image } from "astro:assets";
 import NavLayout from "../../../layouts/NavLayout.astro";
 import { rangeToText } from "../../../utils/number_range";
 import threejs_services from "../../../config/threejs_services";
-import type { ServiceData, ServiceDeliverable } from "../../../config/services";
+import type { ServiceData, ServiceDeliverable, ServiceExample } from "../../../config/services";
 ---
 
 <NavLayout
@@ -25,13 +25,13 @@ import type { ServiceData, ServiceDeliverable } from "../../../config/services";
     <h2 class="font-[MedievalSharp] text-4xl text-shadow-lg/50">Service Tiers</h2>
     <hr class="text-gray-700 mb-8"/>
     {threejs_services.map((service: ServiceData, index: number) => (
-        <div class="bg-indigo-950/25 border border-indigo-900 p-4 rounded-lg shadow-xl/25 mb-8">
-            <div class="flex justify-between">
-                <div class="flex flex-wrap items-center">
+        <div class="bg-indigo-950/25 border border-indigo-900 pt-4 pb-8 rounded-lg shadow-xl/25 mb-8 overflow-hidden">
+            <div class="flex justify-between gap-4 mx-4">
+                <div class="flex flex-wrap items-center gap-2">
                     <Image
                         src={service.tier_icon}
                         alt={`${service.tier}-Tier`}
-                        class="mr-2 size-12 drop-shadow-md/100"
+                        class="size-12 drop-shadow-md/100"
                         widths={[256, 128]}
                         loading={index === 0 ? "eager" : "lazy"}
                     />
@@ -41,12 +41,12 @@ import type { ServiceData, ServiceDeliverable } from "../../../config/services";
                 <span>{rangeToText(service.price, "$")}</span>
             </div>
 
-            <div class="my-2">
+            <div class="my-2 mx-4">
                 <i class="material-icons mr-2">calendar_month</i>
                 <span>{rangeToText(service.time)}&nbsp;Days</span>
             </div>
 
-            <ul class="list-disc ml-8">
+            <ul class="list-disc ml-12 mr-4">
                 {service.deliverables.map((deliverable: ServiceDeliverable) => (
                     <li class="my-1">
                         <span class="font-bold">{deliverable.tag}:&nbsp;</span>
@@ -54,12 +54,64 @@ import type { ServiceData, ServiceDeliverable } from "../../../config/services";
                     </li>
                 ))}
             </ul>
+
+            <div class="relative mt-2">
+                <button
+                    id={`${service.tier}-examples-btn`}
+                    class="absolute top-0 left-0 w-full h-8 bg-indigo-900 hover:bg-indigo-700 cursor-pointer"
+                    aria-label={`${service.tier}-Tier-Examples-Dropdown`}
+                >
+                    <span>See Examples</span>
+                    <i id={`${service.tier}-examples-btn-arrow`} class="material-icons">
+                        {index === 0 ? "keyboard_arrow_up" : "keyboard_arrow_down"}
+                    </i>
+                </button>
+
+                <div
+                    id={`${service.tier}-examples-menu`}
+                    class={`overflow-hidden mx-4 flex flex-wrap gap-4 ${index === 0 ? "pt-16" : "max-h-0"}`}
+                >
+                    {service.examples.length === 0
+                        ? <span class="text-indigo-300">No Examples Available...</span>
+                        : service.examples.map((example: ServiceExample) => (
+                            <div class="rounded-lg overflow-hidden border border-indigo-900 bg-indigo-950/25 flex-1 max-w-75 min-w-50">
+                                <div class="w-full aspect-16/9 bg-cover bg-center" style={`background-image: url('${example.preview.src}');`} />
+
+                                <h4 class="w-full text-center text-xl py-0.5 bg-indigo-500">
+                                    {example.title}
+                                </h4>
+
+                                <div class="px-2 py-4">
+                                    <div>
+                                        <i class="material-icons mr-1">calendar_month</i>
+                                        <span>{example.month},&nbsp;{example.year}</span>
+                                    </div>
+
+                                    <div class="my-1">
+                                        <label for="Example-Link">
+                                            <i class="material-icons mr-1">link</i>
+                                            <span>Link:&nbsp;</span>
+                                        </label>
+                                        <a href={example.href} class="block text-blue-400 underline hover:text-blue-200 truncate">
+                                            {example.href}
+                                        </a>
+                                    </div>
+
+                                    <p class="italic text-center">"{example.description}"</p>
+                                </div>
+                            </div>
+                        ))
+                    }
+                </div>
+            </div>
         </div>
     ))}
 </NavLayout>
 
 <script>
     import * as THREE from "three";
+    import type { ServiceData } from "../../../config/services";
+    import threejs_services from "../../../config/threejs_services";
     import { GLTFLoader, type GLTF } from "three/addons/loaders/GLTFLoader.js";
 
     class GemCanvas extends HTMLElement {
@@ -121,7 +173,10 @@ import type { ServiceData, ServiceDeliverable } from "../../../config/services";
 
                     mesh_candidate.material = new THREE.MeshStandardMaterial({
                         color: 0x24c488,
+                        transparent: true,
+                        opacity: 0.75,
                     });
+                    mesh_candidate.material.side = THREE.DoubleSide;
                 });
 
                 this.model = model.scene;
@@ -152,4 +207,26 @@ import type { ServiceData, ServiceDeliverable } from "../../../config/services";
     }
 
     customElements.define("gem-canvas", GemCanvas);
+
+    threejs_services.forEach((service: ServiceData, index: number) => {
+        const btn: HTMLElement | null = document.getElementById(`${service.tier}-examples-btn`);
+        const arrow: HTMLElement | null = document.getElementById(`${service.tier}-examples-btn-arrow`);
+        const menu: HTMLElement | null = document.getElementById(`${service.tier}-examples-menu`);
+
+        if (btn === null || arrow === null || menu === null) return;
+
+        let is_showing: boolean = index === 0;
+
+        btn.addEventListener("click", () => {
+            if (arrow === null || menu === null) return;
+
+            is_showing = !is_showing;
+            arrow.textContent = (is_showing
+                ? "keyboard_arrow_up"
+                : "keyboard_arrow_down"
+            );
+            menu.classList.toggle("max-h-0");
+            menu.classList.toggle("pt-16");
+        });
+    });
 </script>

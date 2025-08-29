@@ -37,7 +37,14 @@ export const threejs_services: ServiceData[] = [
             },
         ],
         examples: [
-
+            {
+                title: "Example",
+                preview: tier_icon_1,
+                month: "March",
+                year: 2002,
+                href: "https://noviceengineerstudio.github.io/services/threejs",
+                description: "It was a great project!",
+            },
         ],
     }, { // ? Apprentice Tier /////////////////////////////////////////////////
         tier: "Apprentice",

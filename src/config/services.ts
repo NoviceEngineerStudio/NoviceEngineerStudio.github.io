@@ -11,8 +11,13 @@ export interface ServiceDeliverable {
     description: string;
 }
 
-export interface ServiceExamples {
-    // TODO:
+export interface ServiceExample {
+    title: string;
+    preview: ImageMetadata;
+    month: string;
+    year: number;
+    href: string;
+    description: string;
 }
 
 export interface ServiceData {
@@ -21,7 +26,7 @@ export interface ServiceData {
     price: NumberRange;
     time: NumberRange;
     deliverables: ServiceDeliverable[];
-    examples: ServiceExamples[];
+    examples: ServiceExample[];
 }
 
 // *=================================================
