@@ -1,0 +1,22 @@
+---
+import contact_info, { type ContactInfo } from "../../config/contact_info"
+---
+
+<h2 class="font-[MedievalSharp] text-4xl text-shadow-lg/50">Contact Info.</h2>
+<hr class="text-gray-700 mb-8"/>
+
+<div class="flex flex-wrap gap-12 items-center justify-around">
+    {contact_info.map((info: ContactInfo) => (
+        <div class="flex-1 flex flex-col items-center gap-2 text-center text-shadow-lg/50">
+            <i class="material-icons" style="font-size: 60px;">{info.mat_icon}</i>
+            <span>{info.label}</span>
+            {info.href === undefined
+                ? <span>{info.info}</span>
+                : <a
+                    class="text-blue-500 underline hover:text-blue-300"
+                    href={info.href}
+                >{info.info}</a>
+            }
+        </div>
+    ))}
+</div>

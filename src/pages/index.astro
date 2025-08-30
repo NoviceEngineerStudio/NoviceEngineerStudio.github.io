@@ -1,7 +1,66 @@
 ---
+import { Image } from "astro:assets";
 import NavLayout from "../layouts/NavLayout.astro"
+import page_tear from "../assets/images/page_tear.webp";
+import novice_engineer from "../assets/logos/novice_engineer.svg";
+import ContactInfo from "../components/services/ContactInfo.astro";
 ---
 
-<NavLayout>
-    <h1>UNDER CONSTRUCTION...</h1>
+<NavLayout bodyClass="bg-linear-to-tr to-gray-800 from-gray-950 text-white py-16 min-h-screen">
+    <!-- * Hero Section * -->
+    <section class="flex flex-col items-center font-[MedievalSharp] text-shadow-lg/50">
+        <Image
+            src={novice_engineer}
+            alt="Novice-Engineer-Logo"
+            class="size-50 sm:size-75 mb-16 drop-shadow-lg/50"
+            widths={[128, 256, 512]}
+            loading="eager"
+        />
+        
+        <span class="text-xl sm:text-2xl md:text-3xl lg:text-4xl">
+            Welcome To The
+        </span>
+        <span class="text-amber-300 text-4xl sm:text-6xl md:text-7xl lg:text-8xl mt-2 mb-4">
+            Novice Engineer's
+        </span>
+        <span class="text-2xl sm:text-4xl md:text-5xl lg:text-6xl">
+            Studio
+        </span>
+    </section>
+
+    <!-- * Introductory Section * -->
+    <section class="my-16 text-black">
+        <div style={`background-image: url('${page_tear.src}');`} class="h-24 bg-contain bg-repeat-x bg-bottom " />
+
+        <div class="flex flex-col sm:flex-row justify-around items-center gap-8 bg-orange-100 px-8 sm:px-16 md:px-32 py-4">
+            <Image
+                src={"https://placehold.co/400"}
+                alt="Introduction-Portrait"
+                width={400} height={400}
+                loading="eager"
+                class="w-2/3 sm:w-1/2 max-h-[50vh] aspect-square"
+            />
+
+            <div class="max-w-none sm:max-w-1/2">
+                <h2 class="font-[MedievalSharp] text-4xl mb-2">Introduction</h2>
+                <p>
+                    Hello, world! My name is Skyler Riggle, and I&apos;m a developer who enjoys crafting fun and intuitive experiences through software. I&apos;ve worked with a wide variety of computer science disciplines, having worked professionally on everything from websites and backend services, to video games and embedded systems work. That said, I hope that my passion for this ever-expansive field can be of use to you and your next endeavor!
+                </p>
+            </div>
+        </div>
+
+        <div style={`background-image: url('${page_tear.src}');`} class="h-24 bg-contain bg-repeat-x bg-bottom rotate-180" />
+    </section>
+
+    <!-- * Freelance Services Section * -->
+    <section class="px-8 sm:px-16 md:px-32">
+        <h2 class="font-[MedievalSharp] text-4xl text-shadow-lg/50">Freelance Services</h2>
+        <hr class="text-gray-700 mb-8"/>
+
+    </section>
+
+    <!-- * Contact Information Section * -->
+    <section class="px-8 sm:px-16 md:px-32">
+        <ContactInfo />
+    </section>
 </NavLayout>
