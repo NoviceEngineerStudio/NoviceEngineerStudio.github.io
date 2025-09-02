@@ -1,0 +1,350 @@
+---
+import NavLayout from "../../../layouts/NavLayout.astro";
+---
+
+<NavLayout
+    title="Apprentice Tier ThreeJS"
+    additional_links={[
+        {
+            rel: "preload",
+            href: "/fonts/cinzel/Cinzel-VariableFont_wght.ttf",
+            as: "font",
+            type: "font/ttf",
+            crossorigin: true,
+        }, {
+            rel: "stylesheet",
+            href: "/fonts/cinzel/cinzel.css",
+            crossorigin: false,
+        },
+    ]}
+
+    bodyClass="w-screen h-screen relative"
+>
+    <floor-plan-viewer class="absolute top-0 left-0 w-full h-full z-98" />
+
+    <div class="absolute top-4 left-1/2 -translate-x-1/2 z-99 text-center">
+        <h1
+            class="text-4xl sm:text-4xl md:text-4xl lg:text-5xl"
+            style="font-family: 'Cinzel', 'Times New Roman', Times, serif;"
+        >Lofty Living</h1>
+        <span id="details-title" class="text-lg"/>
+    </div>
+
+    <span class="hidden md:block absolute bottom-4 left-4 text-lg z-99">
+        &apos;CTRL + V&apos; to Switch Views
+    </span>
+
+    <div class="absolute translate-x-1/2 md:translate-x-0 right-1/2 md:right-8 bottom-8 z-99 w-4/5 md:w-75">
+        <div id="floor-button-container" class="flex flex-wrap-reverse justify-end items-center gap-4 mb-2"/>
+
+        <div class="rounded-lg bg-white border-2 border-gray-400 overflow-hidden">
+            <button
+                id="details-button"
+                class="text-lg bg-indigo-300 w-full px-4 py-1 cursor-pointer hover:bg-indigo-100 text-start flex justify-between">
+                <span>Details&nbsp;</span>
+                <i id="details-arrow" class="material-icons">keyboard_arrow_down</i>
+            </button>
+
+            <div id="details-paragraph" class="overflow-hidden max-h-0 bg-white"/>
+        </div>
+    </div>
+</NavLayout>
+
+<script>
+    import * as THREE from "three";
+    import FloorPlan, { type DetailsPair } from "../../../config/portfolio_data/FloorPlan";
+
+    import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+    import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls.js";
+
+    import lofty_living from "../../../config/portfolio_data/LoftyLiving";
+
+    class FloorPlanViewer extends HTMLElement {
+        private scene: THREE.Scene = new THREE.Scene();
+        private renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({ antialias: true });
+        private camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(
+            70.0,
+            1.0,
+            0.1,
+            100.0
+        );
+
+        private floor_plan: FloorPlan;
+        private floor_index: number = 0;
+        private details_index: number = 0;
+
+        private walk_speed: number = 2.0;
+
+        private is_up_pressed: boolean = false;
+        private is_down_pressed: boolean = false;
+        private is_left_pressed: boolean = false;
+        private is_right_pressed: boolean = false;
+
+        private dollhouse_mode: boolean = true;
+        private last_time: number = Date.now() * 0.001;
+
+        private saved_camera_position: THREE.Vector3 = new THREE.Vector3();
+        private saved_camera_rotation: THREE.Euler = new THREE.Euler();
+
+        private orbit_controls: OrbitControls = new OrbitControls(this.camera, this.renderer.domElement);
+        private first_person_controls: PointerLockControls = new PointerLockControls(this.camera, this.renderer.domElement);
+
+        private details_open: boolean = false;
+        private details_button: HTMLElement = document.getElementById("details-button") ?? new HTMLDivElement();
+        private details_arrow: HTMLElement = document.getElementById("details-arrow") ?? new HTMLDivElement();
+        private details_title: HTMLElement = document.getElementById("details-title") ?? new HTMLDivElement();
+        private details_paragraph: HTMLElement = document.getElementById("details-paragraph") ?? new HTMLDivElement();
+
+        private floor_button_container: HTMLElement = document.getElementById("floor-button-container") ?? new HTMLDivElement();
+        private last_floor_button: HTMLElement | null = null;
+
+        constructor() {
+            super();
+
+            this.camera.position.set(5.0, 5.0, 5.0);
+            this.camera.rotation.set(0.0, 0.0, 0.0);
+
+            this.saved_camera_position.set(0.0, 0.0, 2.0);
+            this.saved_camera_rotation.set(0.0, 0.0, 0.0);
+
+            this.floor_plan = new FloorPlan(lofty_living);
+            this.scene.add(this.floor_plan);
+
+            const floor_count: number = this.floor_plan.getFloorCount();
+            if (floor_count > 1) {
+                const first_button: HTMLElement = this.createFloorButton(0);
+                first_button.click();
+
+                for (let idx = 1; idx < floor_count; ++idx) {
+                    this.createFloorButton(idx);
+                }
+            }
+
+            this.renderer.setClearColor(new THREE.Color(0xafafaf))
+            this.renderer.setPixelRatio(window.devicePixelRatio);
+            this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+
+            this.orbit_controls.enabled = this.dollhouse_mode;
+            this.first_person_controls.enabled = !this.dollhouse_mode;
+
+            this.renderer.domElement.style.width = "100%";
+            this.renderer.domElement.style.height = "100%";
+            this.appendChild(this.renderer.domElement);
+
+            this.onResize();
+            window.addEventListener("resize", this.onResize.bind(this));
+
+            window.addEventListener("keydown", (key_event: KeyboardEvent) => this.pollInputDown(key_event));
+            window.addEventListener("keyup", (key_event: KeyboardEvent) => this.pollInputUp(key_event));
+
+            this.details_button.addEventListener("click", () => {
+                this.details_open = !this.details_open;
+
+                if (this.details_open) {
+                    this.details_arrow.textContent = "keyboard_arrow_up";
+                    this.details_paragraph.classList.remove("max-h-0");
+                    this.details_paragraph.classList.add("p-4");
+                }
+                else {
+                    this.details_arrow.textContent = "keyboard_arrow_down";
+                    this.details_paragraph.classList.add("max-h-0");
+                    this.details_paragraph.classList.remove("p-4");
+                }
+            });
+
+            const initial_details: DetailsPair = this.floor_plan.getFloorDetails(this.floor_index);
+
+            this.details_index = initial_details.index;
+            this.details_title.textContent = initial_details.name;
+            this.details_paragraph.textContent = initial_details.details;
+
+            this.mainLoop();
+        }
+
+        private createFloorButton(floor_index: number): HTMLElement {
+            const floor_button: HTMLElement = document.createElement("button");
+            this.floor_button_container.appendChild(floor_button);
+
+            floor_button.classList.add(
+                "bg-indigo-300",
+                "px-4",
+                "py-1",
+                "rounded-lg",
+                "border-2",
+                "border-gray-400",
+                "hover:bg-indigo-100",
+                "cursor-pointer",
+                "text-sm"
+            );
+
+            floor_button.textContent = this.floor_plan.getFloorDetails(floor_index).name;
+
+            floor_button.addEventListener("click", () => {
+                if (this.last_floor_button === floor_button) return;
+
+                floor_button.classList.add("bg-indigo-600");
+                floor_button.classList.add("text-white");
+                floor_button.classList.remove("bg-indigo-300");
+                floor_button.classList.remove("hover:bg-indigo-100");
+
+                if (this.last_floor_button !== null) {
+                    this.last_floor_button.classList.remove("bg-indigo-600");
+                    this.last_floor_button.classList.remove("text-white");
+                    this.last_floor_button.classList.add("bg-indigo-300");
+                    this.last_floor_button.classList.add("hover:bg-indigo-100");
+                }
+
+                this.last_floor_button = floor_button;
+
+                this.floor_plan.setFloor(floor_index);
+                this.floor_index = floor_index;
+
+                const new_details: DetailsPair = this.floor_plan.getFloorDetails(floor_index);
+
+                this.details_index = new_details.index;
+                this.details_title.textContent = new_details.name;
+                this.details_paragraph.textContent = new_details.details;
+
+                const floor_height: number = this.floor_plan.getFloorHeight(floor_index);
+                this.orbit_controls.target.setY(floor_height);
+
+                if (this.dollhouse_mode) {
+                    this.saved_camera_position.setY(floor_height);
+                }
+                else {
+                    this.camera.position.setY(floor_height);
+                }
+            });
+
+            return floor_button;
+        }
+
+        private pollInputDown(key_event: KeyboardEvent): void {
+            if (key_event.repeat) return;
+
+            switch (key_event.code) {
+                case "KeyV":
+                    if (key_event.ctrlKey) this.onSwapControls();
+                    break;
+                case "KeyW":
+                case "ArrowUp":
+                    this.is_up_pressed = true;
+                    break;
+                case "KeyS":
+                case "ArrowDown":
+                    this.is_down_pressed = true;
+                    break;
+                case "KeyA":
+                case "ArrowLeft":
+                    this.is_left_pressed = true;
+                    break;
+                case "KeyD":
+                case "ArrowRight":
+                    this.is_right_pressed = true;
+                    break;
+            }
+        }
+
+        private pollInputUp(key_event: KeyboardEvent): void {
+            switch (key_event.code) {
+                case "KeyW":
+                case "ArrowUp":
+                    this.is_up_pressed = false;
+                    break;
+                case "KeyS":
+                case "ArrowDown":
+                    this.is_down_pressed = false;
+                    break;
+                case "KeyA":
+                case "ArrowLeft":
+                    this.is_left_pressed = false;
+                    break;
+                case "KeyD":
+                case "ArrowRight":
+                    this.is_right_pressed = false;
+                    break;
+            }
+        }
+
+        private forwardAxis(): number {
+            return Number(this.is_up_pressed) - Number(this.is_down_pressed);
+        }
+
+        private horizontalAxis(): number {
+            return Number(this.is_right_pressed) - Number(this.is_left_pressed);
+        }
+
+        private onResize(): void {
+            const width: number = this.clientWidth;
+            const height: number = this.clientHeight;
+
+            this.camera.aspect = width / height;
+            this.camera.updateProjectionMatrix();
+
+            this.renderer.setSize(width, height, false);
+        }
+
+        private onSwapControls(): void {
+            this.dollhouse_mode = !this.dollhouse_mode;
+
+            this.orbit_controls.enabled = this.dollhouse_mode;
+            this.first_person_controls.enabled = !this.dollhouse_mode;
+
+            if (this.first_person_controls.enabled) {
+                this.first_person_controls.lock();
+            }
+            else {
+                this.first_person_controls.unlock();
+            }
+
+            const cur_camera_position: THREE.Vector3 = new THREE.Vector3();
+            const cur_camera_rotation: THREE.Euler = new THREE.Euler();
+
+            cur_camera_position.copy(this.camera.position);
+            cur_camera_rotation.copy(this.camera.rotation);
+
+            this.camera.position.copy(this.saved_camera_position);
+            this.camera.rotation.copy(this.saved_camera_rotation);
+
+            this.saved_camera_position.copy(cur_camera_position);
+            this.saved_camera_rotation.copy(cur_camera_rotation);
+
+            const floor_details: DetailsPair = this.floor_plan.getFloorDetails(this.floor_index);
+
+            this.details_index = floor_details.index;
+            this.details_title.textContent = floor_details.name;
+            this.details_paragraph.textContent = floor_details.details;
+        }
+
+        private mainLoop(): void {
+            const cur_time: number = Date.now() * 0.001;
+            const delta_time: number = cur_time - this.last_time;
+            this.last_time = cur_time;
+
+            if (this.dollhouse_mode) {
+                this.orbit_controls.update(delta_time);
+            }
+            else {
+                this.first_person_controls.update(delta_time);
+
+                const frame_walk_speed: number = this.walk_speed * delta_time;
+                this.first_person_controls.moveForward(this.forwardAxis() * frame_walk_speed);
+                this.first_person_controls.moveRight(this.horizontalAxis() * frame_walk_speed);
+
+                const details: DetailsPair = this.floor_plan.getRoomDetails(this.floor_index, this.camera.position);
+
+                if (details.index !== this.details_index) {
+                    this.details_index = details.index;
+                    this.details_title.textContent = details.name;
+                    this.details_paragraph.textContent = details.details;
+                }
+            }
+
+            this.floor_plan.tickAnimations(delta_time);
+            this.renderer.render(this.scene, this.camera);
+            requestAnimationFrame(this.mainLoop.bind(this));
+        }
+    }
+
+    customElements.define("floor-plan-viewer", FloorPlanViewer);
+</script>

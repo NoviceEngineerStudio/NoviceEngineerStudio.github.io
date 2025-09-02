@@ -7,6 +7,7 @@ import tier_icon_4 from "../assets/icons/tiers/tier_icon_4.webp";
 import tier_icon_5 from "../assets/icons/tiers/tier_icon_5.webp";
 
 import novice_preview from "../assets/previews/threejs_novice.webp";
+import adept_preview from "../assets/previews/threejs_adept.webp";
 
 export const threejs_services: ServiceData[] = [
     { // ? Novice Tier ////////////////////////////////////////////////////////
@@ -110,7 +111,14 @@ export const threejs_services: ServiceData[] = [
             },
         ],
         examples: [
-
+            {
+                title: "Lofty Living Cabin",
+                preview: adept_preview,
+                month: "August",
+                year: 2025,
+                href: "https://noviceengineerstudio.github.io/portfolio/threejs/adept_tier",
+                description: "This project gives an idea for what you can expect from our adept tier. Showcasing a lovely two-story home, we explore the Lofty Living house from both a dollhouse view and a first-person perspective (on desktop only). As you traverse the home, see updates from the architects about each room, giving the design a more personable charm.",
+            },
         ],
     }, { // ? Expert Tier /////////////////////////////////////////////////////
         tier: "Expert",
