@@ -6,7 +6,8 @@ import tier_icon_3 from "../assets/icons/tiers/tier_icon_3.webp";
 import tier_icon_4 from "../assets/icons/tiers/tier_icon_4.webp";
 import tier_icon_5 from "../assets/icons/tiers/tier_icon_5.webp";
 
-import novice_preview from "../assets/previews/threejs_novice.webp";
+import novice_preview from "../assets/previews/threejs_novice.webp";apprentice_preview
+import apprentice_preview from "../assets/previews/threejs_apprentice.webp";
 import adept_preview from "../assets/previews/threejs_adept.webp";
 
 export const threejs_services: ServiceData[] = [
@@ -46,7 +47,7 @@ export const threejs_services: ServiceData[] = [
                 month: "August",
                 year: 2025,
                 href: "https://noviceengineerstudio.github.io/portfolio/threejs/novice_tier",
-                description: "This project serves as a fun example of what you can expect from our Novice tier. Showcasing a 3D model of the earth in a made-up companies hero section, you can see the subtle animations looping in the background to give the page a more whimsical feeling.",
+                description: "This project serves as a fun example of what you can expect from our Novice Tier. Showcasing a 3D model of the earth in a made-up companies hero section, you can see the subtle animations looping in the background to give the page a more whimsical feeling.",
             },
         ],
     }, { // ? Apprentice Tier /////////////////////////////////////////////////
@@ -79,7 +80,14 @@ export const threejs_services: ServiceData[] = [
             },
         ],
         examples: [
-
+            {
+                title: "MyArcade",
+                preview: apprentice_preview,
+                month: "September",
+                year: 2025,
+                href: "https://noviceengineerstudio.github.io/portfolio/threejs/apprentice_tier",
+                description: "MyArcade is a product customizer for a hypothetical arcade cabinet building company. Giving users the ability to tweak their cabinet to exactly what they'd like, this example project showcases what clients can get from our Apprentice Tier.",
+            },
         ],
     }, { // ? Adept Tier //////////////////////////////////////////////////////
         tier: "Adept",
@@ -114,10 +122,10 @@ export const threejs_services: ServiceData[] = [
             {
                 title: "Lofty Living Cabin",
                 preview: adept_preview,
-                month: "August",
+                month: "September",
                 year: 2025,
                 href: "https://noviceengineerstudio.github.io/portfolio/threejs/adept_tier",
-                description: "This project gives an idea for what you can expect from our adept tier. Showcasing a lovely two-story home, we explore the Lofty Living house from both a dollhouse view and a first-person perspective (on desktop only). As you traverse the home, see updates from the architects about each room, giving the design a more personable charm.",
+                description: "This project gives an idea for what you can expect from our Adept Tier. Showcasing a lovely two-story home, we explore the Lofty Living house from both a dollhouse view and a first-person perspective (on desktop only). As you traverse the home, see updates from the architects about each room, giving the design a more personable charm.",
             },
         ],
     }, { // ? Expert Tier /////////////////////////////////////////////////////

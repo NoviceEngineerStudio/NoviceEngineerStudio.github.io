@@ -3,7 +3,7 @@ import NavLayout from "../../../layouts/NavLayout.astro";
 ---
 
 <NavLayout
-    title="Apprentice Tier ThreeJS"
+    title="Adept Tier ThreeJS"
     additional_links={[
         {
             rel: "preload",
@@ -52,12 +52,51 @@ import NavLayout from "../../../layouts/NavLayout.astro";
 
 <script>
     import * as THREE from "three";
-    import FloorPlan, { type DetailsPair } from "../../../config/portfolio_data/FloorPlan";
-
+    import lofty_living from "../../../config/portfolio_data/LoftyLiving";
     import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
     import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls.js";
 
-    import lofty_living from "../../../config/portfolio_data/LoftyLiving";
+    class FlyAnimation {
+        private object: THREE.Object3D;
+
+        private target_height: number;
+        private fly_speed: number;
+
+        private end_visibility: boolean;
+
+        constructor(
+            object: THREE.Object3D,
+            target_height: number,
+            fly_speed: number,
+            end_visibility: boolean
+        ) {
+            this.object = object;
+            this.target_height = target_height;
+            this.fly_speed = fly_speed;
+            this.end_visibility = end_visibility;
+
+            this.object.visible = true;
+        }
+
+        public update(delta_time: number): boolean {
+            const new_height: number = this.object.position.y + this.fly_speed * delta_time;
+
+            if (
+                Math.abs(this.object.position.y - this.target_height) <=
+                Math.abs(new_height - this.target_height)
+            ) {
+                this.object.position.setY(this.target_height);
+                return true;
+            }
+
+            this.object.position.setY(new_height);
+            return false;
+        }
+
+        public onEnd(): void {
+            this.object.visible = this.end_visibility;
+        }
+    }
 
     class FloorPlanViewer extends HTMLElement {
         private scene: THREE.Scene = new THREE.Scene();
@@ -66,76 +105,57 @@ import NavLayout from "../../../layouts/NavLayout.astro";
             70.0,
             1.0,
             0.1,
-            100.0
+            1000.0
         );
 
-        private floor_plan: FloorPlan;
-        private floor_index: number = 0;
-        private details_index: number = 0;
+        private fly_speed: number = 45.0;
+        private fly_height: number = 30.0;
+        private fp_animations: FlyAnimation[] = [];
 
+        private floor_index: number = 0;
+        private poi_index: number | null = null;
+        private floors: THREE.Object3D[] = lofty_living.loadModel(this.scene);
+
+        private dollhouse_mode: boolean = true;
+        private orbit_controls: OrbitControls = new OrbitControls(this.camera, this.renderer.domElement);
+        private first_person_controls: PointerLockControls = new PointerLockControls(this.camera, this.renderer.domElement);
+
+        private last_frame_time: number;
+        private run_speed: number = 5.0;
         private walk_speed: number = 2.0;
+        private current_speed: number = this.walk_speed;
 
         private is_up_pressed: boolean = false;
         private is_down_pressed: boolean = false;
         private is_left_pressed: boolean = false;
         private is_right_pressed: boolean = false;
 
-        private dollhouse_mode: boolean = true;
-        private last_time: number = Date.now() * 0.001;
-
-        private saved_camera_position: THREE.Vector3 = new THREE.Vector3();
-        private saved_camera_rotation: THREE.Euler = new THREE.Euler();
-
-        private orbit_controls: OrbitControls = new OrbitControls(this.camera, this.renderer.domElement);
-        private first_person_controls: PointerLockControls = new PointerLockControls(this.camera, this.renderer.domElement);
-
         private details_open: boolean = false;
+        private last_floor_button: HTMLElement | null = null;
+
         private details_button: HTMLElement = document.getElementById("details-button") ?? new HTMLDivElement();
         private details_arrow: HTMLElement = document.getElementById("details-arrow") ?? new HTMLDivElement();
+
         private details_title: HTMLElement = document.getElementById("details-title") ?? new HTMLDivElement();
         private details_paragraph: HTMLElement = document.getElementById("details-paragraph") ?? new HTMLDivElement();
 
         private floor_button_container: HTMLElement = document.getElementById("floor-button-container") ?? new HTMLDivElement();
-        private last_floor_button: HTMLElement | null = null;
 
         constructor() {
             super();
 
-            this.camera.position.set(5.0, 5.0, 5.0);
-            this.camera.rotation.set(0.0, 0.0, 0.0);
+            // ? Add floor selection buttons (if more than one floor)
 
-            this.saved_camera_position.set(0.0, 0.0, 2.0);
-            this.saved_camera_rotation.set(0.0, 0.0, 0.0);
-
-            this.floor_plan = new FloorPlan(lofty_living);
-            this.scene.add(this.floor_plan);
-
-            const floor_count: number = this.floor_plan.getFloorCount();
-            if (floor_count > 1) {
+            if (this.floors.length > 1) {
                 const first_button: HTMLElement = this.createFloorButton(0);
                 first_button.click();
 
-                for (let idx = 1; idx < floor_count; ++idx) {
+                for (let idx = 1; idx < this.floors.length; ++idx) {
                     this.createFloorButton(idx);
                 }
             }
 
-            this.renderer.setClearColor(new THREE.Color(0xafafaf))
-            this.renderer.setPixelRatio(window.devicePixelRatio);
-            this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-
-            this.orbit_controls.enabled = this.dollhouse_mode;
-            this.first_person_controls.enabled = !this.dollhouse_mode;
-
-            this.renderer.domElement.style.width = "100%";
-            this.renderer.domElement.style.height = "100%";
-            this.appendChild(this.renderer.domElement);
-
-            this.onResize();
-            window.addEventListener("resize", this.onResize.bind(this));
-
-            window.addEventListener("keydown", (key_event: KeyboardEvent) => this.pollInputDown(key_event));
-            window.addEventListener("keyup", (key_event: KeyboardEvent) => this.pollInputUp(key_event));
+            // ? Setup details drowpdown
 
             this.details_button.addEventListener("click", () => {
                 this.details_open = !this.details_open;
@@ -150,81 +170,70 @@ import NavLayout from "../../../layouts/NavLayout.astro";
                     this.details_paragraph.classList.add("max-h-0");
                     this.details_paragraph.classList.remove("p-4");
                 }
-            });
+            })
 
-            const initial_details: DetailsPair = this.floor_plan.getFloorDetails(this.floor_index);
+            // ? Stage the standard environment scene
 
-            this.details_index = initial_details.index;
-            this.details_title.textContent = initial_details.name;
-            this.details_paragraph.textContent = initial_details.details;
+            const clear_color: THREE.Color = new THREE.Color(0xafafaf);
+            this.renderer.setClearColor(clear_color, 1.0);
 
-            this.mainLoop();
+            const directional_light_1: THREE.DirectionalLight = new THREE.DirectionalLight(0xffffff, 0.2);
+            directional_light_1.position.set(10.0, 10.0, 0.0);
+            this.scene.add(directional_light_1);
+
+            const directional_light_2: THREE.DirectionalLight = new THREE.DirectionalLight(0xffffff, 0.4);
+            directional_light_2.position.set(-10.0, -10.0, 0.0);
+            this.scene.add(directional_light_2);
+
+            const directional_light_3: THREE.DirectionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
+            directional_light_3.position.set(0.0, 10.0, -10.0);
+            this.scene.add(directional_light_3);
+
+            const directional_light_4: THREE.DirectionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
+            directional_light_4.position.set(0.0, -10.0, 10.0);
+            this.scene.add(directional_light_4);
+
+            // ? Setup window resize callbacks and get the initial size
+
+            this.onResize();
+            window.addEventListener("resize", this.onResize.bind(this));
+
+            // ? Setup keyboard/mouse input handlers and set initial controls
+
+            this.setControls(this.dollhouse_mode);
+            window.addEventListener("keydown", (key_event: KeyboardEvent) => this.onKeyDown(key_event));
+            window.addEventListener("keyup", (key_event: KeyboardEvent) => this.onKeyUp(key_event));
+            window.addEventListener("click", (mouse_event: MouseEvent) => this.onMouseClick(mouse_event));
+
+            // Place the render canvas in the DOM
+
+            this.renderer.domElement.style.width = "100%";
+            this.renderer.domElement.style.height = "100%";
+            this.appendChild(this.renderer.domElement);
+
+            // ? Enter the application's main loop
+
+            this.last_frame_time = Date.now() * 0.001;
+            requestAnimationFrame(this.mainLoop.bind(this));
         }
 
-        private createFloorButton(floor_index: number): HTMLElement {
-            const floor_button: HTMLElement = document.createElement("button");
-            this.floor_button_container.appendChild(floor_button);
+        private onResize(): void {
+            const width: number = this.clientWidth;
+            const height: number = this.clientHeight;
 
-            floor_button.classList.add(
-                "bg-indigo-300",
-                "px-4",
-                "py-1",
-                "rounded-lg",
-                "border-2",
-                "border-gray-400",
-                "hover:bg-indigo-100",
-                "cursor-pointer",
-                "text-sm"
-            );
+            this.camera.aspect = width / height;
+            this.camera.updateProjectionMatrix();
 
-            floor_button.textContent = this.floor_plan.getFloorDetails(floor_index).name;
-
-            floor_button.addEventListener("click", () => {
-                if (this.last_floor_button === floor_button) return;
-
-                floor_button.classList.add("bg-indigo-600");
-                floor_button.classList.add("text-white");
-                floor_button.classList.remove("bg-indigo-300");
-                floor_button.classList.remove("hover:bg-indigo-100");
-
-                if (this.last_floor_button !== null) {
-                    this.last_floor_button.classList.remove("bg-indigo-600");
-                    this.last_floor_button.classList.remove("text-white");
-                    this.last_floor_button.classList.add("bg-indigo-300");
-                    this.last_floor_button.classList.add("hover:bg-indigo-100");
-                }
-
-                this.last_floor_button = floor_button;
-
-                this.floor_plan.setFloor(floor_index);
-                this.floor_index = floor_index;
-
-                const new_details: DetailsPair = this.floor_plan.getFloorDetails(floor_index);
-
-                this.details_index = new_details.index;
-                this.details_title.textContent = new_details.name;
-                this.details_paragraph.textContent = new_details.details;
-
-                const floor_height: number = this.floor_plan.getFloorHeight(floor_index);
-                this.orbit_controls.target.setY(floor_height);
-
-                if (this.dollhouse_mode) {
-                    this.saved_camera_position.setY(floor_height);
-                }
-                else {
-                    this.camera.position.setY(floor_height);
-                }
-            });
-
-            return floor_button;
+            this.renderer.setSize(width, height, false);
+            this.renderer.setPixelRatio(window.devicePixelRatio);
         }
 
-        private pollInputDown(key_event: KeyboardEvent): void {
+        private onKeyDown(key_event: KeyboardEvent): void {
             if (key_event.repeat) return;
 
             switch (key_event.code) {
                 case "KeyV":
-                    if (key_event.ctrlKey) this.onSwapControls();
+                    if (key_event.ctrlKey) this.setControls(!this.dollhouse_mode);
                     break;
                 case "KeyW":
                 case "ArrowUp":
@@ -242,10 +251,13 @@ import NavLayout from "../../../layouts/NavLayout.astro";
                 case "ArrowRight":
                     this.is_right_pressed = true;
                     break;
+                case "ShiftLeft":
+                case "ShiftRight":
+                    this.current_speed = this.run_speed;
             }
         }
 
-        private pollInputUp(key_event: KeyboardEvent): void {
+        private onKeyUp(key_event: KeyboardEvent): void {
             switch (key_event.code) {
                 case "KeyW":
                 case "ArrowUp":
@@ -263,7 +275,53 @@ import NavLayout from "../../../layouts/NavLayout.astro";
                 case "ArrowRight":
                     this.is_right_pressed = false;
                     break;
+                case "ShiftLeft":
+                case "ShiftRight":
+                    this.current_speed = this.walk_speed;
             }
+        }
+
+        private createFloorButton(floor_index: number): HTMLElement {
+            const floor_button: HTMLElement = document.createElement("button");
+            this.floor_button_container.appendChild(floor_button);
+
+            floor_button.textContent = lofty_living.getFloorPOI(floor_index).title;
+            floor_button.classList.add(
+                "bg-indigo-300",
+                "px-4",
+                "py-1",
+                "rounded-lg",
+                "border-2",
+                "border-gray-400",
+                "hover:bg-indigo-100",
+                "cursor-pointer",
+                "text-sm"
+            );
+
+            floor_button.addEventListener("click", () => {
+                if (floor_button === this.last_floor_button) return;
+
+                floor_button.classList.add("bg-indigo-600", "text-white");
+                floor_button.classList.remove("bg-indigo-300", "hover:bg-indigo-100");
+
+                if (this.last_floor_button !== null) {
+                    this.last_floor_button.classList.remove("bg-indigo-600", "text-white");
+                    this.last_floor_button.classList.add("bg-indigo-300", "hover:bg-indigo-100");
+                }
+
+                this.floor_index = floor_index;
+                this.last_floor_button = floor_button;
+
+                this.setControls(this.dollhouse_mode);
+                this.triggerAnimations();
+            });
+
+            return floor_button;
+        }
+
+        private onMouseClick(_: MouseEvent): void {
+            if (this.dollhouse_mode) return;
+            this.first_person_controls.lock();
         }
 
         private forwardAxis(): number {
@@ -274,52 +332,74 @@ import NavLayout from "../../../layouts/NavLayout.astro";
             return Number(this.is_right_pressed) - Number(this.is_left_pressed);
         }
 
-        private onResize(): void {
-            const width: number = this.clientWidth;
-            const height: number = this.clientHeight;
+        private setControls(is_dollhouse: boolean): void {
+            this.dollhouse_mode = is_dollhouse;
 
-            this.camera.aspect = width / height;
-            this.camera.updateProjectionMatrix();
+            let home_orientation: THREE.Vector3;
+            if (is_dollhouse) {
+                this.first_person_controls.unlock();
+                this.queryFloorPOI();
 
-            this.renderer.setSize(width, height, false);
-        }
-
-        private onSwapControls(): void {
-            this.dollhouse_mode = !this.dollhouse_mode;
-
-            this.orbit_controls.enabled = this.dollhouse_mode;
-            this.first_person_controls.enabled = !this.dollhouse_mode;
-
-            if (this.first_person_controls.enabled) {
-                this.first_person_controls.lock();
+                home_orientation = lofty_living.getOrbitHome(this.floor_index);
             }
             else {
-                this.first_person_controls.unlock();
+                this.first_person_controls.lock();
+                this.queryRoomPOI();
+
+                home_orientation = lofty_living.getFirstPersonHome(this.floor_index);
             }
 
-            const cur_camera_position: THREE.Vector3 = new THREE.Vector3();
-            const cur_camera_rotation: THREE.Euler = new THREE.Euler();
+            this.camera.position.copy(home_orientation);
+            this.camera.rotation.set(0.0, 0.0, 0.0);
 
-            cur_camera_position.copy(this.camera.position);
-            cur_camera_rotation.copy(this.camera.rotation);
+            this.orbit_controls.enabled = is_dollhouse;
+            this.first_person_controls.enabled = !is_dollhouse;
+        }
 
-            this.camera.position.copy(this.saved_camera_position);
-            this.camera.rotation.copy(this.saved_camera_rotation);
+        private triggerAnimations(): void {
+            while(this.fp_animations.pop() !== undefined);
 
-            this.saved_camera_position.copy(cur_camera_position);
-            this.saved_camera_rotation.copy(cur_camera_rotation);
+            let idx = 0;
+            for (; idx <= this.floor_index; ++idx) {
+                console.log(this.floors[idx], this.floors);
+                this.fp_animations.push(new FlyAnimation(
+                    this.floors[idx],
+                    0.0,
+                    -this.fly_speed,
+                    true
+                ));
+            }
 
-            const floor_details: DetailsPair = this.floor_plan.getFloorDetails(this.floor_index);
+            for (; idx < this.floors.length; ++idx) {
+                this.fp_animations.push(new FlyAnimation(
+                    this.floors[idx],
+                    this.fly_height,
+                    this.fly_speed,
+                    false
+                ));
+            }
+        }
 
-            this.details_index = floor_details.index;
-            this.details_title.textContent = floor_details.name;
-            this.details_paragraph.textContent = floor_details.details;
+        private queryFloorPOI(): void {
+            const poi = lofty_living.getFloorPOI(this.floor_index);
+            if (poi.index === this.poi_index) return;
+
+            this.details_title.textContent = poi.title;
+            this.details_paragraph.textContent = poi.details;
+        }
+
+        private queryRoomPOI(): void {
+            const poi = lofty_living.getRoomPOI(this.floor_index, this.camera.position);
+            if (poi.index === this.poi_index) return;
+
+            this.details_title.textContent = poi.title;
+            this.details_paragraph.textContent = poi.details;
         }
 
         private mainLoop(): void {
-            const cur_time: number = Date.now() * 0.001;
-            const delta_time: number = cur_time - this.last_time;
-            this.last_time = cur_time;
+            const cur_frame_time: number = Date.now() * 0.001;
+            const delta_time: number = cur_frame_time - this.last_frame_time;
+            this.last_frame_time = cur_frame_time;
 
             if (this.dollhouse_mode) {
                 this.orbit_controls.update(delta_time);
@@ -327,20 +407,25 @@ import NavLayout from "../../../layouts/NavLayout.astro";
             else {
                 this.first_person_controls.update(delta_time);
 
-                const frame_walk_speed: number = this.walk_speed * delta_time;
+                const frame_walk_speed: number = this.current_speed * delta_time;
                 this.first_person_controls.moveForward(this.forwardAxis() * frame_walk_speed);
                 this.first_person_controls.moveRight(this.horizontalAxis() * frame_walk_speed);
 
-                const details: DetailsPair = this.floor_plan.getRoomDetails(this.floor_index, this.camera.position);
+                this.queryRoomPOI();
+            }
 
-                if (details.index !== this.details_index) {
-                    this.details_index = details.index;
-                    this.details_title.textContent = details.name;
-                    this.details_paragraph.textContent = details.details;
+            for (let idx = 0; idx < this.fp_animations.length; ++idx) {
+                const animation: FlyAnimation = this.fp_animations[idx];
+
+                if (animation.update(delta_time)) {
+                    animation.onEnd();
+                    
+                    this.fp_animations.splice(idx, 1);
+                    --idx;
+                    continue;
                 }
             }
 
-            this.floor_plan.tickAnimations(delta_time);
             this.renderer.render(this.scene, this.camera);
             requestAnimationFrame(this.mainLoop.bind(this));
         }

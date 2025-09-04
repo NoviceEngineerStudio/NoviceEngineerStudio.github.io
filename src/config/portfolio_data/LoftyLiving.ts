@@ -1,78 +1,108 @@
 import * as THREE from "three";
-import type { FloorParams } from "./FloorPlan";
+import { GLTFLoader, type GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
 
-import wood_plank_color from "../../assets/materials/wood_planks/color.jpg";
-
-function FeetVector2(x: number, y: number): THREE.Vector2 {
-    return new THREE.Vector2(
-        x / 3.280839895,
-        y / 3.280839895
-    );
+interface POIData {
+    title: string;
+    details: string;
+    index: number;
 }
 
-const texture_loader: THREE.TextureLoader = new THREE.TextureLoader();
+interface FloorPlan {
+    getOrbitHome: (floor_index: number) => THREE.Vector3;
+    getFirstPersonHome: (floor_index: number) => THREE.Vector3;
 
-const wood_plank_flooring: THREE.MeshBasicMaterial = new THREE.MeshBasicMaterial({
-    map: texture_loader.load(wood_plank_color.src),
-});
+    loadModel: (scene: THREE.Scene) => THREE.Object3D[];
+    
+    getFloorPOI: (floor_index: number) => POIData;
+    getRoomPOI: (floor_index: number, position: THREE.Vector3) => POIData;
+}
 
-wood_plank_flooring.onBeforeCompile = (shader) => {
-    shader.vertexShader = shader.vertexShader.replace(
-        `#include <common>`,
-        `#include <common>
-        varying vec2 vUv;`
-    ).replace(
-        '#include <uv_vertex>',
-        `vUv = (modelMatrix * vec4(position, 1.0)).xz; // world XZ plane`
-    );
+const METER2FEET: number = 1.0 / 3.280839895;
+const FLOOR_HEIGHT: number = 2.4384;
 
-    shader.fragmentShader = shader.fragmentShader.replace(
-        `#include <common>`,
-        `#include <common>
-        varying vec2 vUv;
-        uniform float scale_factor`
-    ).replace(
-        '#include <map_fragment>',
-        `vec2 uv = vUv * scale_factor; // scale = tiles per meter
-        vec4 texelColor = texture2D(map, mod(uv, 1.0));
-        diffuseColor *= texelColor;`
-    );
-
-    shader.uniforms.scale_factor = { value: 1.0 / 1.0 };
-};
-
-const lofty_living: FloorParams[] = [
+const floor_pois: POIData[] = [
     {
         title: "First Floor",
         details: "The first floor is where the majority of the action happens! Sporting a spacious single-bedroom design, this layout works great for small families and vaction homes.",
-        rooms: [
-            {
-                title: "Great Room",
-                details: "To be written...",
-                floor: {
-                    position: FeetVector2(0.0, 0.0),
-                    scale: FeetVector2(20.0, 16.0),
-                    material: wood_plank_flooring,
-                },
-            }, {
-                title: "Master Bedroom",
-                details: "To be written...",
-                floor: {
-                    position: FeetVector2(16.0, 5.0),
-                    scale: FeetVector2(12.0, 14.0),
-                    material: wood_plank_flooring,
-                },
-            },
-        ],
+        index: 0x0000,
     }, {
         title: "Second Floor",
         details: "Welcome to the second floor loft! In this area, homeowners can easily assemble a fun game room or append an additional guest bedroom.",
-        rooms: [],
+        index: 0x0100,
     }, {
         title: "Exterior",
         details: "The lovely cabin exterior gives a cozy atmosphere for those seasonal nature getaways. We hope you'll consider this layout for your next construction adventure!",
-        rooms: [],
+        index: 0x0200,
     },
 ];
+
+const room_pois: {
+    position: THREE.Vector2;
+    sqr_distance: number; // ? All distances must be squared (removes a runtime multiplication)
+    poi: POIData;
+}[][] = [
+    // ? First Floor
+    [], // TODO:
+
+    // ? Second Floor
+    [], // TODO:
+
+    // ? Exterior (NO POIs)
+    [],
+];
+
+const model_srcs: string[] = [
+    "/models/portfolio/threejs/adept/first_floor.glb",
+    "/models/portfolio/threejs/adept/second_floor.glb",
+    "/models/portfolio/threejs/adept/roof.glb",
+];
+
+const lofty_living: FloorPlan = {
+    getOrbitHome: (floor_index: number) => {
+        return new THREE.Vector3(-10.0, (floor_index * FLOOR_HEIGHT) + 10.0, 10.0);
+    },
+    getFirstPersonHome: (floor_index: number) => {
+        return new THREE.Vector3(0.0, (floor_index * FLOOR_HEIGHT) + 1.5, 0.0);
+    },
+
+    loadModel: (scene: THREE.Scene): THREE.Object3D[] => {
+        const model_loader: GLTFLoader = new GLTFLoader();
+        const floors: THREE.Object3D[] = Array(model_srcs.length) as THREE.Object3D[];
+
+        for (let idx = 0; idx < model_srcs.length; ++idx) {
+            floors[idx] = new THREE.Object3D();
+
+            const floor = floors[idx];
+            floor.scale.set(METER2FEET, METER2FEET, METER2FEET);
+            floor.visible = false;
+
+            scene.add(floor);
+
+            model_loader.load(model_srcs[idx], (data: GLTF) => floor.add(data.scene));
+        }
+
+        return floors;
+    },
+
+    getFloorPOI: (floor_index: number) => {
+        return floor_pois[floor_index];
+    },
+    getRoomPOI: (floor_index: number, position: THREE.Vector3) => {
+        const rooms = room_pois[floor_index];
+
+        for (let idx = 0; idx < rooms.length; ++idx) {
+            const room = rooms[idx];
+
+            const dx: number = position.x - room.position.x;
+            const dz: number = position.z - room.position.y;
+
+            if ((dx * dx) + (dz * dz) <= room.sqr_distance) {
+                return room.poi;
+            }
+        }
+
+        return lofty_living.getFloorPOI(floor_index);
+    },
+}
 
 export default lofty_living;
