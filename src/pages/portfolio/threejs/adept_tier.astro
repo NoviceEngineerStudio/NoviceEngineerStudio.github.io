@@ -2,219 +2,90 @@
 import NavLayout from "../../../layouts/NavLayout.astro";
 ---
 
-<NavLayout
-    title="Adept Tier ThreeJS"
-    additional_links={[
-        {
-            rel: "preload",
-            href: "/fonts/cinzel/Cinzel-VariableFont_wght.ttf",
-            as: "font",
-            type: "font/ttf",
-            crossorigin: true,
-        }, {
-            rel: "stylesheet",
-            href: "/fonts/cinzel/cinzel.css",
-            crossorigin: false,
-        },
-    ]}
-
-    bodyClass="w-screen h-screen relative"
->
-    <floor-plan-viewer class="absolute top-0 left-0 w-full h-full z-98" />
-
-    <div class="absolute top-4 left-1/2 -translate-x-1/2 z-99 text-center">
-        <h1
-            class="text-4xl sm:text-4xl md:text-4xl lg:text-5xl"
-            style="font-family: 'Cinzel', 'Times New Roman', Times, serif;"
-        >Lofty Living</h1>
-        <span id="details-title" class="text-lg"/>
-    </div>
-
-    <span class="hidden md:block absolute bottom-4 left-4 text-lg z-99">
-        &apos;CTRL + V&apos; to Switch Views
-    </span>
-
-    <div class="absolute translate-x-1/2 md:translate-x-0 right-1/2 md:right-8 bottom-8 z-99 w-4/5 md:w-75">
-        <div id="floor-button-container" class="flex flex-wrap-reverse justify-end items-center gap-4 mb-2"/>
-
-        <div class="rounded-lg bg-white border-2 border-gray-400 overflow-hidden">
-            <button
-                id="details-button"
-                class="text-lg bg-indigo-300 w-full px-4 py-1 cursor-pointer hover:bg-indigo-100 text-start flex justify-between">
-                <span>Details&nbsp;</span>
-                <i id="details-arrow" class="material-icons">keyboard_arrow_down</i>
-            </button>
-
-            <div id="details-paragraph" class="overflow-hidden max-h-0 bg-white"/>
-        </div>
-    </div>
+<NavLayout title="Adept Tier ThreeJS">
+    <floorplan-viewer
+        class="block size-100 bg-red-400"
+        data-top_path="/models/portfolio/threejs/adept/top.glb"
+        data-bottom_path="/models/portfolio/threejs/adept/bottom.glb"
+    />
 </NavLayout>
 
 <script>
     import * as THREE from "three";
-    import lofty_living from "../../../config/portfolio_data/LoftyLiving";
+    import { GLTFLoader, type GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
+
     import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
     import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls.js";
 
-    class FlyAnimation {
-        private object: THREE.Object3D;
-
-        private target_height: number;
-        private fly_speed: number;
-
-        private end_visibility: boolean;
-
-        constructor(
-            object: THREE.Object3D,
-            target_height: number,
-            fly_speed: number,
-            end_visibility: boolean
-        ) {
-            this.object = object;
-            this.target_height = target_height;
-            this.fly_speed = fly_speed;
-            this.end_visibility = end_visibility;
-
-            this.object.visible = true;
-        }
-
-        public update(delta_time: number): boolean {
-            const new_height: number = this.object.position.y + this.fly_speed * delta_time;
-
-            if (
-                Math.abs(this.object.position.y - this.target_height) <=
-                Math.abs(new_height - this.target_height)
-            ) {
-                this.object.position.setY(this.target_height);
-                return true;
-            }
-
-            this.object.position.setY(new_height);
-            return false;
-        }
-
-        public onEnd(): void {
-            this.object.visible = this.end_visibility;
-        }
-    }
-
-    class FloorPlanViewer extends HTMLElement {
+    class FloorplanViewer extends HTMLElement {
         private scene: THREE.Scene = new THREE.Scene();
         private renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({ antialias: true });
         private camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(
-            70.0,
-            1.0,
-            0.1,
-            1000.0
+            70.0, // ? Field of View
+            1.0, // ! PLACEHOLDER ASPECT RATIO; WILL BE CALCULATED
+            0.1, // ? Near Plane Distance
+            100.0 // ? Far Plane Distance
         );
 
-        private fly_speed: number = 45.0;
-        private fly_height: number = 30.0;
-        private fp_animations: FlyAnimation[] = [];
+        private top_half: THREE.Object3D = new THREE.Object3D();
+        private bottom_half: THREE.Object3D = new THREE.Object3D();
 
-        private floor_index: number = 0;
-        private poi_index: number | null = null;
-        private floors: THREE.Object3D[] = lofty_living.loadModel(this.scene);
+        private last_frame_time: number;
 
         private dollhouse_mode: boolean = true;
         private orbit_controls: OrbitControls = new OrbitControls(this.camera, this.renderer.domElement);
-        private first_person_controls: PointerLockControls = new PointerLockControls(this.camera, this.renderer.domElement);
+        private pointer_controls: PointerLockControls = new PointerLockControls(this.camera, this.renderer.domElement);
 
-        private last_frame_time: number;
-        private run_speed: number = 5.0;
-        private walk_speed: number = 2.0;
-        private current_speed: number = this.walk_speed;
-
-        private is_up_pressed: boolean = false;
-        private is_down_pressed: boolean = false;
-        private is_left_pressed: boolean = false;
-        private is_right_pressed: boolean = false;
-
-        private details_open: boolean = false;
-        private last_floor_button: HTMLElement | null = null;
-
-        private details_button: HTMLElement = document.getElementById("details-button") ?? new HTMLDivElement();
-        private details_arrow: HTMLElement = document.getElementById("details-arrow") ?? new HTMLDivElement();
-
-        private details_title: HTMLElement = document.getElementById("details-title") ?? new HTMLDivElement();
-        private details_paragraph: HTMLElement = document.getElementById("details-paragraph") ?? new HTMLDivElement();
-
-        private floor_button_container: HTMLElement = document.getElementById("floor-button-container") ?? new HTMLDivElement();
+        private saved_camera_position: THREE.Vector3 = new THREE.Vector3();
+        private saved_camera_rotation: THREE.Euler = new THREE.Euler();
 
         constructor() {
             super();
 
-            // ? Add floor selection buttons (if more than one floor)
+            this.camera.position.set(-30,30,50)
 
-            if (this.floors.length > 1) {
-                const first_button: HTMLElement = this.createFloorButton(0);
-                first_button.click();
+            // ? Load Scene Models
 
-                for (let idx = 1; idx < this.floors.length; ++idx) {
-                    this.createFloorButton(idx);
-                }
-            }
+            const model_loader: GLTFLoader = new GLTFLoader();
 
-            // ? Setup details drowpdown
+            model_loader.load(
+                this.dataset.top_path ?? "",
+                (data: GLTF) => this.top_half.add(data.scene)
+            );
+            model_loader.load(
+                this.dataset.bottom_path ?? "",
+                (data: GLTF) => this.bottom_half.add(data.scene)
+            );
+            
+            this.scene.add(this.top_half);
+            this.scene.add(this.bottom_half);
 
-            this.details_button.addEventListener("click", () => {
-                this.details_open = !this.details_open;
+            // ? Setup Scene Lighting and Ambience
 
-                if (this.details_open) {
-                    this.details_arrow.textContent = "keyboard_arrow_up";
-                    this.details_paragraph.classList.remove("max-h-0");
-                    this.details_paragraph.classList.add("p-4");
-                }
-                else {
-                    this.details_arrow.textContent = "keyboard_arrow_down";
-                    this.details_paragraph.classList.add("max-h-0");
-                    this.details_paragraph.classList.remove("p-4");
-                }
-            })
+            this.scene.fog = new THREE.FogExp2(0xffffff, 0.01);
 
-            // ? Stage the standard environment scene
+            this.scene.add(new THREE.AmbientLight(0xffffff, 1.0));
 
-            const clear_color: THREE.Color = new THREE.Color(0xafafaf);
+            // ? Renderer Parameters
+
+            const clear_color: THREE.Color = new THREE.Color(0xffffff);
             this.renderer.setClearColor(clear_color, 1.0);
+            
+            this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
 
-            const directional_light_1: THREE.DirectionalLight = new THREE.DirectionalLight(0xffffff, 0.2);
-            directional_light_1.position.set(10.0, 10.0, 0.0);
-            this.scene.add(directional_light_1);
-
-            const directional_light_2: THREE.DirectionalLight = new THREE.DirectionalLight(0xffffff, 0.4);
-            directional_light_2.position.set(-10.0, -10.0, 0.0);
-            this.scene.add(directional_light_2);
-
-            const directional_light_3: THREE.DirectionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
-            directional_light_3.position.set(0.0, 10.0, -10.0);
-            this.scene.add(directional_light_3);
-
-            const directional_light_4: THREE.DirectionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
-            directional_light_4.position.set(0.0, -10.0, 10.0);
-            this.scene.add(directional_light_4);
-
-            // ? Setup window resize callbacks and get the initial size
-
-            this.onResize();
-            window.addEventListener("resize", this.onResize.bind(this));
-
-            // ? Setup keyboard/mouse input handlers and set initial controls
-
-            this.setControls(this.dollhouse_mode);
-            window.addEventListener("keydown", (key_event: KeyboardEvent) => this.onKeyDown(key_event));
-            window.addEventListener("keyup", (key_event: KeyboardEvent) => this.onKeyUp(key_event));
-            window.addEventListener("click", (mouse_event: MouseEvent) => this.onMouseClick(mouse_event));
-
-            // Place the render canvas in the DOM
+            // ? Add the Render DOM Element and Handle Resizing
 
             this.renderer.domElement.style.width = "100%";
             this.renderer.domElement.style.height = "100%";
             this.appendChild(this.renderer.domElement);
 
-            // ? Enter the application's main loop
+            this.onResize();
+            window.addEventListener("resize", this.onResize.bind(this));
+
+            // ? Run the First Iteration of the Viewer's Update Function
 
             this.last_frame_time = Date.now() * 0.001;
-            requestAnimationFrame(this.mainLoop.bind(this));
+            this.mainLoop();
         }
 
         private onResize(): void {
@@ -224,212 +95,48 @@ import NavLayout from "../../../layouts/NavLayout.astro";
             this.camera.aspect = width / height;
             this.camera.updateProjectionMatrix();
 
-            this.renderer.setSize(width, height, false);
+            this.renderer.setSize(width, height);
             this.renderer.setPixelRatio(window.devicePixelRatio);
         }
 
-        private onKeyDown(key_event: KeyboardEvent): void {
-            if (key_event.repeat) return;
+        private toggleDollhouseMode(): void {
+            this.dollhouse_mode = !this.dollhouse_mode;
 
-            switch (key_event.code) {
-                case "KeyV":
-                    if (key_event.ctrlKey) this.setControls(!this.dollhouse_mode);
-                    break;
-                case "KeyW":
-                case "ArrowUp":
-                    this.is_up_pressed = true;
-                    break;
-                case "KeyS":
-                case "ArrowDown":
-                    this.is_down_pressed = true;
-                    break;
-                case "KeyA":
-                case "ArrowLeft":
-                    this.is_left_pressed = true;
-                    break;
-                case "KeyD":
-                case "ArrowRight":
-                    this.is_right_pressed = true;
-                    break;
-                case "ShiftLeft":
-                case "ShiftRight":
-                    this.current_speed = this.run_speed;
-            }
-        }
+            // Swap Camera Data and Save for the Next Swap
 
-        private onKeyUp(key_event: KeyboardEvent): void {
-            switch (key_event.code) {
-                case "KeyW":
-                case "ArrowUp":
-                    this.is_up_pressed = false;
-                    break;
-                case "KeyS":
-                case "ArrowDown":
-                    this.is_down_pressed = false;
-                    break;
-                case "KeyA":
-                case "ArrowLeft":
-                    this.is_left_pressed = false;
-                    break;
-                case "KeyD":
-                case "ArrowRight":
-                    this.is_right_pressed = false;
-                    break;
-                case "ShiftLeft":
-                case "ShiftRight":
-                    this.current_speed = this.walk_speed;
-            }
-        }
+            const temp_position: THREE.Vector3 = this.camera.position;
+            const temp_rotation: THREE.Euler = this.camera.rotation;
 
-        private createFloorButton(floor_index: number): HTMLElement {
-            const floor_button: HTMLElement = document.createElement("button");
-            this.floor_button_container.appendChild(floor_button);
+            this.camera.position.copy(this.saved_camera_position);
+            this.camera.rotation.copy(this.saved_camera_rotation);
 
-            floor_button.textContent = lofty_living.getFloorPOI(floor_index).title;
-            floor_button.classList.add(
-                "bg-indigo-300",
-                "px-4",
-                "py-1",
-                "rounded-lg",
-                "border-2",
-                "border-gray-400",
-                "hover:bg-indigo-100",
-                "cursor-pointer",
-                "text-sm"
-            );
-
-            floor_button.addEventListener("click", () => {
-                if (floor_button === this.last_floor_button) return;
-
-                floor_button.classList.add("bg-indigo-600", "text-white");
-                floor_button.classList.remove("bg-indigo-300", "hover:bg-indigo-100");
-
-                if (this.last_floor_button !== null) {
-                    this.last_floor_button.classList.remove("bg-indigo-600", "text-white");
-                    this.last_floor_button.classList.add("bg-indigo-300", "hover:bg-indigo-100");
-                }
-
-                this.floor_index = floor_index;
-                this.last_floor_button = floor_button;
-
-                this.setControls(this.dollhouse_mode);
-                this.triggerAnimations();
-            });
-
-            return floor_button;
-        }
-
-        private onMouseClick(_: MouseEvent): void {
-            if (this.dollhouse_mode) return;
-            this.first_person_controls.lock();
-        }
-
-        private forwardAxis(): number {
-            return Number(this.is_up_pressed) - Number(this.is_down_pressed);
-        }
-
-        private horizontalAxis(): number {
-            return Number(this.is_right_pressed) - Number(this.is_left_pressed);
-        }
-
-        private setControls(is_dollhouse: boolean): void {
-            this.dollhouse_mode = is_dollhouse;
-
-            let home_orientation: THREE.Vector3;
-            if (is_dollhouse) {
-                this.first_person_controls.unlock();
-                this.queryFloorPOI();
-
-                home_orientation = lofty_living.getOrbitHome(this.floor_index);
-            }
-            else {
-                this.first_person_controls.lock();
-                this.queryRoomPOI();
-
-                home_orientation = lofty_living.getFirstPersonHome(this.floor_index);
-            }
-
-            this.camera.position.copy(home_orientation);
-            this.camera.rotation.set(0.0, 0.0, 0.0);
-
-            this.orbit_controls.enabled = is_dollhouse;
-            this.first_person_controls.enabled = !is_dollhouse;
-        }
-
-        private triggerAnimations(): void {
-            while(this.fp_animations.pop() !== undefined);
-
-            let idx = 0;
-            for (; idx <= this.floor_index; ++idx) {
-                console.log(this.floors[idx], this.floors);
-                this.fp_animations.push(new FlyAnimation(
-                    this.floors[idx],
-                    0.0,
-                    -this.fly_speed,
-                    true
-                ));
-            }
-
-            for (; idx < this.floors.length; ++idx) {
-                this.fp_animations.push(new FlyAnimation(
-                    this.floors[idx],
-                    this.fly_height,
-                    this.fly_speed,
-                    false
-                ));
-            }
-        }
-
-        private queryFloorPOI(): void {
-            const poi = lofty_living.getFloorPOI(this.floor_index);
-            if (poi.index === this.poi_index) return;
-
-            this.details_title.textContent = poi.title;
-            this.details_paragraph.textContent = poi.details;
-        }
-
-        private queryRoomPOI(): void {
-            const poi = lofty_living.getRoomPOI(this.floor_index, this.camera.position);
-            if (poi.index === this.poi_index) return;
-
-            this.details_title.textContent = poi.title;
-            this.details_paragraph.textContent = poi.details;
+            this.saved_camera_position.copy(temp_position);
+            this.saved_camera_rotation.copy(temp_rotation);
         }
 
         private mainLoop(): void {
+            // ? Compute Delta Time
+
             const cur_frame_time: number = Date.now() * 0.001;
             const delta_time: number = cur_frame_time - this.last_frame_time;
             this.last_frame_time = cur_frame_time;
+
+
+            // ? Update Controls
 
             if (this.dollhouse_mode) {
                 this.orbit_controls.update(delta_time);
             }
             else {
-                this.first_person_controls.update(delta_time);
-
-                const frame_walk_speed: number = this.current_speed * delta_time;
-                this.first_person_controls.moveForward(this.forwardAxis() * frame_walk_speed);
-                this.first_person_controls.moveRight(this.horizontalAxis() * frame_walk_speed);
-
-                this.queryRoomPOI();
+                this.pointer_controls.update(delta_time);
             }
 
-            for (let idx = 0; idx < this.fp_animations.length; ++idx) {
-                const animation: FlyAnimation = this.fp_animations[idx];
-
-                if (animation.update(delta_time)) {
-                    animation.onEnd();
-                    
-                    this.fp_animations.splice(idx, 1);
-                    --idx;
-                    continue;
-                }
-            }
+            // Render and Request the Next Frame
 
             this.renderer.render(this.scene, this.camera);
             requestAnimationFrame(this.mainLoop.bind(this));
         }
     }
 
-    customElements.define("floor-plan-viewer", FloorPlanViewer);
+    customElements.define("floorplan-viewer", FloorplanViewer);
 </script>

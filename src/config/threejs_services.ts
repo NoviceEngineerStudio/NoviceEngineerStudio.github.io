@@ -33,9 +33,6 @@ export const threejs_services: ServiceData[] = [
                 tag: "Interactivity",
                 description: "Minimal or None",
             }, {
-                tag: "3D Models",
-                description: "Primitive Geometry or Provided Model",
-            }, {
                 tag: "Revisions",
                 description: "1 Round",
             },
@@ -71,9 +68,6 @@ export const threejs_services: ServiceData[] = [
             }, {
                 tag: "Interactivity",
                 description: "Model Movement and Property Changes",
-            }, {
-                tag: "3D Models",
-                description: "1 Custom Model and Primitive Geometry",
             }, {
                 tag: "Revisions",
                 description: "2 Rounds",
@@ -111,9 +105,6 @@ export const threejs_services: ServiceData[] = [
                 tag: "Interactivity",
                 description: "Integrated and Complex Input",
             }, {
-                tag: "3D Models",
-                description: "3 Custom Models",
-            }, {
                 tag: "Revisions",
                 description: "3 Rounds",
             },
@@ -150,9 +141,6 @@ export const threejs_services: ServiceData[] = [
                 tag: "Interactivity",
                 description: "As Requested",
             }, {
-                tag: "3D Models",
-                description: "8 Custom Models",
-            }, {
                 tag: "Revisions",
                 description: "4 Rounds",
             },
@@ -180,9 +168,6 @@ export const threejs_services: ServiceData[] = [
                 description: "As Requested",
             }, {
                 tag: "Interactivity",
-                description: "As Requested",
-            }, {
-                tag: "3D Models",
                 description: "As Requested",
             }, {
                 tag: "Revisions",
