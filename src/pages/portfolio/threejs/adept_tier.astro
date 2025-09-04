@@ -4,18 +4,67 @@ import NavLayout from "../../../layouts/NavLayout.astro";
 
 <NavLayout title="Adept Tier ThreeJS">
     <floorplan-viewer
-        class="block size-100 bg-red-400"
+        class="fixed w-screen h-screen"
         data-top_path="/models/portfolio/threejs/adept/top.glb"
         data-bottom_path="/models/portfolio/threejs/adept/bottom.glb"
     />
+
+    <button
+        id="home-orientation-button"
+        aria-label="Home-Orientation-Button"
+        class="fixed top-8 left-8 bg-indigo-950 p-2 rounded-lg text-indigo-200 shadow-lg cursor-pointer hover:bg-indigo-800">
+        <i class="material-icons">home</i>
+    </button>
+
+    <div class="flex gap-2 flex-col fixed left-8 bottom-8 md:bottom-1/2 md:translate-y-1/2">
+        <button
+            id="dollhouse-toggle-button"
+            aria-label="Dollhouse-Toggle-Button"
+            class="bg-indigo-950 p-2 rounded-lg text-indigo-200 shadow-lg cursor-pointer hover:bg-indigo-800 w-fit">
+            <i class="material-icons">monochrome_photos</i>
+        </button>
+
+        <hr class="hidden md:block" />
+
+        <div class="flex gap-2 md:flex-col">
+            <button
+                id="grid-toggle-button"
+                aria-label="Home-Orientation-Button"
+                class="bg-indigo-950 p-2 rounded-lg text-indigo-200 shadow-lg cursor-pointer hover:bg-indigo-800">
+                <i class="material-icons">grid_3x3</i>
+            </button>
+
+            <button
+                id="plan-toggle-button"
+                aria-label="Home-Orientation-Button"
+                class="bg-indigo-950 p-2 rounded-lg text-indigo-200 shadow-lg cursor-pointer hover:bg-indigo-800">
+                <i class="material-icons">architecture</i>
+            </button>
+
+            <button
+                id="roof-toggle-button"
+                aria-label="Roof-Toggle-Button"
+                class="bg-indigo-950 p-2 rounded-lg text-indigo-200 shadow-lg cursor-pointer hover:bg-indigo-800">
+                <i class="material-icons">roofing</i>
+            </button>
+        </div>
+    </div>
 </NavLayout>
 
 <script>
     import * as THREE from "three";
     import { GLTFLoader, type GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
 
+    import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
+    import { SAOPass } from "three/examples/jsm/postprocessing/SAOPass.js";
+
+    import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
+    import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
+
     import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
     import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls.js";
+
+    import adept_floorplan from "../../../assets/images/adept_floorplan.png";
 
     class FloorplanViewer extends HTMLElement {
         private scene: THREE.Scene = new THREE.Scene();
@@ -24,29 +73,53 @@ import NavLayout from "../../../layouts/NavLayout.astro";
             70.0, // ? Field of View
             1.0, // ! PLACEHOLDER ASPECT RATIO; WILL BE CALCULATED
             0.1, // ? Near Plane Distance
-            100.0 // ? Far Plane Distance
+            200.0 // ? Far Plane Distance
         );
+
+        private postProcessor: EffectComposer = new EffectComposer(this.renderer);
 
         private top_half: THREE.Object3D = new THREE.Object3D();
         private bottom_half: THREE.Object3D = new THREE.Object3D();
 
-        private last_frame_time: number;
+        private last_frame_time: number = Date.now() * 0.001;
+        private walk_speed: number = 10.0;
+
+        private is_up_pressed: boolean = false;
+        private is_down_pressed: boolean = false;
+        private is_left_pressed: boolean = false;
+        private is_right_pressed: boolean = false;
 
         private dollhouse_mode: boolean = true;
         private orbit_controls: OrbitControls = new OrbitControls(this.camera, this.renderer.domElement);
         private pointer_controls: PointerLockControls = new PointerLockControls(this.camera, this.renderer.domElement);
 
-        private saved_camera_position: THREE.Vector3 = new THREE.Vector3();
-        private saved_camera_rotation: THREE.Euler = new THREE.Euler();
+        private MAX_CAMERA_DISTANCE: number = 100.0;
+        private MAX_CAMERA_DISTANCE_SQR: number = this.MAX_CAMERA_DISTANCE * this.MAX_CAMERA_DISTANCE;
+
+        private ORBIT_INITIAL_POSITION: THREE.Vector3 = new THREE.Vector3(-30.0, 30.0, 30.0);
+        private POINTER_INITIAL_POSITION: THREE.Vector3 = new THREE.Vector3(2.0, 5.0, 12.0);
+
+        private ORBIT_INITIAL_ROTATION: THREE.Euler = new THREE.Euler(Math.PI * 0.25, Math.PI * 0.25, 0.0);
+        private POINTER_INITIAL_ROTATION: THREE.Euler = new THREE.Euler(0.0, 0.0, 0.0);
+
+        private saved_camera_position: THREE.Vector3 = this.dollhouse_mode ? this.POINTER_INITIAL_POSITION : this.ORBIT_INITIAL_POSITION;
+        private saved_camera_rotation: THREE.Euler = this.dollhouse_mode ? this.POINTER_INITIAL_ROTATION : this.ORBIT_INITIAL_ROTATION;
+
+        private grid_layer: THREE.GridHelper = new THREE.GridHelper(500.0, 50.0, 0xff0000, 0xafafaf);
+        private floorplan_layer: THREE.Mesh = new THREE.Mesh(
+            new THREE.PlaneGeometry(37.0, 30.5),
+            new THREE.MeshBasicMaterial()
+        );
 
         constructor() {
             super();
 
-            this.camera.position.set(-30,30,50)
-
-            // ? Load Scene Models
+            // ? Create Loaders
 
             const model_loader: GLTFLoader = new GLTFLoader();
+            const texture_loader: THREE.TextureLoader = new THREE.TextureLoader();
+
+            // ? Load Scene Models
 
             model_loader.load(
                 this.dataset.top_path ?? "",
@@ -62,16 +135,47 @@ import NavLayout from "../../../layouts/NavLayout.astro";
 
             // ? Setup Scene Lighting and Ambience
 
-            this.scene.fog = new THREE.FogExp2(0xffffff, 0.01);
+            this.scene.fog = new THREE.Fog(0xffffff, 100.0, 200.0);
 
             this.scene.add(new THREE.AmbientLight(0xffffff, 1.0));
+
+            const sun_light: THREE.DirectionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
+            sun_light.position.set(10.0, 10.0, 10.0);
+            this.scene.add(sun_light);
+
+            // ? Setup Scene View Layers
+
+            this.grid_layer.position.set(0.0, -0.45, 0.0);
+            this.scene.add(this.grid_layer);
+
+            const floorplan_mat: THREE.MeshBasicMaterial = this.floorplan_layer.material as THREE.MeshBasicMaterial;
+            floorplan_mat.map = texture_loader.load(adept_floorplan.src);
+            floorplan_mat.transparent = true;
+            
+            this.floorplan_layer.position.set(2.0, 0.1, -1.0);
+            this.floorplan_layer.rotation.set(Math.PI * -0.5, 0.0, 0.0);
+            this.scene.add(this.floorplan_layer);
+
+            this.top_half.visible = false;
+            this.grid_layer.visible = false;
+            this.floorplan_layer.visible = false;
 
             // ? Renderer Parameters
 
             const clear_color: THREE.Color = new THREE.Color(0xffffff);
             this.renderer.setClearColor(clear_color, 1.0);
-            
-            this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+
+            this.renderer.setAnimationLoop(this.mainLoop.bind(this));
+
+            this.postProcessor.addPass(new RenderPass(this.scene, this.camera));
+
+            const ao_pass: SAOPass = new SAOPass(this.scene, this.camera);
+            this.postProcessor.addPass(ao_pass);
+
+            ao_pass.params.saoIntensity = 0.0075;
+            ao_pass.params.saoKernelRadius = 10.0;
+
+            this.postProcessor.addPass(new OutputPass());
 
             // ? Add the Render DOM Element and Handle Resizing
 
@@ -82,10 +186,125 @@ import NavLayout from "../../../layouts/NavLayout.astro";
             this.onResize();
             window.addEventListener("resize", this.onResize.bind(this));
 
-            // ? Run the First Iteration of the Viewer's Update Function
+            // ? Configure Controls
 
-            this.last_frame_time = Date.now() * 0.001;
-            this.mainLoop();
+            if (this.dollhouse_mode) {
+                this.orbit_controls.enabled = true;
+                this.pointer_controls.enabled = false;
+
+                this.camera.position.copy(this.ORBIT_INITIAL_POSITION);
+                this.camera.rotation.copy(this.ORBIT_INITIAL_ROTATION);
+
+                this.pointer_controls.unlock();
+            }
+            else {
+                this.orbit_controls.enabled = false;
+                this.pointer_controls.enabled = true;
+
+                this.camera.position.copy(this.POINTER_INITIAL_POSITION);
+                this.camera.rotation.copy(this.POINTER_INITIAL_ROTATION);
+
+                this.pointer_controls.lock();
+            }
+
+            // ? Input Management
+
+            window.addEventListener("keyup", (key_event: KeyboardEvent) => {
+                if (key_event.repeat) return;
+
+                switch (key_event.code) {
+                    case "KeyW":
+                    case "ArrowUp":
+                        this.is_up_pressed = false;
+                        break;
+                    case "KeyS":
+                    case "ArrowDown":
+                        this.is_down_pressed = false;
+                        break;
+                    case "KeyA":
+                    case "ArrowLeft":
+                        this.is_left_pressed = false;
+                        break;
+                    case "KeyD":
+                    case "ArrowRight":
+                        this.is_right_pressed = false;
+                        break;
+                }
+            });
+
+            window.addEventListener("keydown", (key_event: KeyboardEvent) => {
+                if (key_event.repeat) return;
+
+                switch (key_event.code) {
+                    case "KeyW":
+                    case "ArrowUp":
+                        this.is_up_pressed = true;
+                        break;
+                    case "KeyS":
+                    case "ArrowDown":
+                        this.is_down_pressed = true;
+                        break;
+                    case "KeyA":
+                    case "ArrowLeft":
+                        this.is_left_pressed = true;
+                        break;
+                    case "KeyD":
+                    case "ArrowRight":
+                        this.is_right_pressed = true;
+                        break;
+                }
+            });
+
+            this.renderer.domElement.addEventListener("click", () => {
+                if (this.dollhouse_mode) return;
+
+                this.pointer_controls.lock();
+            });
+
+            // ? Setup UI Elements
+
+            this.setupUIElement("home-orientation-button", () => {
+                if (this.dollhouse_mode) {
+                    this.camera.position.copy(this.ORBIT_INITIAL_POSITION);
+                    this.camera.rotation.copy(this.ORBIT_INITIAL_ROTATION);
+                }
+                else {
+                    this.camera.position.copy(this.POINTER_INITIAL_POSITION);
+                    this.camera.rotation.copy(this.POINTER_INITIAL_ROTATION);
+                }
+            });
+
+            this.setupUIElement("dollhouse-toggle-button", () => this.toggleDollhouseMode());
+
+            this.setupUIElement("grid-toggle-button", (ui_element: HTMLElement) => {
+                this.grid_layer.visible = !this.grid_layer.visible;
+                ui_element.classList.toggle("text-indigo-100");
+                ui_element.classList.toggle("text-indigo-200");
+                ui_element.classList.toggle("bg-indigo-600");
+                ui_element.classList.toggle("bg-indigo-950");
+            });
+
+            this.setupUIElement("plan-toggle-button", (ui_element: HTMLElement) => {
+                this.floorplan_layer.visible = !this.floorplan_layer.visible;
+                ui_element.classList.toggle("text-indigo-100");
+                ui_element.classList.toggle("text-indigo-200");
+                ui_element.classList.toggle("bg-indigo-600");
+                ui_element.classList.toggle("bg-indigo-950");
+            });
+
+            this.setupUIElement("roof-toggle-button", (ui_element: HTMLElement) => {
+                this.top_half.visible = !this.top_half.visible;
+                ui_element.classList.toggle("text-indigo-100");
+                ui_element.classList.toggle("text-indigo-200");
+                ui_element.classList.toggle("bg-indigo-600");
+                ui_element.classList.toggle("bg-indigo-950");
+            });
+        }
+
+        private setupUIElement(id: string, callback: (ui_element: HTMLElement) => void): void {
+            const ui_element: HTMLElement | null = document.getElementById(id);
+            if (ui_element === null) return;
+            ui_element.addEventListener("click", () => callback(ui_element));
         }
 
         private onResize(): void {
@@ -97,15 +316,41 @@ import NavLayout from "../../../layouts/NavLayout.astro";
 
             this.renderer.setSize(width, height);
             this.renderer.setPixelRatio(window.devicePixelRatio);
+
+            this.postProcessor.setSize(width, height);
+            this.postProcessor.setPixelRatio(window.devicePixelRatio);
         }
 
         private toggleDollhouseMode(): void {
-            this.dollhouse_mode = !this.dollhouse_mode;
+            if (this.dollhouse_mode) {
+                this.dollhouse_mode = false;
+
+                this.orbit_controls.enabled = false;
+                this.pointer_controls.enabled = true;
+                
+                this.pointer_controls.lock();
+            }
+            else {
+                this.dollhouse_mode = true;
+
+                this.orbit_controls.enabled = true;
+                this.pointer_controls.enabled = false;
+
+                this.pointer_controls.unlock();
+            }
 
             // Swap Camera Data and Save for the Next Swap
 
-            const temp_position: THREE.Vector3 = this.camera.position;
-            const temp_rotation: THREE.Euler = this.camera.rotation;
+            const temp_position: THREE.Vector3 = new THREE.Vector3(
+                this.camera.position.x,
+                this.camera.position.y,
+                this.camera.position.z
+            );
+            const temp_rotation: THREE.Euler = new THREE.Euler(
+                this.camera.rotation.x,
+                this.camera.rotation.y,
+                this.camera.rotation.z
+            );
 
             this.camera.position.copy(this.saved_camera_position);
             this.camera.rotation.copy(this.saved_camera_rotation);
@@ -129,12 +374,23 @@ import NavLayout from "../../../layouts/NavLayout.astro";
             }
             else {
                 this.pointer_controls.update(delta_time);
+
+                const frame_speed: number = this.walk_speed * delta_time;
+                this.pointer_controls.moveForward(
+                    (Number(this.is_up_pressed) - Number(this.is_down_pressed)) * frame_speed);
+                this.pointer_controls.moveRight(
+                    (Number(this.is_right_pressed) - Number(this.is_left_pressed)) * frame_speed);
             }
 
-            // Render and Request the Next Frame
+            // ? Limit Camera Distance
 
-            this.renderer.render(this.scene, this.camera);
-            requestAnimationFrame(this.mainLoop.bind(this));
+            if (this.camera.position.dot(this.camera.position) > this.MAX_CAMERA_DISTANCE_SQR) {
+                this.camera.position.copy(this.camera.position.normalize().multiplyScalar(this.MAX_CAMERA_DISTANCE));
+            }
+
+            // Render
+
+            this.postProcessor.render();
         }
     }
 

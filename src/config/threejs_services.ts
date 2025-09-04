@@ -111,12 +111,12 @@ export const threejs_services: ServiceData[] = [
         ],
         examples: [
             {
-                title: "Lofty Living Cabin",
+                title: "3D Floorplan Viewer",
                 preview: adept_preview,
                 month: "September",
                 year: 2025,
                 href: "https://noviceengineerstudio.github.io/portfolio/threejs/adept_tier",
-                description: "This project gives an idea for what you can expect from our Adept Tier. Showcasing a lovely two-story home, we explore the Lofty Living house from both a dollhouse view and a first-person perspective (on desktop only). As you traverse the home, see updates from the architects about each room, giving the design a more personable charm.",
+                description: "Explore a cozy home layout using this 3D architecture viewer. Using the togglable controls, you can get a good look at the design using the orbiting camera, or feel how the space would be at-scale by walking around using the first-person camera. The project also features toggles for the home's roof, the world grid, and a floorplan overlay.",
             },
         ],
     }, { // ? Expert Tier /////////////////////////////////////////////////////
