@@ -6,7 +6,7 @@ import tier_icon_3 from "../assets/icons/tiers/tier_icon_3.webp";
 import tier_icon_4 from "../assets/icons/tiers/tier_icon_4.webp";
 import tier_icon_5 from "../assets/icons/tiers/tier_icon_5.webp";
 
-import novice_preview from "../assets/previews/threejs_novice.webp";apprentice_preview
+import novice_preview from "../assets/previews/threejs_novice.webp";
 import apprentice_preview from "../assets/previews/threejs_apprentice.webp";
 import adept_preview from "../assets/previews/threejs_adept.webp";
 
@@ -24,17 +24,17 @@ export const threejs_services: ServiceData[] = [
         },
         deliverables: [
             {
-                tag: "Tag",
-                description: "I will embed a 3D model into your website",
+                tag: "Scene",
+                description: "Single 3D model with basic lighting and material.",
             }, {
                 tag: "Animation",
-                description: "Simple Repetitive Loops or None",
+                description: "Single simple animation.",
             }, {
                 tag: "Interactivity",
-                description: "Minimal or None",
+                description: "Simple camera controls.",
             }, {
-                tag: "Revisions",
-                description: "1 Round",
+                tag: "Support",
+                description: "1 revision round.",
             },
         ],
         examples: [
@@ -60,27 +60,27 @@ export const threejs_services: ServiceData[] = [
         },
         deliverables: [
             {
-                tag: "Tag",
-                description: "I will embed a dynamic 3D model into your website",
+                tag: "Scene",
+                description: "Multiple assets in a simple 3D environment.",
             }, {
                 tag: "Animation",
-                description: "Simple Property Changes",
+                description: "Basic static animations.",
             }, {
                 tag: "Interactivity",
-                description: "Model Movement and Property Changes",
+                description: "Simple camera controls and basic UI inputs.",
             }, {
-                tag: "Revisions",
-                description: "2 Rounds",
+                tag: "Support",
+                description: "1 revision round.",
             },
         ],
         examples: [
             {
-                title: "MyArcade",
+                title: "3D Floorplan Viewer",
                 preview: apprentice_preview,
                 month: "September",
                 year: 2025,
                 href: "https://noviceengineerstudio.github.io/portfolio/threejs/apprentice_tier",
-                description: "MyArcade is a product customizer for a hypothetical arcade cabinet building company. Giving users the ability to tweak their cabinet to exactly what they'd like, this example project showcases what clients can get from our Apprentice Tier.",
+                description: "Explore a cozy home layout using this 3D architecture viewer. Using the togglable controls, you can get a good look at the design using the orbiting camera, or feel how the space would be at-scale by walking around using the first-person camera. The project also features toggles for the home's roof, the world grid, and a floorplan overlay.",
             },
         ],
     }, { // ? Adept Tier //////////////////////////////////////////////////////
@@ -96,27 +96,27 @@ export const threejs_services: ServiceData[] = [
         },
         deliverables: [
             {
-                tag: "Tag",
-                description: "I will create an interactive 3D website experience",
+                tag: "Scene",
+                description: "Dynamic scene with numerous 3D assets.",
             }, {
                 tag: "Animation",
-                description: "Simple Property Changes or Minimal Complex Animation",
+                description: "Basic dynamic animations.",
             }, {
                 tag: "Interactivity",
-                description: "Integrated and Complex Input",
+                description: "Complex camera controls and UI inputs.",
             }, {
-                tag: "Revisions",
-                description: "3 Rounds",
+                tag: "Support",
+                description: "2-3 revision rounds with minor integration support.",
             },
         ],
         examples: [
             {
-                title: "3D Floorplan Viewer",
+                title: "MyArcade",
                 preview: adept_preview,
                 month: "September",
                 year: 2025,
                 href: "https://noviceengineerstudio.github.io/portfolio/threejs/adept_tier",
-                description: "Explore a cozy home layout using this 3D architecture viewer. Using the togglable controls, you can get a good look at the design using the orbiting camera, or feel how the space would be at-scale by walking around using the first-person camera. The project also features toggles for the home's roof, the world grid, and a floorplan overlay.",
+                description: "MyArcade is a product customizer for a hypothetical arcade cabinet building company. Giving users the ability to tweak their cabinet to exactly what they'd like, this example project showcases what clients can get from our Adept Tier.",
             },
         ],
     }, { // ? Expert Tier /////////////////////////////////////////////////////
@@ -132,17 +132,17 @@ export const threejs_services: ServiceData[] = [
         },
         deliverables: [
             {
-                tag: "Tag",
-                description: "I will create a highly-interactive 3D website experience",
+                tag: "Scene",
+                description: "Complex scene with numerous assets and interactions.",
             }, {
                 tag: "Animation",
-                description: "As Requested",
+                description: "Dynamic and complex animations.",
             }, {
                 tag: "Interactivity",
-                description: "As Requested",
+                description: "Complex keyboard, mouse, mobile, or browser input management.",
             }, {
-                tag: "Revisions",
-                description: "4 Rounds",
+                tag: "Support",
+                description: "4 revision rounds with documentation and full integration support.",
             },
         ],
         examples: [
@@ -161,17 +161,17 @@ export const threejs_services: ServiceData[] = [
         },
         deliverables: [
             {
-                tag: "Tag",
-                description: "I will create a fully-featured 3D website experience",
+                tag: "Scene",
+                description: "Fully populated scene with highly dynamic lighting and rendering effects.",
             }, {
                 tag: "Animation",
-                description: "As Requested",
+                description: "Dynamic and complex animations.",
             }, {
                 tag: "Interactivity",
-                description: "As Requested",
+                description: "Complex input management with any device support.",
             }, {
-                tag: "Revisions",
-                description: "5 Rounds",
+                tag: "Support",
+                description: "Full documentation, unlimited revisions, and long-term maintenance during project window.",
             },
         ],
         examples: [
