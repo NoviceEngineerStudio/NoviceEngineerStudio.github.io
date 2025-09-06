@@ -1,5 +1,5 @@
 import CabinetView from "./CabinetView";
-import CabinetModel from "./cabinetmodel";
+import CabinetModel from "./CabinetModel";
 
 class CabinetController extends HTMLElement {
     private view: CabinetView;

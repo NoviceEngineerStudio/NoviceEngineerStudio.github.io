@@ -102,8 +102,8 @@ import NavLayout from "../../../layouts/NavLayout.astro";
         private ORBIT_INITIAL_ROTATION: THREE.Euler = new THREE.Euler(Math.PI * 0.25, Math.PI * 0.25, 0.0);
         private POINTER_INITIAL_ROTATION: THREE.Euler = new THREE.Euler(0.0, 0.0, 0.0);
 
-        private saved_camera_position: THREE.Vector3 = this.dollhouse_mode ? this.POINTER_INITIAL_POSITION : this.ORBIT_INITIAL_POSITION;
-        private saved_camera_rotation: THREE.Euler = this.dollhouse_mode ? this.POINTER_INITIAL_ROTATION : this.ORBIT_INITIAL_ROTATION;
+        private saved_camera_position: THREE.Vector3 = new THREE.Vector3();
+        private saved_camera_rotation: THREE.Euler = new THREE.Euler();
 
         private grid_layer: THREE.GridHelper = new THREE.GridHelper(500.0, 50.0, 0xff0000, 0xafafaf);
         private floorplan_layer: THREE.Mesh = new THREE.Mesh(
@@ -192,6 +192,9 @@ import NavLayout from "../../../layouts/NavLayout.astro";
                 this.orbit_controls.enabled = true;
                 this.pointer_controls.enabled = false;
 
+                this.saved_camera_position.copy(this.POINTER_INITIAL_POSITION);
+                this.saved_camera_rotation.copy(this.POINTER_INITIAL_ROTATION);
+
                 this.camera.position.copy(this.ORBIT_INITIAL_POSITION);
                 this.camera.rotation.copy(this.ORBIT_INITIAL_ROTATION);
 
@@ -200,6 +203,9 @@ import NavLayout from "../../../layouts/NavLayout.astro";
             else {
                 this.orbit_controls.enabled = false;
                 this.pointer_controls.enabled = true;
+
+                this.saved_camera_position.copy(this.ORBIT_INITIAL_POSITION);
+                this.saved_camera_rotation.copy(this.ORBIT_INITIAL_ROTATION);
 
                 this.camera.position.copy(this.POINTER_INITIAL_POSITION);
                 this.camera.rotation.copy(this.POINTER_INITIAL_ROTATION);
