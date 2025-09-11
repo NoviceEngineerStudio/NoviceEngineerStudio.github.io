@@ -1,0 +1,56 @@
+---
+import "../styles/global.css";
+import buildMetaData, { type SiteMetaData, type PageLink } from "../config/site";
+
+interface Props {
+    title?: string;
+    additional_links?: PageLink[];
+
+    bodyClass?: string;
+    bodyStyle?: string | astroHTML.JSX.CSSProperties;
+}
+
+export type RootLayoutProps = Props;
+
+const meta_data: SiteMetaData = buildMetaData(Astro.props.title);
+---
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="description" content={meta_data.description}>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        {meta_data.authors.map((author: string) => (
+            <meta name="author" content={author}>
+        ))}
+
+        <link rel="icon" href={meta_data.icon_path} type="image/x-icon">
+
+        {meta_data.static_links.map((link: PageLink) => (
+            <link
+                rel={link.rel}
+                href={link.href}
+                as={link.as}
+                type={link.type}
+                crossorigin={link.crossorigin}
+            />
+        ))}
+
+        {Astro.props.additional_links?.map((link: PageLink) => (
+            <link
+                rel={link.rel}
+                href={link.href}
+                as={link.as}
+                type={link.type}
+                crossorigin={link.crossorigin}
+            />
+        ))}
+
+        <title>{meta_data.title}</title>
+    </head>
+    <body class={Astro.props.bodyClass} style={Astro.props.bodyStyle}>
+        <slot/>
+    </body>
+</html>
