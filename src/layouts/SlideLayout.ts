@@ -43,6 +43,23 @@ class SlideDeck extends HTMLElement {
         return this.slide_titles[index];
     }
 
+    public canScrollTransition(scroll_delta: number): boolean {
+        const slide: HTMLElement = this.slides[this.slide_index];
+
+        const scroll_top: number = slide.scrollTop;
+        const scroll_height: number = slide.scrollHeight;
+        const client_height: number = slide.clientHeight;
+
+        if (scroll_delta > 0.0) {
+            return scroll_top + client_height >= scroll_height;
+        }
+        else if (scroll_delta < 0.0) {
+            return scroll_top <= 0.0;
+        }
+
+        return true;
+    }
+
     public selectSlide(index: number): void {
         if (
             index < 0 ||
@@ -73,11 +90,17 @@ class PageMap extends HTMLElement {
     private last_node_active: HTMLElement | null;
     private onChangeCallbacks: ((index: number) => void)[];
 
+    private map_nodes: HTMLElement[];
+
+    private swipe_start: number;
+
     constructor() {
         super();
 
         this.last_node_active = null;
         this.onChangeCallbacks = [];
+        this.map_nodes = [];
+        this.swipe_start = 0;
 
         const parent_element: HTMLElement | null = this.parentElement;
         if (parent_element === null) return;
@@ -88,9 +111,13 @@ class PageMap extends HTMLElement {
         if (slide_deck_element === null) return;
 
         const slide_deck: SlideDeck = slide_deck_element as SlideDeck;
-        const slide_index: number = slide_deck.getSlideIndex();
 
-        for (let idx = 0; idx < slide_deck.getSlideCount(); ++idx) {
+        const slide_index: number = slide_deck.getSlideIndex();
+        const slide_count: number = slide_deck.getSlideCount();
+
+        this.map_nodes = new Array(slide_count) as HTMLElement[];
+
+        for (let idx = 0; idx < slide_count; ++idx) {
             const map_node_container: HTMLDivElement = document.createElement("div");
             map_node_container.classList.add("slide-layout-page-map-node-container")
             this.appendChild(map_node_container);
@@ -102,6 +129,8 @@ class PageMap extends HTMLElement {
             const map_node_text: HTMLSpanElement = document.createElement("span");
             map_node_text.classList.add("slide-layout-page-map-node-text");
             map_node_button.appendChild(map_node_text);
+
+            this.map_nodes[idx] = map_node_container;
 
             map_node_text.textContent = slide_deck.getSlideTitle(idx);
 
@@ -119,11 +148,49 @@ class PageMap extends HTMLElement {
                     this.onChangeCallbacks[jdx](idx);
                 }
             });
-
-            if (idx === slide_index) {
-                map_node_container.click();
-            }
         }
+
+        this.map_nodes[slide_index].click();
+
+        window.addEventListener("wheel", (wheel_event: WheelEvent) => {
+            const scroll_delta: number = wheel_event.deltaY;
+
+            if (!slide_deck.canScrollTransition(scroll_delta)) return;
+
+            if (wheel_event.cancelable) {
+                wheel_event.preventDefault();
+            }
+
+            const new_index: number = slide_deck.getSlideIndex() + (
+                scroll_delta > 0.0 ? 1 : -1
+            );
+
+            if (new_index >= 0 && new_index < this.map_nodes.length) {
+                this.map_nodes[new_index].click();
+            }
+        }, { passive: false });
+
+        window.addEventListener("touchstart", (touch_event: TouchEvent) => {
+            this.swipe_start = touch_event.touches[0].clientY;
+        });
+
+        window.addEventListener("touchmove", (touch_event: TouchEvent) => {
+            const scroll_delta: number = this.swipe_start - touch_event.touches[0].clientY;
+
+            if (!slide_deck.canScrollTransition(scroll_delta)) return;
+
+            if (touch_event.cancelable) {
+                touch_event.preventDefault();
+            }
+
+            const new_index: number = slide_deck.getSlideIndex() + (
+                scroll_delta > 0.0 ? 1 : -1
+            );
+
+            if (new_index >= 0 && new_index < this.map_nodes.length) {
+                this.map_nodes[new_index].click();
+            }
+        }, { passive: false });
     }
 
     public registerChangeCallback(callback: (index: number) => void): void {
