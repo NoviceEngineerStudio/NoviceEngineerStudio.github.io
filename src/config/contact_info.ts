@@ -1,8 +1,8 @@
-import SUPPORTED_LANGUAGES, { DEFAULT_LANGUAGE, Language } from "./language";
+import { Language } from "./language";
 
 import email_icon from "../assets/icons/Email.svg";
 import fiverr_logo from "../assets/logos/Fiverr.svg";
-import upwork_logo from "../assets/logos/UpWork.svg";
+import upwork_logo from "../assets/logos/Upwork.svg";
 import github_logo from "../assets/logos/Git.svg";
 
 interface ContactInfo {
