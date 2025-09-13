@@ -1,0 +1,103 @@
+---
+import RootLayout, { type RootLayoutProps } from "./RootLayout.astro";
+
+interface Props extends RootLayoutProps {
+    page_map_id?: string;
+    page_map_class?: string;
+    page_map_style?: string | astroHTML.JSX.CSSProperties;
+
+    slide_deck_id?: string;
+    slide_deck_class?: string;
+    slide_deck_style?: string | astroHTML.JSX.CSSProperties;
+
+    slide_behavior?: ScrollBehavior;
+    slide_orientation?: SlideDeckOrientation;
+    slide_start_index?: number;
+}
+---
+
+<RootLayout {...(Astro.props as RootLayoutProps)}>
+    <slot />
+
+    <page-map
+        id={Astro.props.page_map_id}
+        class={`${Astro.props.page_map_class ?? ""} slide-layout-page-map`}
+        style={Astro.props.page_map_style}
+    />
+
+    <slide-deck
+        id={Astro.props.slide_deck_id}
+        class={`${Astro.props.slide_deck_class ?? ""} slide-layout-slide-deck-${Astro.props.slide_orientation} slide-layout-slide-deck`}
+        style={Astro.props.slide_deck_style}
+
+        data-scroll_behavior={Astro.props.slide_behavior}
+        data-orientation={Astro.props.slide_orientation}
+        data-start_index={Astro.props.slide_start_index}
+    >
+        <slot name="slides" />
+    </slide-deck>
+</RootLayout>
+
+<script src="./SlideLayout.ts" />
+
+<style is:global>
+    .slide-layout-slide-deck {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow: hidden;
+    }
+
+    .slide-layout-slide-deck-horizontal {
+        flex-direction: row;
+    }
+
+    .slide-layout-slide-deck-vertical {
+        flex-direction: column;
+    }
+
+    .slide-layout-page-map {
+        display: flex;
+        flex-direction: column;
+
+        position: absolute;
+        top: 50%;
+        right: 2.5rem;
+        z-index: 100;
+        transform: translateY(-50%);
+    }
+
+    .slide-layout-page-map-node-container {
+        padding: 0.5rem;
+        cursor: pointer;
+    }
+
+    .slide-layout-page-map-node-container:hover .slide-layout-page-map-node-button {
+        background-color: #ffffff;
+    }
+
+    .slide-layout-page-map-node-container:hover .slide-layout-page-map-node-text {
+        max-width: 100vw;
+    }
+
+    .slide-layout-page-map-node-button {
+        background-color: #5f5f5f;
+
+        width: 0.25rem;
+        height: 2.5rem;
+        position: relative;
+    }
+
+    .slide-layout-page-map-node-text {
+        color: #ffffff;
+        
+        max-width: 0;
+        overflow: hidden;
+
+        transition: max-width 500ms ease-in-out 0s;
+
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translate(calc(-100% - 0.5rem), -50%);
+    }
+</style>

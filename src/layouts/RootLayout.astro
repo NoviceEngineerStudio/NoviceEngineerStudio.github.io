@@ -1,22 +1,25 @@
 ---
 import "../styles/global.css";
+import { DEFAULT_LANGUAGE, type Language } from "../config/language";
 import buildMetaData, { type SiteMetaData, type PageLink } from "../config/site";
 
 interface Props {
     title?: string;
     additional_links?: PageLink[];
+    language?: Language;
 
-    bodyClass?: string;
-    bodyStyle?: string | astroHTML.JSX.CSSProperties;
+    body_class?: string;
+    body_style?: string | astroHTML.JSX.CSSProperties;
 }
 
 export type RootLayoutProps = Props;
 
-const meta_data: SiteMetaData = buildMetaData(Astro.props.title);
+const language: Language = Astro.props.language ?? DEFAULT_LANGUAGE;
+const meta_data: SiteMetaData = buildMetaData(language, Astro.props.title);
 ---
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang={language}>
     <head>
         <meta charset="UTF-8">
         <meta name="description" content={meta_data.description}>
@@ -29,28 +32,16 @@ const meta_data: SiteMetaData = buildMetaData(Astro.props.title);
         <link rel="icon" href={meta_data.icon_path} type="image/x-icon">
 
         {meta_data.static_links.map((link: PageLink) => (
-            <link
-                rel={link.rel}
-                href={link.href}
-                as={link.as}
-                type={link.type}
-                crossorigin={link.crossorigin}
-            />
+            <link {...link} />
         ))}
 
         {Astro.props.additional_links?.map((link: PageLink) => (
-            <link
-                rel={link.rel}
-                href={link.href}
-                as={link.as}
-                type={link.type}
-                crossorigin={link.crossorigin}
-            />
+            <link {...link} />
         ))}
 
         <title>{meta_data.title}</title>
     </head>
-    <body class={Astro.props.bodyClass} style={Astro.props.bodyStyle}>
+    <body class={Astro.props.body_class} style={Astro.props.body_style}>
         <slot/>
     </body>
 </html>

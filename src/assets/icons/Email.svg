@@ -1,0 +1,7 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+	<title>New Project</title>
+	<style>
+		.s0 { fill: #ffffff } 
+	</style>
+	<path id="Background" fill-rule="evenodd" class="s0" d="m24 32c-13.25 0-24 10.75-24 24 0 7.55 3.55 14.65 9.6 19.2l108.8 81.6c5.7 4.25 13.5 4.25 19.2 0l108.8-81.6c6.05-4.55 9.6-11.65 9.6-19.2 0-13.25-10.75-24-24-24zm-24 56v104c0 17.65 14.35 32 32 32h192c17.65 0 32-14.35 32-32v-104l-108.8 81.6c-11.4 8.55-27 8.55-38.4 0z"/>
+</svg>

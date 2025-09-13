@@ -1,0 +1,62 @@
+---
+interface Props {
+    id?: string;
+    class?: string;
+    style?: string | astroHTML.JSX.CSSProperties;
+
+    container_id?: string;
+    container_class?: string;
+    container_style?: string | astroHTML.JSX.CSSProperties;
+
+    content_id?: string;
+    content_class?: string;
+    content_style?: string | astroHTML.JSX.CSSProperties;
+
+    text: string[];
+    separator: string;
+    time: number;
+}
+---
+
+<slide-text
+    id={Astro.props.id}
+    class={Astro.props.class}
+    style={Astro.props.style}
+
+    data-text={JSON.stringify(Astro.props.text)}
+    data-separator={Astro.props.separator}
+    data-time={Astro.props.time}
+>
+    <div
+        id={Astro.props.container_id}
+        class={`${Astro.props.container_class} ${"slide-text-container"}`}
+        style={Astro.props.container_style}
+    >
+        <span
+            id={Astro.props.content_id}
+            class={`${Astro.props.content_class} ${"slide-text-content"}`}
+            style={Astro.props.content_style}
+        />
+    </div>
+</slide-text>
+
+<style>
+    @keyframes horizontal-scroll {
+        from { transform: translateX(0); }
+        to { transform: translateX(-50%); }
+    }
+
+    .slide-text-container {
+        width: max-content;
+
+        display: flex;
+        flex-wrap: nowrap;
+
+        animation-name: horizontal-scroll;
+        animation-delay: 0s;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+    }
+</style>
+
+<script src="./SlideText.ts" />

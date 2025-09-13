@@ -13,6 +13,8 @@
 # Last update: 2020-12-17                                                      #
 #                                                                              #
 ################################################################################
+# archive.org
+User-agent: archive.org_bot
 # so.com chinese search engine
 User-agent: 360Spider
 User-agent: 360Spider-Image

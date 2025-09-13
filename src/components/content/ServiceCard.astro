@@ -1,0 +1,215 @@
+---
+import { Language } from '../../config/language';
+import type { ServiceExample, ServiceTier } from '../../config/services/service_tier';
+
+interface Props {
+    language: Language;
+    index: number;
+    tier: ServiceTier;
+    examples_open: boolean;
+}
+
+function rangeToText(min: number, max?: number, text_transform?: (value: number) => string): string {
+    if (text_transform === undefined) text_transform = (value: number) => value.toString();
+
+    let result = text_transform(min);
+
+    if (max === undefined) {
+        return result + "+";
+    }
+
+    if (min !== max) {
+        return result + " - " + text_transform(max);
+    }
+
+    return result;
+}
+
+const min_cost: number = Astro.props.tier.price.min_cost;
+const max_cost: number | undefined = Astro.props.tier.price.max_cost;
+
+const price_text: string = rangeToText(min_cost, max_cost, (value: number) => `$${value.toFixed(2)}`);
+
+const min_days: number = Astro.props.tier.time.min_days;
+const max_days: number | undefined = Astro.props.tier.time.max_days;
+
+const time_text: string = rangeToText(min_days, max_days);
+
+let text_delivery_time: string = "";
+let text_days: string = "";
+let text_scene: string = "";
+let text_animation: string = "";
+let text_interaction: string = "";
+let text_support: string = "";
+let text_open_menu: string = "";
+let text_close_menu: string = "";
+
+switch (Astro.props.language) {
+    case Language.ENGLISH:
+        text_delivery_time = "Delivery Time"
+        text_days = (min_days === max_days && min_days === 1) ? "Day" : "Days";
+        text_scene = "Scene";
+        text_animation = "Animation";
+        text_interaction = "Interaction";
+        text_support = "Support";
+        text_open_menu = "Open Examples";
+        text_close_menu = "Close Examples";
+        break;
+}
+---
+
+<service-card
+    data-examples_open={Astro.props.examples_open}
+    data-open_text={text_open_menu}
+    data-close_text={text_close_menu}
+>
+    <div class="flex items-center justify-between flex-wrap" style="margin-bottom: 1rem;">
+        <div class="flex items-center mr-sm">
+            <div class="service-index-icon">{Astro.props.index}</div>
+            <h4>{Astro.props.tier.title}</h4>
+        </div>
+
+        <span>{price_text}</span>
+    </div>
+
+    <div>
+        <b>{text_delivery_time}:&nbsp;</b>
+        <span>{time_text}&nbsp;{text_days}</span>
+    </div>
+
+    <ul class="ml-sm">
+        <li>
+            <b>{text_scene}:&nbsp;</b>
+            <span>{Astro.props.tier.scene_tag}</span>
+        </li>
+        <li>
+            <b>{text_animation}:&nbsp;</b>
+            <span>{Astro.props.tier.animation_tag}</span>
+        </li>
+        <li>
+            <b>{text_interaction}:&nbsp;</b>
+            <span>{Astro.props.tier.interaction_tag}</span>
+        </li>
+        <li>
+            <b>{text_support}:&nbsp;</b>
+            <span>{Astro.props.tier.support_tag}</span>
+        </li>
+    </ul>
+
+    <button class="my-sm service-example-button">
+        {Astro.props.examples_open ? text_close_menu : text_open_menu}
+    </button>
+
+    <div
+        class="service-example-menu"
+        style={!Astro.props.examples_open && "max-height: 0;"}
+    >
+        {Astro.props.tier.examples.length === 0
+            ? <span>No Examples Available...</span>
+            : (Astro.props.tier.examples.map((example: ServiceExample) => (
+                <div class="service-example-card">
+                    <div class="service-example-card-preview" style={`background-image: url("${example.preview_image.src}");`} />
+                    
+                    <div class="service-example-card-title">
+                        {example.title}
+                    </div>
+
+                    <div class="service-example-card-content">
+                        <p style="font-style: italic;">"{example.description}"</p>
+                        <a class="teal-button" href={example.href}>View Here</a>
+                    </div>
+                </div>
+            )))
+        }
+    </div>
+</service-card>
+
+<style>
+    .service-index-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+
+        margin-right: 1rem;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        font-weight: bolder;
+        font-size: 1.5rem;
+
+        border: 3px solid white;
+        border-radius: 50%;
+    }
+
+    .service-example-button {
+        width: 100%;
+
+        padding: 0.25rem 0rem 0.25rem 0rem;
+
+        cursor: pointer;
+
+        color: #000000;
+        background-color: #afafaf;
+
+        font-weight: bolder;
+
+        border: none;
+        border-radius: 0.25rem;
+    }
+
+    .service-example-button:hover {
+        background-color: #ffffff;
+    }
+
+    .service-example-menu {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2rem;
+
+        transition: max-height 500ms ease-in-out 0s;
+        overflow: hidden;
+    }
+
+    .service-example-card {
+        max-width: 18.75rem;
+        overflow: hidden;
+
+        border: 0.125rem solid #ffffff;
+        border-radius: 1rem;
+
+        text-align: center;
+        flex: 1;
+    }
+
+    .service-example-card-preview {
+        aspect-ratio: 16.0 / 9.0;
+        background-position: center;
+        background-size: cover;
+    }
+
+    .service-example-card-title {
+        padding-top: 0.25rem;
+        padding-bottom: 0.25rem;
+
+        color: #000000;
+        background-color: #ffffff;
+
+        font-weight: bolder;
+    }
+
+    .service-example-card-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+
+        padding: 1rem;
+    }
+
+    service-card li {
+        margin-top: 1rem;
+    }
+</style>
+
+<script src="./ServiceCard.ts" />

@@ -1,0 +1,28 @@
+.landing-slide-deck {
+    width: 100vw;
+    height: 100vh;
+}
+
+.landing-slide-deck > * {
+    width: 100%;
+    min-height: 100%;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.landing-contact-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    
+    margin: 2rem 0rem 0rem 2rem;
+}
+
+landing-page-canvas {
+    width: 100vw;
+    height: 100vh;
+    
+    position: fixed;
+    z-index: -100;
+}

@@ -1,0 +1,53 @@
+---
+interface Props {
+    id?: string;
+    class?: string;
+    style?: string | astroHTML.JSX.CSSProperties;
+}
+---
+
+<div
+    id={Astro.props.id}
+    class={Astro.props.class}
+    style={Astro.props.style}
+>
+    <div class="load-spinner" />
+    <slot />
+</div>
+
+<style>
+    @keyframes spinner-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .load-spinner {
+        display: inline-block;
+        position: relative;
+
+        width: 2rem;
+        height: 2rem;
+
+        border: 3px solid #ffffff;
+        border-radius: 50%;
+
+        animation: spinner-spin 1s linear infinite;
+    }
+
+    .load-spinner::after {
+        content: '';
+        box-sizing: border-box;
+
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        
+        width: 1.5rem;
+        height: 1.5rem;
+        
+        border: 3px solid;
+        border-radius: 50%;
+        border-color: #fb2c36 transparent;
+    }
+</style>

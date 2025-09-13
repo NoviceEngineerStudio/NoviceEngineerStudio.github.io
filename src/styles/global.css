@@ -1,0 +1,428 @@
+@font-face {
+  font-family: 'Rubik';
+  font-style: normal;
+  font-weight: 300;
+  src: url('/fonts/rubik/Rubik-VariableFont_wght.ttf') format('truetype');
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: "Rubik", sans-serif;
+    box-sizing: border-box;
+}
+
+body {
+    color: #ffffff;
+    background-color: #000000;
+}
+
+a { color: #615fff; text-decoration: underline; }
+a:hover { color: #a3b3ff; }
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #312c85;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #4f39f6;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #7c86ff;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+}
+
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+
+.text-shadow { text-shadow: 0 0.25rem 0.5rem #000000; }
+
+.teal-button {
+    display: block;
+    width: fit-content;
+
+    color: #ffffff;
+    background-color: #022f2e;
+
+    border-color: #0b4f4a;
+    border-width: 0.125rem;
+    border-style: solid;
+    border-radius: 1rem;
+
+    cursor: pointer;
+
+    text-decoration: none;
+
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+
+    transition-property: background;
+    transition-duration: 150ms;
+}
+
+.teal-button:hover {
+    background-color: #0b4f4a;
+}
+
+/* Font Sizes */
+h1 { font-size: 3.000rem; }
+h2 { font-size: 2.250rem; }
+h3 { font-size: 1.875rem; }
+h4 { font-size: 1.500rem; }
+h5 { font-size: 1.250rem; }
+h6 { font-size: 1.125rem; }
+*  { font-size: 1.000rem; }
+
+/* Margins */
+.m-sm { margin: 1.00rem; }
+.m-md { margin: 2.00rem; }
+.m-lg { margin: 3.00rem; }
+
+.mt-sm { margin-top: 1.00rem; }
+.mt-md { margin-top: 2.00rem; }
+.mt-lg { margin-top: 3.00rem; }
+
+.mb-sm { margin-bottom: 1.00rem; }
+.mb-md { margin-bottom: 2.00rem; }
+.mb-lg { margin-bottom: 3.00rem; }
+
+.ml-sm { margin-left: 1.00rem; }
+.ml-md { margin-left: 2.00rem; }
+.ml-lg { margin-left: 3.00rem; }
+
+.mr-sm { margin-right: 1.00rem; }
+.mr-md { margin-right: 2.00rem; }
+.mr-lg { margin-right: 3.00rem; }
+
+.mx-sm { margin-left: 1.00rem; margin-right: 1.00rem; }
+.mx-md { margin-left: 2.00rem; margin-right: 2.00rem; }
+.mx-lg { margin-left: 3.00rem; margin-right: 3.00rem; }
+
+.my-sm { margin-top: 1.00rem; margin-bottom: 1.00rem; }
+.my-md { margin-top: 2.00rem; margin-bottom: 2.00rem; }
+.my-lg { margin-top: 3.00rem; margin-bottom: 3.00rem; }
+
+/* Paddings */
+.p-sm { padding: 1.00rem; }
+.p-md { padding: 2.00rem; }
+.p-lg { padding: 3.00rem; }
+
+.pt-sm { padding-top: 1.00rem; }
+.pt-md { padding-top: 2.00rem; }
+.pt-lg { padding-top: 3.00rem; }
+
+.pb-sm { padding-bottom: 1.00rem; }
+.pb-md { padding-bottom: 2.00rem; }
+.pb-lg { padding-bottom: 3.00rem; }
+
+.pl-sm { padding-left: 1.00rem; }
+.pl-md { padding-left: 2.00rem; }
+.pl-lg { padding-left: 3.00rem; }
+
+.pr-sm { padding-right: 1.00rem; }
+.pr-md { padding-right: 2.00rem; }
+.pr-lg { padding-right: 3.00rem; }
+
+.px-sm { padding-left: 1.00rem; padding-right: 1.00rem; }
+.px-md { padding-left: 2.00rem; padding-right: 2.00rem; }
+.px-lg { padding-left: 3.00rem; padding-right: 3.00rem; }
+
+.py-sm { padding-top: 1.00rem; padding-bottom: 1.00rem; }
+.py-md { padding-top: 2.00rem; padding-bottom: 2.00rem; }
+.py-lg { padding-top: 3.00rem; padding-bottom: 3.00rem; }
+
+
+/* Small Screen Size */
+@media only screen and (min-width: 40rem) {
+    /* Font Sizes */
+    h1 { font-size: 3.750rem; }
+    h2 { font-size: 3.000rem; }
+    h3 { font-size: 2.250rem; }
+    h4 { font-size: 1.875rem; }
+    h5 { font-size: 1.500rem; }
+    h6 { font-size: 1.250rem; }
+
+    /* Margins */
+    .m-sm { margin: 1.25rem; }
+    .m-md { margin: 2.50rem; }
+    .m-lg { margin: 3.75rem; }
+
+    .mt-sm { margin-top: 1.25rem; }
+    .mt-md { margin-top: 2.50rem; }
+    .mt-lg { margin-top: 3.75rem; }
+
+    .mb-sm { margin-bottom: 1.25rem; }
+    .mb-md { margin-bottom: 2.50rem; }
+    .mb-lg { margin-bottom: 3.75rem; }
+
+    .ml-sm { margin-left: 1.25rem; }
+    .ml-md { margin-left: 2.50rem; }
+    .ml-lg { margin-left: 3.75rem; }
+
+    .mr-sm { margin-right: 1.25rem; }
+    .mr-md { margin-right: 2.50rem; }
+    .mr-lg { margin-right: 3.75rem; }
+
+    .mx-sm { margin-left: 1.25rem; margin-right: 1.25rem; }
+    .mx-md { margin-left: 2.50rem; margin-right: 2.50rem; }
+    .mx-lg { margin-left: 3.75rem; margin-right: 3.75rem; }
+
+    .my-sm { margin-top: 1.25rem; margin-bottom: 1.25rem; }
+    .my-md { margin-top: 2.50rem; margin-bottom: 2.50rem; }
+    .my-lg { margin-top: 3.75rem; margin-bottom: 3.75rem; }
+
+    /* Paddings */
+    .p-sm { padding: 1.25rem; }
+    .p-md { padding: 2.50rem; }
+    .p-lg { padding: 3.75rem; }
+
+    .pt-sm { padding-top: 1.25rem; }
+    .pt-md { padding-top: 2.50rem; }
+    .pt-lg { padding-top: 3.75rem; }
+
+    .pb-sm { padding-bottom: 1.25rem; }
+    .pb-md { padding-bottom: 2.50rem; }
+    .pb-lg { padding-bottom: 3.75rem; }
+
+    .pl-sm { padding-left: 1.25rem; }
+    .pl-md { padding-left: 2.50rem; }
+    .pl-lg { padding-left: 3.75rem; }
+
+    .pr-sm { padding-right: 1.25rem; }
+    .pr-md { padding-right: 2.50rem; }
+    .pr-lg { padding-right: 3.75rem; }
+
+    .px-sm { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .px-md { padding-left: 2.50rem; padding-right: 2.50rem; }
+    .px-lg { padding-left: 3.75rem; margin-right: 3.75rem; }
+
+    .py-sm { padding-top: 1.25rem; padding-bottom: 1.25rem; }
+    .py-md { padding-top: 2.50rem; padding-bottom: 2.50rem; }
+    .py-lg { padding-top: 3.75rem; padding-bottom: 3.75rem; }
+}
+
+/* Medium Screen Size */
+@media only screen and (min-width: 48rem) {
+    /* Font Sizes */
+    h1 { font-size: 4.500rem; }
+    h2 { font-size: 3.750rem; }
+    h3 { font-size: 3.000rem; }
+    h4 { font-size: 2.250rem; }
+    h5 { font-size: 1.875rem; }
+    h6 { font-size: 1.500rem; }
+
+    /* Margins */
+    .m-sm { margin: 1.50rem; }
+    .m-md { margin: 3.00rem; }
+    .m-lg { margin: 4.50rem; }
+
+    .mt-sm { margin-top: 1.50rem; }
+    .mt-md { margin-top: 3.00rem; }
+    .mt-lg { margin-top: 4.50rem; }
+
+    .mb-sm { margin-bottom: 1.50rem; }
+    .mb-md { margin-bottom: 3.00rem; }
+    .mb-lg { margin-bottom: 4.50rem; }
+
+    .ml-sm { margin-left: 1.50rem; }
+    .ml-md { margin-left: 3.00rem; }
+    .ml-lg { margin-left: 4.50rem; }
+
+    .mr-sm { margin-right: 1.50rem; }
+    .mr-md { margin-right: 3.00rem; }
+    .mr-lg { margin-right: 4.50rem; }
+
+    .mx-sm { margin-left: 1.50rem; margin-right: 1.50rem; }
+    .mx-md { margin-left: 3.00rem; margin-right: 3.00rem; }
+    .mx-lg { margin-left: 4.50rem; margin-right: 4.50rem; }
+
+    .my-sm { margin-top: 1.50rem; margin-bottom: 1.50rem; }
+    .my-md { margin-top: 3.00rem; margin-bottom: 3.00rem; }
+    .my-lg { margin-top: 4.50rem; margin-bottom: 4.50rem; }
+
+    /* Paddings */
+    .p-sm { padding: 1.50rem; }
+    .p-md { padding: 3.00rem; }
+    .p-lg { padding: 4.50rem; }
+
+    .pt-sm { padding-top: 1.50rem; }
+    .pt-md { padding-top: 3.00rem; }
+    .pt-lg { padding-top: 4.50rem; }
+
+    .pb-sm { padding-bottom: 1.50rem; }
+    .pb-md { padding-bottom: 3.00rem; }
+    .pb-lg { padding-bottom: 4.50rem; }
+
+    .pl-sm { padding-left: 1.50rem; }
+    .pl-md { padding-left: 3.00rem; }
+    .pl-lg { padding-left: 4.50rem; }
+
+    .pr-sm { padding-right: 1.50rem; }
+    .pr-md { padding-right: 3.00rem; }
+    .pr-lg { padding-right: 4.50rem; }
+
+    .px-sm { padding-left: 1.50rem; padding-right: 1.50rem; }
+    .px-md { padding-left: 3.00rem; padding-right: 3.00rem; }
+    .px-lg { padding-left: 4.50rem; padding-right: 4.50rem; }
+
+    .py-sm { padding-top: 1.50rem; padding-bottom: 1.50rem; }
+    .py-md { padding-top: 3.00rem; padding-bottom: 3.00rem; }
+    .py-lg { padding-top: 4.50rem; padding-bottom: 4.50rem; }
+}
+
+/* Large Screen Size */
+@media only screen and (min-width: 64rem) {
+    /* Font Sizes */
+    h1 { font-size: 6.000rem; }
+    h2 { font-size: 4.500rem; }
+    h3 { font-size: 3.750rem; }
+    h4 { font-size: 3.000rem; }
+    h5 { font-size: 2.250rem; }
+    h6 { font-size: 1.875rem; }
+    *  { font-size: 1.125rem; }
+
+    /* Margins */
+    .m-sm { margin: 1.75rem; }
+    .m-md { margin: 3.50rem; }
+    .m-lg { margin: 5.25rem; }
+
+    .mt-sm { margin-top: 1.75rem; }
+    .mt-md { margin-top: 3.50rem; }
+    .mt-lg { margin-top: 5.25rem; }
+
+    .mb-sm { margin-bottom: 1.75rem; }
+    .mb-md { margin-bottom: 3.50rem; }
+    .mb-lg { margin-bottom: 5.25rem; }
+
+    .ml-sm { margin-left: 1.75rem; }
+    .ml-md { margin-left: 3.50rem; }
+    .ml-lg { margin-left: 5.25rem; }
+
+    .mr-sm { margin-right: 1.75rem; }
+    .mr-md { margin-right: 3.50rem; }
+    .mr-lg { margin-right: 5.25rem; }
+
+    .mx-sm { margin-left: 1.75rem; margin-right: 1.75rem; }
+    .mx-md { margin-left: 3.50rem; margin-right: 3.50rem; }
+    .mx-lg { margin-left: 5.25rem; margin-right: 5.25rem; }
+
+    .my-sm { margin-top: 1.75rem; margin-bottom: 1.75rem; }
+    .my-md { margin-top: 3.50rem; margin-bottom: 3.50rem; }
+    .my-lg { margin-top: 5.25rem; margin-bottom: 5.25rem; }
+
+    /* Paddings */
+    .p-sm { padding: 1.75rem; }
+    .p-md { padding: 3.50rem; }
+    .p-lg { padding: 5.25rem; }
+
+    .pt-sm { padding-top: 1.75rem; }
+    .pt-md { padding-top: 3.50rem; }
+    .pt-lg { padding-top: 5.25rem; }
+
+    .pb-sm { padding-bottom: 1.75rem; }
+    .pb-md { padding-bottom: 3.50rem; }
+    .pb-lg { padding-bottom: 5.25rem; }
+
+    .pl-sm { padding-left: 1.75rem; }
+    .pl-md { padding-left: 3.50rem; }
+    .pl-lg { padding-left: 5.25rem; }
+
+    .pr-sm { padding-right: 1.75rem; }
+    .pr-md { padding-right: 3.50rem; }
+    .pr-lg { padding-right: 5.25rem; }
+
+    .px-sm { padding-left: 1.75rem; padding-right: 1.75rem; }
+    .px-md { padding-left: 3.50rem; padding-right: 3.50rem; }
+    .px-lg { padding-left: 5.25rem; padding-right: 5.25rem; }
+
+    .py-sm { padding-top: 1.75rem; padding-bottom: 1.75rem; }
+    .py-md { padding-top: 3.50rem; padding-bottom: 3.50rem; }
+    .py-lg { padding-top: 5.25rem; padding-bottom: 5.25rem; }
+}
+
+/* Extra Large Screen Size */
+@media only screen and (min-width: 80rem) {
+    /* Font Sizes */
+    h1 { font-size: 8.000rem; }
+    h2 { font-size: 6.000rem; }
+    h3 { font-size: 4.500rem; }
+    h4 { font-size: 3.750rem; }
+    h5 { font-size: 3.000rem; }
+    h6 { font-size: 2.250rem; }
+    *  { font-size: 1.250rem; }
+
+    /* Margins */
+    .m-sm { margin: 2.00rem; }
+    .m-md { margin: 4.00rem; }
+    .m-lg { margin: 6.00rem; }
+
+    .mt-sm { margin-top: 2.00rem; }
+    .mt-md { margin-top: 4.00rem; }
+    .mt-lg { margin-top: 6.00rem; }
+
+    .mb-sm { margin-bottom: 2.00rem; }
+    .mb-md { margin-bottom: 4.00rem; }
+    .mb-lg { margin-bottom: 6.00rem; }
+
+    .ml-sm { margin-left: 2.00rem; }
+    .ml-md { margin-left: 4.00rem; }
+    .ml-lg { margin-left: 6.00rem; }
+
+    .mr-sm { margin-right: 2.00rem; }
+    .mr-md { margin-right: 4.00rem; }
+    .mr-lg { margin-right: 6.00rem; }
+
+    .mx-sm { margin-left: 2.00rem; margin-right: 2.00rem; }
+    .mx-md { margin-left: 4.00rem; margin-right: 4.00rem; }
+    .mx-lg { margin-left: 6.00rem; margin-right: 6.00rem; }
+
+    .my-sm { margin-top: 2.00rem; margin-bottom: 2.00rem; }
+    .my-md { margin-top: 4.00rem; margin-bottom: 4.00rem; }
+    .my-lg { margin-top: 6.00rem; margin-bottom: 6.00rem; }
+
+    /* Paddings */
+    .p-sm { padding: 2.00rem; }
+    .p-md { padding: 4.00rem; }
+    .p-lg { padding: 6.00rem; }
+
+    .pt-sm { padding-top: 2.00rem; }
+    .pt-md { padding-top: 4.00rem; }
+    .pt-lg { padding-top: 6.00rem; }
+
+    .pb-sm { padding-bottom: 2.00rem; }
+    .pb-md { padding-bottom: 4.00rem; }
+    .pb-lg { padding-bottom: 6.00rem; }
+
+    .pl-sm { padding-left: 2.00rem; }
+    .pl-md { padding-left: 4.00rem; }
+    .pl-lg { padding-left: 6.00rem; }
+
+    .pr-sm { padding-right: 2.00rem; }
+    .pr-md { padding-right: 4.00rem; }
+    .pr-lg { padding-right: 6.00rem; }
+
+    .px-sm { padding-left: 2.00rem; padding-right: 2.00rem; }
+    .px-md { padding-left: 4.00rem; padding-right: 4.00rem; }
+    .px-lg { padding-left: 6.00rem; padding-right: 6.00rem; }
+
+    .py-sm { padding-top: 2.00rem; padding-bottom: 2.00rem; }
+    .py-md { padding-top: 4.00rem; padding-bottom: 4.00rem; }
+    .py-lg { padding-top: 6.00rem; padding-bottom: 6.00rem; }
+}

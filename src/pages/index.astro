@@ -1,7 +1,44 @@
 ---
 import RootLayout from "../layouts/RootLayout.astro";
+import LoadingSpinner from "../components/decoration/LoadingSpinner.astro";
 ---
 
-<RootLayout>
-
+<RootLayout
+    title="Loading..."
+    body_class="transition-body"
+>
+    <LoadingSpinner />
+    <span>Loading...</span>
 </RootLayout>
+
+<style>
+    body.transition-body {
+        width: 100vw;
+        height: 100vh;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+</style>
+
+<script>
+import SUPPORTED_LANGUAGES, { DEFAULT_LANGUAGE, type Language } from "../config/language";
+
+    function redirectToLanguage(): void {
+        let nav_language: Language = DEFAULT_LANGUAGE;
+
+        const primary_language: Language = (
+            navigator.language.split("-")[0].trim()
+        ) as Language;
+
+        if (SUPPORTED_LANGUAGES.includes(primary_language)) {
+            nav_language = primary_language;
+        }
+
+        window.location.assign(`/${nav_language}`);
+    }
+
+    redirectToLanguage();
+</script>

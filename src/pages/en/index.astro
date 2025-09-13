@@ -1,0 +1,390 @@
+---
+import { Image } from "astro:assets";
+import "../../styles/landing_page.css";
+import { Language } from "../../config/language";
+import SlideLayout from "../../layouts/SlideLayout.astro";
+import SlideText from "../../components/decoration/SlideText.astro";
+import ServiceCard from "../../components/content/ServiceCard.astro";
+import getContactInfo, { type ContactInfo } from "../../config/contact_info";
+import getServices, { type ServiceTier } from "../../config/services/services";
+
+const language: Language = Language.ENGLISH;
+---
+
+<SlideLayout
+    language={language}
+    body_class="landing-viewport"
+    slide_deck_class="landing-slide-deck"
+    
+    slide_behavior="smooth"
+    slide_orientation="vertical"
+    slide_start_index={0}
+
+    page_map_id="landing-page-map"
+>
+    <!-- * Landing Page Particles Canvas * -->
+    <landing-page-canvas />
+
+    <!-- * Hero Section * -->
+    <section
+        slot="slides"
+        data-slide_title="Home"
+        class="flex flex-col justify-between"
+    >
+        <div class="ml-sm mt-lg">
+            <h1>NOVICE</h1>
+            <h1>ENGINEER</h1>
+        </div>
+
+        <SlideText
+            class="mb-md"
+            style="width: 100%; display: inline-block;"
+
+            text={[
+                "FREELANCER",
+                "GAME DEVELOPER",
+                "COMPUTER SCIENTIST",
+                "HUSBAND",
+                "GAMER"
+            ]}
+            separator="&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;"
+            time={30.0}
+        />
+    </section>
+
+    <!-- * About Me Section * -->
+    <section
+        slot="slides"
+        data-slide_title="About"
+        class="py-lg px-sm"
+    >
+        <h2>ABOUT ME</h2>
+        <p class="my-sm" style="max-width: 37.5rem;">
+            My name is Skyler Riggle, and I&apos;m a developer who enjoys crafting fun and intuitive experiences through software. I&apos;ve worked with a wide variety of computer science disciplines, having worked professionally on everything from websites and backend services, to video games and embedded systems work. At the moment, I work as a freelance developer using ThreeJS to build interactive and engaging 3D website experiences. That said, I hope that my passion for this ever-expansive field can be of use to you and your next endeavor!
+        </p>
+        <a href="/en/resume/skylerriggle" class="teal-button">
+            See Résumé
+        </a>
+    </section>
+
+    <!-- * Services Section * -->
+    <section
+        slot="slides"
+        data-slide_title="ThreeJS"
+        class="py-lg px-sm"
+    >
+        <h2>THREE-JS SERVICES</h2>
+        <p style="max-width: 37.5rem;">
+            ThreeJS is a powerful tool that brings 3D graphics and animations right into a web browser—no extra software needed. With it, your website can go beyond static images and text, offering interactive experiences like dynamic product showcases, immersive backgrounds, or even mini-games that run smoothly across devices. It&apos;s a great way to capture attention, stand out from competitors, and give visitors something memorable and engaging to explore.
+        </p>
+
+        <div style="margin-top: 45vh;">
+            <h3>TIERS</h3>
+            
+            <div class="flex flex-col mt-sm" style="gap: 2rem;">
+                {getServices(language).map((tier: ServiceTier, index: number) => (
+                    <hr />
+                    <ServiceCard
+                        language={language}
+                        index={index + 1}
+                        tier={tier}
+                        examples_open={index === 0}
+                    />
+                ))}
+            </div>
+        </div>
+    </section>
+
+    <!-- * Contact Section * -->
+    <section
+        slot="slides"
+        data-slide_title="Contact"
+        class="py-lg px-sm"
+    >
+        <h2>LET&apos;S MAKE MAGIC!</h2>
+
+        {getContactInfo(language).map((info: ContactInfo) => (
+            <div class="landing-contact-container">
+                <Image
+                    src={info.icon}
+                    alt={`${info.label}-Contact-Icon`}
+                    widths={[64, 128, 256]}
+                    loading="lazy"
+                    style="width: 4rem; height: 4rem;"
+                />
+                <div>
+                    <b>{info.label}</b>
+                    <br/>
+                    <a href={info.href}>{info.text}</a>
+                </div>
+            </div>
+        ))}
+    </section>
+</SlideLayout>
+
+<script>
+    import * as THREE from "three";
+    import ShapeParticleSystem from "../../components/threejs/ShapeParticleSystem";
+    import { OBJLoader, Pass, UnrealBloomPass } from "three/examples/jsm/Addons.js";
+    import PostProcessingCanvas from "../../components/threejs/PostProcessingCanvas";
+
+    interface LandingPageModelSource {
+        red_mesh_src: string;
+        green_mesh_src: string;
+        blue_mesh_src: string;
+        yellow_mesh_src: string;
+        model_scale: number;
+    }
+
+    interface LandingPageModel {
+        red_mesh: THREE.Mesh;
+        green_mesh: THREE.Mesh;
+        blue_mesh: THREE.Mesh;
+        yellow_mesh: THREE.Mesh;
+    }
+
+    const ROTATION_SPEED: number = 0.1;
+
+    const PARTICLE_COUNT: number = 1000;
+    const PARTICLE_SIZE: number = 15.0;
+    const BOB_HEIGHT: number = 0.05;
+    const MOUSE_RADIUS: number = 0.025;
+    const MOUSE_DISPLACEMENT: number = 0.05;
+
+    const PAGE_MODEL_SRCS: LandingPageModelSource[] = [
+        {
+            red_mesh_src: "/models/landing/home/LogoBrim.obj",
+            green_mesh_src: "/models/landing/home/LogoHat.obj",
+            blue_mesh_src: "/models/landing/home/LogoHead.obj",
+            yellow_mesh_src: "/models/landing/home/LogoJaw.obj",
+            model_scale: 2.0
+        }, {
+            red_mesh_src: "/models/landing/about/Body.obj",
+            green_mesh_src: "/models/landing/about/Sword.obj",
+            blue_mesh_src: "/models/landing/about/Clothes.obj",
+            yellow_mesh_src: "/models/landing/about/Crown.obj",
+            model_scale: 0.75
+        }, {
+            red_mesh_src: "/models/landing/threejs/Center.obj",
+            green_mesh_src: "/models/landing/threejs/Left.obj",
+            blue_mesh_src: "/models/landing/threejs/Right.obj",
+            yellow_mesh_src: "/models/landing/threejs/Top.obj",
+            model_scale: 0.75
+        }, {
+            red_mesh_src: "/models/landing/contact/Email.obj",
+            green_mesh_src: "/models/landing/contact/Git.obj",
+            blue_mesh_src: "/models/landing/contact/Phone.obj",
+            yellow_mesh_src: "/models/landing/contact/Upwork.obj",
+            model_scale: 2.0
+        }
+    ];
+
+    async function loadOBJ(loader: OBJLoader, src: string, scale: number): Promise<THREE.Mesh> {
+        const data: THREE.Object3D = await loader.loadAsync(src);
+
+        if (
+            (data as THREE.Mesh).isMesh ||
+            (data as THREE.LineSegments).isLine
+        ) {
+            (data as THREE.Mesh).geometry.scale(scale, scale, scale);
+            return data as THREE.Mesh;
+        }
+
+        for (let idx = 0; idx < data.children.length; ++idx) {
+            const child: THREE.Object3D = data.children[idx];
+
+            if (
+                (child as THREE.Mesh).isMesh ||
+                (child as THREE.LineSegments).isLine
+            ) {
+                (child as THREE.Mesh).geometry.scale(scale, scale, scale);
+                return child as THREE.Mesh;
+            }
+        }
+
+        return new THREE.Mesh(new THREE.SphereGeometry());
+    }
+
+    async function loadPageModel(
+        src: LandingPageModelSource,
+        loadCallback: (models: LandingPageModel) => void
+    ): Promise<void> {
+        const obj_loader: OBJLoader = new OBJLoader();
+        loadCallback({
+            red_mesh: await loadOBJ(obj_loader, src.red_mesh_src, src.model_scale),
+            green_mesh: await loadOBJ(obj_loader, src.green_mesh_src, src.model_scale),
+            blue_mesh: await loadOBJ(obj_loader, src.blue_mesh_src, src.model_scale),
+            yellow_mesh: await loadOBJ(obj_loader, src.yellow_mesh_src, src.model_scale),
+        });
+    }
+
+    class LandingPageCanvas extends HTMLElement {
+        private model_index: number;
+        private page_models: LandingPageModel[];
+        
+        private particle_parent: THREE.Object3D;
+        private red_particles: ShapeParticleSystem;
+        private green_particles: ShapeParticleSystem;
+        private blue_particles: ShapeParticleSystem;
+        private yellow_particles: ShapeParticleSystem;
+
+        constructor() {
+            super();
+
+            const canvas: PostProcessingCanvas = new PostProcessingCanvas({
+                camera: {
+                    fov: 70.0,
+                    near: 0.1,
+                    far: 100.0
+                },
+                renderer: {
+                    antialias: true,
+                    clear_color: 0x000000,
+                    clear_alpha: 1.0,
+                    tone_mapping: THREE.ACESFilmicToneMapping
+                },
+                post_processing: {
+                    passes: [
+                        {
+                            pass: new UnrealBloomPass(
+                                new THREE.Vector2(0.0, 0.0), // ! SET DYNAMICALLY (RESOLUTION)
+                                0.5, // ? Strength
+                                0.3, // ? Radius
+                                0.0 // ? Threshhold
+                            ),
+                            onResize: (width: number, height: number, pass: Pass) => {
+                                (pass as UnrealBloomPass).resolution.set(width, height);
+                            }
+                        }
+                    ]
+                }
+            });
+
+            this.particle_parent = new THREE.Object3D();
+            canvas.add(this.particle_parent);
+            canvas.setParent(this);
+
+            canvas.registerUpdateCallback(this.update.bind(this));
+            canvas.setCameraPosition(0.0, 0.0, 5.0);
+
+            this.model_index = 0;
+            this.page_models = new Array(PAGE_MODEL_SRCS.length);
+            for (let idx = 0; idx < PAGE_MODEL_SRCS.length; ++idx) {
+                this.page_models[idx] = {
+                    red_mesh: new THREE.Mesh(),
+                    green_mesh: new THREE.Mesh(),
+                    blue_mesh: new THREE.Mesh(),
+                    yellow_mesh: new THREE.Mesh()
+                }
+
+                loadPageModel(
+                    PAGE_MODEL_SRCS[idx],
+                    (models: LandingPageModel) => {
+                        this.page_models[idx] = models;
+
+                        if (idx === this.model_index) {
+                            this.red_particles.setMeshTargets(models.red_mesh);
+                            this.green_particles.setMeshTargets(models.green_mesh);
+                            this.blue_particles.setMeshTargets(models.blue_mesh);
+                            this.yellow_particles.setMeshTargets(models.yellow_mesh);
+                        }
+                    }
+                );
+            }
+
+            this.red_particles = new ShapeParticleSystem({
+                particles: {
+                    count: PARTICLE_COUNT,
+                    size: PARTICLE_SIZE,
+                    color: 0xfb2c36
+                },
+                animation: {
+                    bob_height: BOB_HEIGHT
+                },
+                interaction: {
+                    mouse_radius: MOUSE_RADIUS,
+                    mouse_displacement: MOUSE_DISPLACEMENT
+                }
+            });
+            this.green_particles = new ShapeParticleSystem({
+                particles: {
+                    count: PARTICLE_COUNT,
+                    size: PARTICLE_SIZE,
+                    color: 0x7ccf00
+                },
+                animation: {
+                    bob_height: BOB_HEIGHT
+                },
+                interaction: {
+                    mouse_radius: MOUSE_RADIUS,
+                    mouse_displacement: MOUSE_DISPLACEMENT
+                }
+            });
+            this.blue_particles = new ShapeParticleSystem({
+                particles: {
+                    count: PARTICLE_COUNT,
+                    size: PARTICLE_SIZE,
+                    color: 0x615fff
+                },
+                animation: {
+                    bob_height: BOB_HEIGHT
+                },
+                interaction: {
+                    mouse_radius: MOUSE_RADIUS,
+                    mouse_displacement: MOUSE_DISPLACEMENT
+                }
+            });
+            this.yellow_particles = new ShapeParticleSystem({
+                particles: {
+                    count: PARTICLE_COUNT,
+                    size: PARTICLE_SIZE,
+                    color: 0xf0b100
+                },
+                animation: {
+                    bob_height: BOB_HEIGHT
+                },
+                interaction: {
+                    mouse_radius: MOUSE_RADIUS,
+                    mouse_displacement: MOUSE_DISPLACEMENT
+                }
+            });
+
+            this.particle_parent.add(
+                this.red_particles,
+                this.green_particles,
+                this.blue_particles,
+                this.yellow_particles
+            );
+
+            const page_map_element: HTMLElement | null = document.getElementById("landing-page-map");
+
+            if (page_map_element !== null) {
+                const page_map: PageMap = page_map_element as PageMap;
+
+                page_map.registerChangeCallback((index: number) => {
+                    if (this.model_index === index) return;
+
+                    this.model_index = index;
+                    
+                    const model: LandingPageModel = this.page_models[index];
+
+                    this.red_particles.setMeshTargets(model.red_mesh);
+                    this.green_particles.setMeshTargets(model.green_mesh);
+                    this.blue_particles.setMeshTargets(model.blue_mesh);
+                    this.yellow_particles.setMeshTargets(model.yellow_mesh);
+                });
+            }
+        }
+
+        private update(delta_time: number): void {
+            this.particle_parent.rotateY(delta_time * ROTATION_SPEED);
+
+            this.red_particles.update(delta_time);
+            this.green_particles.update(delta_time);
+            this.blue_particles.update(delta_time);
+            this.yellow_particles.update(delta_time);
+        }
+    }
+
+    customElements.define("landing-page-canvas", LandingPageCanvas);
+</script>
