@@ -26,3 +26,13 @@ landing-page-canvas {
     position: fixed;
     z-index: -100;
 }
+
+.landing-services-container {
+    backdrop-filter: blur(2rem);
+
+    padding-bottom: 12rem;
+
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}

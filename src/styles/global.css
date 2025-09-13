@@ -17,7 +17,11 @@ body {
     background-color: #000000;
 }
 
-a { color: #615fff; text-decoration: underline; }
+a {
+    color: #615fff;
+    text-decoration: underline;
+}
+
 a:hover { color: #a3b3ff; }
 
 ::-webkit-scrollbar {
@@ -50,7 +54,10 @@ a:hover { color: #a3b3ff; }
 .items-center { align-items: center; }
 .justify-between { justify-content: space-between; }
 
-.text-shadow { text-shadow: 0 0.25rem 0.5rem #000000; }
+.text-shadow-none { text-shadow: none; }
+.text-shadow-sm { text-shadow: 0 0.25rem 0.25rem #000000; }
+.text-shadow-md { text-shadow: 0 0.5rem 0.5rem #000000; }
+.text-shadow-lg { text-shadow: 0 0.75rem 0.75rem #000000; }
 
 .teal-button {
     display: block;

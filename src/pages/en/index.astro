@@ -29,9 +29,9 @@ const language: Language = Language.ENGLISH;
     <section
         slot="slides"
         data-slide_title="Home"
-        class="flex flex-col justify-between"
+        class="flex flex-col justify-between text-shadow-sm"
     >
-        <div class="ml-sm mt-lg">
+        <div class="ml-sm mt-lg" style="padding-right: 4rem;">
             <h1>NOVICE</h1>
             <h1>ENGINEER</h1>
         </div>
@@ -56,10 +56,11 @@ const language: Language = Language.ENGLISH;
     <section
         slot="slides"
         data-slide_title="About"
-        class="py-lg px-sm"
+        class="py-lg pl-sm"
+        style="padding-right: 4rem;"
     >
-        <h2>ABOUT ME</h2>
-        <p class="my-sm" style="max-width: 37.5rem;">
+        <h2 class="text-shadow-sm">ABOUT ME</h2>
+        <p class="my-sm text-shadow-sm" style="max-width: 37.5rem;">
             My name is Skyler Riggle, and I&apos;m a developer who enjoys crafting fun and intuitive experiences through software. I&apos;ve worked with a wide variety of computer science disciplines, having worked professionally on everything from websites and backend services, to video games and embedded systems work. At the moment, I work as a freelance developer using ThreeJS to build interactive and engaging 3D website experiences. That said, I hope that my passion for this ever-expansive field can be of use to you and your next endeavor!
         </p>
         <a href="/en/resume/skylerriggle" class="teal-button">
@@ -71,17 +72,18 @@ const language: Language = Language.ENGLISH;
     <section
         slot="slides"
         data-slide_title="ThreeJS"
-        class="py-lg px-sm"
+        class="pt-lg pl-sm"
+        style="padding-right: 4rem;"
     >
-        <h2>THREE-JS SERVICES</h2>
-        <p style="max-width: 37.5rem;">
+        <h2 class="text-shadow-sm">THREE-JS SERVICES</h2>
+        <p class="text-shadow-sm" style="max-width: 37.5rem;">
             ThreeJS is a powerful tool that brings 3D graphics and animations right into a web browser—no extra software needed. With it, your website can go beyond static images and text, offering interactive experiences like dynamic product showcases, immersive backgrounds, or even mini-games that run smoothly across devices. It&apos;s a great way to capture attention, stand out from competitors, and give visitors something memorable and engaging to explore.
         </p>
 
         <div style="margin-top: 45vh;">
-            <h3>TIERS</h3>
+            <h3 class="text-shadow-sm">TIERS</h3>
             
-            <div class="flex flex-col mt-sm" style="gap: 2rem;">
+            <div class="mt-sm landing-services-container text-shadow-sm">
                 {getServices(language).map((tier: ServiceTier, index: number) => (
                     <hr />
                     <ServiceCard
@@ -99,7 +101,8 @@ const language: Language = Language.ENGLISH;
     <section
         slot="slides"
         data-slide_title="Contact"
-        class="py-lg px-sm"
+        class="py-lg pl-sm text-shadow-sm"
+        style="padding-right: 4rem;"
     >
         <h2>LET&apos;S MAKE MAGIC!</h2>
 
