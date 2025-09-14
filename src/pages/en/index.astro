@@ -18,7 +18,7 @@ const language: Language = Language.ENGLISH;
     
     slide_behavior="smooth"
     slide_orientation="vertical"
-    slide_start_index={0}
+    slide_start_index={1}
 
     page_map_id="landing-page-map"
 >
@@ -60,7 +60,7 @@ const language: Language = Language.ENGLISH;
         style="padding-right: 4rem;"
     >
         <h2 class="text-shadow-sm">ABOUT ME</h2>
-        <p class="my-sm text-shadow-sm" style="max-width: 37.5rem;">
+        <p class="my-sm text-shadow-sm blur" style="max-width: 37.5rem;">
             My name is Skyler Riggle, and I&apos;m a developer who enjoys crafting fun and intuitive experiences through software. I&apos;ve worked with a wide variety of computer science disciplines, having worked professionally on everything from websites and backend services, to video games and embedded systems work. At the moment, I work as a freelance developer using ThreeJS to build interactive and engaging 3D website experiences. That said, I hope that my passion for this ever-expansive field can be of use to you and your next endeavor!
         </p>
         <a href="/en/resume/skylerriggle" class="teal-button">
@@ -76,7 +76,7 @@ const language: Language = Language.ENGLISH;
         style="padding-right: 4rem;"
     >
         <h2 class="text-shadow-sm">THREE-JS SERVICES</h2>
-        <p class="text-shadow-sm" style="max-width: 37.5rem;">
+        <p class="text-shadow-sm blur" style="max-width: 37.5rem;">
             ThreeJS is a powerful tool that brings 3D graphics and animations right into a web browser—no extra software needed. With it, your website can go beyond static images and text, offering interactive experiences like dynamic product showcases, immersive backgrounds, or even mini-games that run smoothly across devices. It&apos;s a great way to capture attention, stand out from competitors, and give visitors something memorable and engaging to explore.
         </p>
 
@@ -115,7 +115,7 @@ const language: Language = Language.ENGLISH;
                     loading="lazy"
                     style="width: 4rem; height: 4rem;"
                 />
-                <div>
+                <div class="blur">
                     <b>{info.label}</b>
                     <br/>
                     <a href={info.href}>{info.text}</a>

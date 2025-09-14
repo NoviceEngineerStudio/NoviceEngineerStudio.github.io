@@ -1,7 +1,7 @@
 @font-face {
   font-family: 'Rubik';
   font-style: normal;
-  font-weight: 300;
+  font-weight: 400;
   src: url('/fonts/rubik/Rubik-VariableFont_wght.ttf') format('truetype');
 }
 
@@ -20,6 +20,7 @@ body {
 a {
     color: #615fff;
     text-decoration: underline;
+    font-weight: bold;
 }
 
 a:hover { color: #a3b3ff; }
@@ -58,6 +59,13 @@ a:hover { color: #a3b3ff; }
 .text-shadow-sm { text-shadow: 0 0.25rem 0.25rem #000000; }
 .text-shadow-md { text-shadow: 0 0.5rem 0.5rem #000000; }
 .text-shadow-lg { text-shadow: 0 0.75rem 0.75rem #000000; }
+
+.blur {
+    backdrop-filter: blur(0.25rem);
+    -webkit-backdrop-filter: blur(0.25rem);
+    border-radius: 1rem;
+    padding: 1rem;
+}
 
 .teal-button {
     display: block;
