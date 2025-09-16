@@ -107,10 +107,10 @@ switch (Astro.props.language) {
         {Astro.props.tier.examples.length === 0
             ? <span>No Examples Available...</span>
             : (Astro.props.tier.examples.map((example: ServiceExample) => (
-                <div class="service-example-card">
+                <div class="service-example-card text-shadow-none">
                     <div class="service-example-card-preview" style={`background-image: url("${example.preview_image.src}");`} />
                     
-                    <div class="service-example-card-title text-shadow-none">
+                    <div class="service-example-card-title">
                         {example.title}
                     </div>
 
@@ -154,7 +154,7 @@ switch (Astro.props.language) {
 
         font-weight: bolder;
 
-        border: none;
+        border: 0.125rem solid #000000;
         border-radius: 0.25rem;
     }
 
