@@ -1,0 +1,108 @@
+---
+import Modal from "../components/container/Modal.astro";
+import getNavLinks, { type NavLink } from "../config/nav_links";
+import RootLayout, { type RootLayoutProps } from "./RootLayout.astro";
+
+interface Props extends RootLayoutProps {}
+
+function urlMatch(href: string): boolean {
+    const clean_href: string = href.replaceAll("/", "").replaceAll("\\", "").trim();
+    const clean_url: string = Astro.url.pathname.replaceAll("/", "").replaceAll("\\", "").trim();
+
+    return clean_href === clean_url;
+}
+---
+
+<RootLayout {...Astro.props as RootLayoutProps}>
+    <slot />
+
+    <Modal id="nav-layout-menu-modal" position_x="r" position_y="m">
+        <div class="nav-layout-menu">
+            {getNavLinks(Astro.props.language).map((nav_link: NavLink) => (
+                <a
+                    href={nav_link.href}
+                    class={urlMatch(nav_link.href) ? "nav-layout-menu-link-active" : "nav-layout-menu-link-inactive"}>
+                    {nav_link.text}
+                </a>
+            ))}
+        </div>
+    </Modal>
+
+    <button id="nav-layout-menu-button">
+        <div class="nav-layout-menu-button-bar-1" />
+        <div class="nav-layout-menu-button-bar-2" />
+        <div class="nav-layout-menu-button-bar-3" />
+    </button>
+</RootLayout>
+
+<style>
+    #nav-layout-menu-button {
+        width: 3rem;
+        height: 3rem;
+        padding: 0.75rem;
+
+        position: fixed;
+        top: 2rem;
+        right: 2rem;
+        z-index: 1000;
+
+        background-color: #000000;
+        border-radius: 0.5rem;
+        border: 0.125rem solid #615fff;
+
+        cursor: pointer;
+        transition: background-color 150ms ease-in-out 0s;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    #nav-layout-menu-button:hover {
+        background-color: #372aac;
+    }
+
+    #nav-layout-menu-button > div {
+        width: 100%;
+        height: 0.25rem;
+
+        background-color: #ffffff;
+
+        border-radius: 0.125rem;
+
+        transition: transform 150ms ease-in-out 0s;
+    }
+
+    .nav-layout-menu {
+        background-color: #000000;
+        border-left: 0.25rem solid #615fff;
+
+        min-height: 100vh;
+        padding: 8rem 6rem 4rem 2rem;
+
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .nav-layout-menu-link-active {
+        text-decoration: underline;
+        color: #ffffff;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .nav-layout-menu-link-inactive {
+        text-decoration: none;
+        color: #ffffff;
+        font-weight: normal;
+        cursor: pointer;
+    }
+
+    .nav-layout-menu-link-inactive:hover {
+        text-decoration: underline;
+        font-weight: bold;
+    }
+</style>
+
+<script src="./NavLayout.ts" />

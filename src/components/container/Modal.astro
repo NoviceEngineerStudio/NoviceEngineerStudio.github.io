@@ -1,0 +1,60 @@
+---
+interface Props {
+    id?: string;
+    class?: string;
+    style?: string | astroHTML.JSX.CSSProperties;
+
+    position_x: "l" | "m" | "r";
+    position_y: "t" | "m" | "b";
+}
+---
+
+<modal-element
+    id={Astro.props.id}
+    class={Astro.props.class}
+    style={Astro.props.style}
+>
+    <div class="modal-fade-overlay" style="background-color: transparent; display: none;" />
+    <div
+        class={`modal-menu-container modal-position-x-${Astro.props.position_x} modal-position-y-${Astro.props.position_y}`}
+        style="opacity: 0; display: none;"
+    >
+        <slot />
+    </div>
+</modal-element>
+
+<style>
+    .modal-fade-overlay {
+        background-color: #000000bb;
+
+        width: 100vw;
+        height: 100vh;
+
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 998;
+
+        transition: background-color 150ms ease-in-out 0s;
+    }
+
+    .modal-menu-container {
+        width: fit-content;
+        height: fit-content;
+        
+        position: fixed;
+        z-index: 999;
+
+        transition: opacity 150ms ease-in-out 0s;
+    }
+
+    .modal-position-x-l { left: 0; }
+    .modal-position-x-m { left: 50%; transform: translateX(-50%); }
+    .modal-position-x-r { right: 0; }
+
+    .modal-position-y-t { top: 0; }
+    .modal-position-y-m { top: 50%; transform: translateY(-50%); }
+    .modal-position-y-b { bottom: 0; }
+</style>
+
+<script src="./Modal.ts" />
