@@ -4,6 +4,7 @@ import getNavLinks, { type NavLink } from "../config/nav_links";
 import RootLayout, { type RootLayoutProps } from "./RootLayout.astro";
 
 interface Props extends RootLayoutProps {}
+export type NavLayoutProps = Props;
 
 function urlMatch(href: string): boolean {
     const clean_href: string = href.replaceAll("/", "").replaceAll("\\", "").trim();
