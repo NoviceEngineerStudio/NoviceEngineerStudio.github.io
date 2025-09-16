@@ -1,3 +1,164 @@
 ---
+import { Image } from "astro:assets";
+import NavLayout from "../../../../layouts/NavLayout.astro";
+
+import orbit_logo from "../../../../assets/logos/Orbit.webp";
 ---
-<h1>GLOBAL HERO EXAMPLE</h1>
+
+<NavLayout title="Global Hero">
+    <global-hero>
+        <div class="hero-container blur">
+            <Image
+                src={orbit_logo}
+                alt="Orbit-Logo"
+                loading="eager"
+                style="width: 10rem; height: 10rem;"
+            />
+            <h1 class="text-shadow-lg">ORBIT</h1>
+            <span>Connecting our World.</span>
+            <div class="flex flex-wrap justify-center pt-sm" style="gap: 1rem;">
+                <button
+                    class="teal-button"
+                    onclick="alert('This page is just an example, and has no actual functionality.');"
+                >
+                    Get Started
+                </button>
+
+                <button
+                    class="indigo-button"
+                    onclick="alert('This page is just an example, and has no actual functionality.');"
+                >
+                    Learn More
+                </button>
+            </div>
+        </div>
+    </global-hero>
+</NavLayout>
+
+<style>
+    global-hero {
+        display: block;
+        position: relative;
+
+        width: 100vw;
+        height: 100vh;
+    }
+
+    global-hero .hero-container {
+        width: 100%;
+
+        position: absolute;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    @media only screen and (min-width: 40rem) {
+        global-hero .hero-container {
+            width: fit-content;
+            right: 4rem;
+        }
+    }
+</style>
+
+<script>
+    import * as THREE from "three";
+    import RenderCanvas from "../../../../components/threejs/RenderCanvas";
+
+    import earth_clouds from "../../../../assets/materials/earth/clouds.jpg";
+    import earth_day_color from "../../../../assets/materials/earth/day_color.jpg";
+    import earth_normal from "../../../../assets/materials/earth/normal.jpg";
+    import earth_specular from "../../../../assets/materials/earth/specular.jpg";
+
+    const CAMERA_DEPTH: number = 150.0;
+
+    const EARTH_RADIUS: number = 100.0;
+    const EARTH_DETAIL: number = 12;
+
+    const CLOUD_OFFSET: number = 0.5;
+    const CLOUD_OPACITY: number = 0.75;
+
+    const EARTH_POSITION: THREE.Vector3 = new THREE.Vector3(-65.0, -50.0, 0.0);
+    const EARTH_ROTATION: THREE.Euler = new THREE.Euler(0.2, 3.5, 0.2);
+
+    const SUN_COLOR: number = 0xffffff;
+    const SUN_INTENSITY: number = 150.0;
+    const SUN_DISTANCE: number = 250.0;
+    const SUN_DECAY: number = 1.0;
+
+    const SUN_POSITION: THREE.Vector3 = new THREE.Vector3(50.0, 50.0, 50.0);
+
+    const EARTH_ROTATION_SPEED: number = 0.05;
+    const CLOUD_ROTATION_SPEED: number = 0.075;
+
+    class GlobalHero extends HTMLElement {
+        constructor() {
+            super();
+
+            const canvas: RenderCanvas = new RenderCanvas({
+                camera: {
+                    fov: 70.0,
+                    near: 0.1,
+                    far: 200.0
+                },
+                renderer: {
+                    antialias: true,
+                    clear_color: 0x000000,
+                    clear_alpha: 1.0,
+                    tone_mapping: THREE.ACESFilmicToneMapping
+                }
+            });
+
+            canvas.setCameraPosition(0.0, 0.0, CAMERA_DEPTH);
+            canvas.setParent(this);
+
+            const texture_loader: THREE.TextureLoader = new THREE.TextureLoader();
+
+            const earth_mesh: THREE.Mesh = new THREE.Mesh(
+                new THREE.IcosahedronGeometry(EARTH_RADIUS, 12.0),
+                new THREE.MeshLambertMaterial({
+                    map: texture_loader.load(earth_day_color.src),
+                    normalMap: texture_loader.load(earth_normal.src),
+                    specularMap: texture_loader.load(earth_specular.src),
+                })
+            );
+
+            earth_mesh.position.copy(EARTH_POSITION);
+            earth_mesh.rotation.copy(EARTH_ROTATION);
+
+            const cloud_mesh: THREE.Mesh = new THREE.Mesh(
+                new THREE.IcosahedronGeometry(EARTH_RADIUS + CLOUD_OFFSET, EARTH_DETAIL),
+                new THREE.MeshLambertMaterial({
+                    alphaMap: texture_loader.load(earth_clouds.src),
+                    transparent: true,
+                    opacity: CLOUD_OPACITY
+                })
+            );
+
+            cloud_mesh.position.copy(EARTH_POSITION);
+            cloud_mesh.rotation.copy(EARTH_ROTATION);
+
+            const sun: THREE.PointLight = new THREE.PointLight(
+                SUN_COLOR,
+                SUN_INTENSITY,
+                SUN_DISTANCE,
+                SUN_DECAY
+            );
+
+            sun.position.copy(SUN_POSITION);
+
+            canvas.add(earth_mesh, cloud_mesh, sun);
+
+            canvas.registerUpdateCallback((delta_time: number) => {
+                earth_mesh.rotateY(EARTH_ROTATION_SPEED * delta_time);
+                cloud_mesh.rotateY(CLOUD_ROTATION_SPEED * delta_time);
+            });
+        }
+    }
+
+    customElements.define("global-hero", GlobalHero);
+</script>
