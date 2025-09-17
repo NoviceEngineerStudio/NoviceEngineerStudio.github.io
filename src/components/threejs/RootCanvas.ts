@@ -39,6 +39,18 @@ abstract class RootCanvas {
         window.addEventListener("resize", this.__onResize.bind(this));
     }
 
+    public getCamera(): THREE.Camera {
+        return this.camera_manager.getCamera();
+    }
+
+    public getScene(): THREE.Scene {
+        return this.scene_manager.getScene();
+    }
+
+    public getDomElement(): HTMLCanvasElement {
+        return this.renderer.domElement;
+    }
+
     public setParent(parent: HTMLElement): void {
         const render_parent: HTMLElement | null = this.renderer.domElement.parentElement;
         if (render_parent !== null) {
@@ -67,6 +79,14 @@ abstract class RootCanvas {
 
     public setCameraRotation(x: number, y: number, z: number): void {
         this.camera_manager.getCamera().rotation.set(x, y, z);
+    }
+
+    public copyCameraPosition(vec: THREE.Vector3): void {
+        this.camera_manager.getCamera().position.copy(vec);
+    }
+
+    public copyCameraRotation(eul: THREE.Euler): void {
+        this.camera_manager.getCamera().rotation.copy(eul);
     }
 
     private __onResize(): void {

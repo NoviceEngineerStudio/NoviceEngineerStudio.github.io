@@ -1,3 +1,529 @@
 ---
+import { Image } from "astro:assets";
+import NavLayout from "../../../../layouts/NavLayout.astro";
+
+import house_icon from "../../../../assets/icons/House.svg";
+import camera_swap_icon from "../../../../assets/icons/CameraSwap.svg";
+import roof_icon from "../../../../assets/icons/Roof.svg";
+import grid_icon from "../../../../assets/icons/Grid.svg";
+import ruler_pencil_icon from "../../../../assets/icons/RulerPencil.svg";
 ---
-<h1>Floorplan Viewer Example</h1>
+
+<NavLayout title="Floorplan Viewer">
+    <floorplan-viewer />
+
+    <button
+        id="home-orientation-button"
+        class="floorplan-viewer-ui-button"
+    >
+        <Image
+            src={house_icon}
+            alt="Home-Icon"
+            loading="eager"
+        />
+    </button>
+
+    <div class="toggle-button-container">
+        <button
+            id="control-toggle-button"
+            class="floorplan-viewer-ui-button"
+        >
+            <Image
+                src={camera_swap_icon}
+                alt="Camera-Swap-Icon"
+                loading="eager"
+            />
+        </button>
+
+        <hr class="toggle-button-group-divider" />
+
+        <div class="toggle-button-group">
+            <button
+                id="top-toggle-button"
+                class="floorplan-viewer-ui-button"
+            >
+                <Image
+                    src={roof_icon}
+                    alt="Roof-Icon"
+                    loading="eager"
+                />
+            </button>
+
+            <button
+                id="grid-toggle-button"
+                class="floorplan-viewer-ui-button"
+            >
+                <Image
+                    src={grid_icon}
+                    alt="Grid-Icon"
+                    loading="eager"
+                />
+            </button>
+
+            <button
+                id="floorplan-toggle-button"
+                class="floorplan-viewer-ui-button"
+            >
+                <Image
+                    src={ruler_pencil_icon}
+                    alt="Blueprint-Icon"
+                    loading="eager"
+                />
+            </button>
+        </div>
+    </div>
+</NavLayout>
+
+<style>
+    floorplan-viewer {
+        width: 100vw;
+        height: 100vh;
+
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+
+    #home-orientation-button {
+        position: fixed;
+        top: 2rem;
+        left: 2rem;
+        z-index: 10;
+    }
+
+    .floorplan-viewer-ui-button {
+        width: 3rem;
+        height: 3rem;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background-color: #1e1a4d;
+        box-shadow: 0 0.125rem 0.5rem #00000077;
+
+        border: none;
+        border-radius: 1rem;
+
+        transition: background-color 150ms ease-in-out 0s;
+        cursor: pointer;
+    }
+
+    .floorplan-viewer-ui-button:hover {
+        background-color: #372aac;
+    }
+
+    .floorplan-viewer-ui-button img {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+
+    .toggle-button-container {
+        position: fixed;
+        bottom: 2rem;
+        left: 2rem;
+        z-index: 10;
+    }
+
+    .toggle-button-group {
+        display: flex;
+        flex-direction: row;
+        gap: 0.5rem;
+    }
+
+    .toggle-button-group-divider {
+        opacity: 0;
+        margin-top: 0.5rem;
+        margin-bottom: 0rem;
+    }
+
+    @media only screen and (min-width: 40rem) {
+        .toggle-button-container {
+            bottom: 50%;
+            transform: translateY(50%);
+        }
+
+        .toggle-button-group {
+            flex-direction: column;
+        }
+
+        .toggle-button-group-divider {
+            opacity: 1;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+    }
+</style>
+
+<script>
+    import * as THREE from "three";
+    import PostProcessingCanvas from "../../../../components/threejs/PostProcessingCanvas";
+    import { GLTFLoader, OrbitControls, PointerLockControls, SAOPass, type GLTF } from "three/examples/jsm/Addons.js";
+
+    import floorplan_image from "../../../../assets/images/apprentice_floorplan.png";
+
+    const FADE_TIME: number = 0.5;
+    const WALK_SPEED: number = 10.0;
+
+    const MAX_CAMERA_DISTANCE: number = 100.0;
+    const MAX_CAMERA_DISTANCE_SQR: number = MAX_CAMERA_DISTANCE * MAX_CAMERA_DISTANCE;
+
+    const ORBIT_CAMERA_POSITION: THREE.Vector3 = new THREE.Vector3(-30.0, 30.0, 30.0);
+    const ORBIT_CAMERA_ROTATION: THREE.Euler = new THREE.Euler(Math.PI * -0.25, Math.PI * -0.25, 0.0);
+
+    const FPS_CAMERA_POSITION: THREE.Vector3 = new THREE.Vector3(2.0, 5.0, 12.0);
+    const FPS_CAMERA_ROTATION: THREE.Euler = new THREE.Euler(0.0, 0.0, 0.0);
+
+    const TOP_PATH: string = "/models/floorplan_viewer/top.glb";
+    const BOTTOM_PATH: string = "/models/floorplan_viewer/bottom.glb";
+
+    function getAxis(positive: boolean, negative: boolean): number {
+        return Number(positive) - Number(negative);
+    }
+
+    class FloorplanViewer extends HTMLElement {
+        private is_orbit_mode: boolean = true;
+
+        private is_up_pressed: boolean  = false;
+        private is_down_pressed: boolean  = false;
+        private is_left_pressed: boolean  = false;
+        private is_right_pressed: boolean  = false;
+
+        private top_half_fade_target: number = 0.0;
+        private floorplan_fade_target: number = 0.0;
+        private grid_fade_target: number = 0.0;
+
+        private top_half_fade_step: number = 1.0;
+        private floorplan_fade_step: number = 1.0;
+        private grid_fade_step: number = 1.0;
+
+        private last_position: THREE.Vector3;
+        private last_rotation: THREE.Euler;
+
+        constructor() {
+            super();
+
+            // *=================================================
+            // *
+            // * Root Rendering and Scene
+            // *
+            // *=================================================
+
+            const canvas: PostProcessingCanvas = new PostProcessingCanvas({
+                camera: {
+                    fov: 70.0,
+                    near: 0.1,
+                    far: 200.0
+                },
+                renderer: {
+                    antialias: true,
+                    tone_mapping: THREE.ACESFilmicToneMapping,
+                    clear_color: 0xffffff,
+                    clear_alpha: 1.0
+                },
+                post_processing: { passes: [] }
+            });
+
+            const scene: THREE.Scene = canvas.getScene();
+            const camera: THREE.Camera = canvas.getCamera();
+            const sao_pass: SAOPass = new SAOPass(scene, camera);
+
+            sao_pass.params.saoIntensity = 0.0075;
+            sao_pass.params.saoKernelRadius = 10.0;
+
+            canvas.addPostProcessingPass({ pass: sao_pass });
+            canvas.setParent(this);
+
+            canvas.getScene().fog = new THREE.Fog(0xffffff, 100.0, 200.0);
+
+            // *=================================================
+            // *
+            // * Scene Objects
+            // *
+            // *=================================================
+
+            const model_loader: GLTFLoader = new GLTFLoader();
+            const texture_loader: THREE.TextureLoader = new THREE.TextureLoader();
+
+            const top_model: THREE.Object3D = new THREE.Object3D();
+            const bottom_model: THREE.Object3D = new THREE.Object3D();
+
+            const top_materials: THREE.MeshStandardMaterial[] = [];
+            top_model.visible = this.top_half_fade_target > 0.0;
+
+            model_loader.load(TOP_PATH, (data: GLTF) => {
+                top_model.add(data.scene);
+
+                data.scene.traverseVisible((item: THREE.Object3D) => {
+                    const mesh: THREE.Mesh = item as THREE.Mesh;
+                    if (!mesh.isMesh) return;
+                    
+                    const material: THREE.MeshStandardMaterial = mesh.material as THREE.MeshStandardMaterial;
+                    top_materials.push(material);
+                    material.transparent = true;
+                    material.opacity = this.top_half_fade_target;
+                });
+            });
+
+            model_loader.load(BOTTOM_PATH, (data: GLTF) => {
+                bottom_model.add(data.scene);
+            });
+
+            const ambient_light: THREE.AmbientLight = new THREE.AmbientLight(0xffffff, 1.0);
+
+            const sun_light: THREE.DirectionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
+            sun_light.position.set(10.0, 10.0, 10.0);
+
+            const grid_layer: THREE.GridHelper = new THREE.GridHelper(500.0, 50.0, 0xff0000, 0xafafaf);
+            grid_layer.material.transparent = true;
+            grid_layer.material.opacity = this.grid_fade_target;
+            grid_layer.position.setY(-0.45);
+            grid_layer.visible = this.grid_fade_target > 0.0;
+
+            const floorplan_layer: THREE.Mesh = new THREE.Mesh(
+                new THREE.PlaneGeometry(37.0, 30.5),
+                new THREE.MeshBasicMaterial({
+                    transparent: true,
+                    opacity: this.floorplan_fade_target,
+                    map: texture_loader.load(floorplan_image.src)
+                })
+            );
+            floorplan_layer.position.set(1.75, 0.1, -1.75);
+            floorplan_layer.rotation.set(Math.PI * -0.5, 0.0, 0.0);
+            floorplan_layer.visible = this.floorplan_fade_target > 0.0;
+
+            canvas.add(top_model, bottom_model, ambient_light, sun_light, grid_layer, floorplan_layer);
+
+            // *=================================================
+            // *
+            // * Controls
+            // *
+            // *=================================================
+
+            const domCanvas: HTMLCanvasElement = canvas.getDomElement();
+            const orbit_controls: OrbitControls = new OrbitControls(camera, domCanvas);
+            const fps_controls: PointerLockControls = new PointerLockControls(camera, domCanvas);
+
+            if (this.is_orbit_mode) {
+                canvas.copyCameraPosition(ORBIT_CAMERA_POSITION);
+                canvas.copyCameraRotation(ORBIT_CAMERA_ROTATION);
+                this.last_position = FPS_CAMERA_POSITION.clone();
+                this.last_rotation = FPS_CAMERA_ROTATION.clone();
+
+                fps_controls.unlock();
+                
+                orbit_controls.enabled = true;
+                fps_controls.enabled = false;
+            }
+            else {
+                canvas.copyCameraPosition(FPS_CAMERA_POSITION);
+                canvas.copyCameraRotation(FPS_CAMERA_ROTATION);
+                this.last_position = ORBIT_CAMERA_POSITION.clone();
+                this.last_rotation = ORBIT_CAMERA_ROTATION.clone();
+
+                fps_controls.lock();
+
+                orbit_controls.enabled = false;
+                fps_controls.enabled = true;
+            }
+
+            window.addEventListener("keyup", (key_event: KeyboardEvent) => {
+                if (key_event.repeat) return;
+
+                switch (key_event.code) {
+                    case "KeyW":
+                    case "ArrowUp":
+                        this.is_up_pressed = false;
+                        break;
+                    case "KeyS":
+                    case "ArrowDown":
+                        this.is_down_pressed = false;
+                        break;
+                    case "KeyA":
+                    case "ArrowLeft":
+                        this.is_left_pressed = false;
+                        break;
+                    case "KeyD":
+                    case "ArrowRight":
+                        this.is_right_pressed = false;
+                        break;
+                }
+            });
+
+            window.addEventListener("keydown", (key_event: KeyboardEvent) => {
+                if (key_event.repeat) return;
+
+                switch (key_event.code) {
+                    case "KeyW":
+                    case "ArrowUp":
+                        this.is_up_pressed = true;
+                        break;
+                    case "KeyS":
+                    case "ArrowDown":
+                        this.is_down_pressed = true;
+                        break;
+                    case "KeyA":
+                    case "ArrowLeft":
+                        this.is_left_pressed = true;
+                        break;
+                    case "KeyD":
+                    case "ArrowRight":
+                        this.is_right_pressed = true;
+                        break;
+                }
+            });
+
+            domCanvas.addEventListener("click", () => {
+                if (this.is_orbit_mode) return;
+                fps_controls.lock();
+            });
+
+            // *=================================================
+            // *
+            // * Update Method
+            // *
+            // *=================================================
+
+            const grid_material: THREE.LineBasicMaterial = grid_layer.material;
+            const floorplan_material: THREE.MeshBasicMaterial = floorplan_layer.material as THREE.MeshBasicMaterial;
+
+            let a = 0;
+            canvas.registerUpdateCallback((delta_time: number) => {
+                // ? Progress animations
+
+                const time_step: number = delta_time / FADE_TIME;
+                this.top_half_fade_step = Math.min(this.top_half_fade_step + time_step, 1.0);
+                this.floorplan_fade_step = Math.min(this.floorplan_fade_step + time_step, 1.0);
+                this.grid_fade_step = Math.min(this.grid_fade_step + time_step, 1.0);
+
+                const top_opacity: number = this.top_half_fade_target * (2.0 * this.top_half_fade_step - 1.0) - this.top_half_fade_step + 1.0;
+                for (let idx = 0; idx < top_materials.length; ++idx) {
+                    const material: THREE.MeshStandardMaterial = top_materials[idx];
+                    material.opacity = top_opacity;
+                }
+
+                grid_material.opacity = this.grid_fade_target * (2.0 * this.grid_fade_step - 1.0) - this.grid_fade_step + 1.0;
+                floorplan_material.opacity = this.floorplan_fade_target * (2.0 * this.floorplan_fade_step - 1.0) - this.floorplan_fade_step + 1.0;
+
+                top_model.visible = top_opacity > 0.0;
+                grid_layer.visible = grid_material.opacity > 0.0;
+                floorplan_layer.visible = floorplan_material.opacity > 0.0;
+                
+                // ? Update controls
+
+                if (this.is_orbit_mode) {
+                    orbit_controls.update(delta_time);
+                }
+                else {
+                    const frame_speed: number = delta_time * WALK_SPEED;
+
+                    fps_controls.moveForward(getAxis(this.is_up_pressed, this.is_down_pressed) * frame_speed);
+                    fps_controls.moveRight(getAxis(this.is_right_pressed, this.is_left_pressed) * frame_speed);
+
+                    fps_controls.update(delta_time);
+                }
+
+                // ? Clamp camera distance
+
+                if (camera.position.dot(camera.position) > MAX_CAMERA_DISTANCE_SQR) {
+                    canvas.copyCameraPosition(camera.position.normalize().multiplyScalar(MAX_CAMERA_DISTANCE));
+                }
+            });
+
+            // *=================================================
+            // *
+            // * UI Hookups
+            // *
+            // *=================================================
+
+            const home_btn: HTMLElement | null = document.getElementById("home-orientation-button");
+
+            const control_btn: HTMLElement | null = document.getElementById("control-toggle-button");
+
+            const top_btn: HTMLElement | null = document.getElementById("top-toggle-button");
+            const grid_btn: HTMLElement | null = document.getElementById("grid-toggle-button");
+            const floorplan_btn: HTMLElement | null = document.getElementById("floorplan-toggle-button");
+
+            home_btn?.addEventListener("click", () => {
+                if (this.is_orbit_mode) {
+                    canvas.copyCameraPosition(ORBIT_CAMERA_POSITION);
+                    canvas.copyCameraRotation(ORBIT_CAMERA_ROTATION);
+                }
+                else {
+                    canvas.copyCameraPosition(FPS_CAMERA_POSITION);
+                    canvas.copyCameraRotation(FPS_CAMERA_ROTATION);
+                }
+            });
+
+            control_btn?.addEventListener("click", () => {
+                this.is_orbit_mode = !this.is_orbit_mode;
+
+                const tmp_position: THREE.Vector3 = new THREE.Vector3(
+                    camera.position.x,
+                    camera.position.y,
+                    camera.position.z
+                );
+                const tmp_rotation: THREE.Euler = new THREE.Euler(
+                    camera.rotation.x,
+                    camera.rotation.y,
+                    camera.rotation.z
+                );
+
+                canvas.copyCameraPosition(this.last_position);
+                canvas.copyCameraRotation(this.last_rotation);
+
+                this.last_position.copy(tmp_position);
+                this.last_rotation.copy(tmp_rotation);
+
+                if (this.is_orbit_mode) {
+                    fps_controls.unlock();
+
+                    orbit_controls.enabled = true;
+                    fps_controls.enabled = false;
+                }
+                else {
+                    fps_controls.lock();
+
+                    orbit_controls.enabled = false;
+                    fps_controls.enabled = true;
+                }
+            });
+
+            top_btn?.addEventListener("click", () => {
+                this.top_half_fade_step = 0.0;
+                this.top_half_fade_target = 1.0 - this.top_half_fade_target;
+                top_model.visible = true;
+
+                top_btn.style.backgroundColor = (this.top_half_fade_target > 0.0
+                    ? "#312c85"
+                    : ""
+                );
+            });
+
+            grid_btn?.addEventListener("click", () => {
+                this.grid_fade_step = 0.0;
+                this.grid_fade_target = 1.0 - this.grid_fade_target;
+                grid_layer.visible = true;
+
+                grid_btn.style.backgroundColor = (this.grid_fade_target > 0.0
+                    ? "#312c85"
+                    : ""
+                );
+            });
+
+            floorplan_btn?.addEventListener("click", () => {
+                this.floorplan_fade_step = 0.0;
+                this.floorplan_fade_target = 1.0 - this.floorplan_fade_target;
+                floorplan_layer.visible = true;
+
+                floorplan_btn.style.backgroundColor = (this.floorplan_fade_target > 0.0
+                    ? "#312c85"
+                    : ""
+                );
+            });
+
+        }
+    }
+
+    customElements.define("floorplan-viewer", FloorplanViewer);
+</script>

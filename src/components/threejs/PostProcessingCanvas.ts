@@ -36,6 +36,11 @@ class PostProcessingCanvas extends RootCanvas {
         this.effect_composer.addPass(new OutputPass());
     }
 
+    public addPostProcessingPass(pass: PostProcessingPass) {
+        this.effect_composer.addPass(pass.pass);
+        this.passes.push(pass);
+    }
+
     protected onResize(width: number, height: number): void {
         this.effect_composer.setSize(width, height);
         this.effect_composer.setPixelRatio(window.devicePixelRatio);
