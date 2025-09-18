@@ -1,7 +1,16 @@
 import { Language } from "../language";
-import type { ServiceTier } from "./service_tier";
+import type { ServiceExample, ServiceTier } from "./service_tier";
+
+import my_arcade_preview from "../../assets/previews/global_hero.webp";
 
 function buildAdeptTier(language: Language): ServiceTier {
+    const my_arcade: ServiceExample = {
+        title: "MyArcade",
+        description: "",
+        href: `/${language}/examples/adept_tier/my_arcade`,
+        preview_image: my_arcade_preview
+    }
+
     const tier: ServiceTier = {
         title: "",
         price: {
@@ -12,7 +21,9 @@ function buildAdeptTier(language: Language): ServiceTier {
             min_days: 4,
             max_days: 7,
         },
-        examples: [],
+        examples: [
+            my_arcade
+        ],
         scene_tag: "",
         animation_tag: "",
         interaction_tag: "",
@@ -27,6 +38,8 @@ function buildAdeptTier(language: Language): ServiceTier {
             tier.animation_tag = "Basic dynamic animations.";
             tier.interaction_tag = "Complex camera controls and UI inputs.";
             tier.support_tag = "2-3 revision rounds with minor integration support.";
+
+            my_arcade.description = "TO BE WRITTEN...";
             
             break;
     }

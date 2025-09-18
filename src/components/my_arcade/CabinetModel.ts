@@ -1,0 +1,452 @@
+import * as THREE from "three";
+
+const DEFAULT_MIN_BUTTONS: number = 2;
+const DEFAULT_MAX_BUTTONS: number = 6;
+
+enum JoystickBallShape {
+    SPHERE,
+    TEARDROP
+}
+
+enum CabinetControlOrigin {
+    LEFT,
+    CENTER,
+    RIGHT
+}
+
+function fileToTexture(image_file: File, texture_loader: THREE.TextureLoader): THREE.Texture {
+    return texture_loader.load(URL.createObjectURL(image_file));
+}
+
+// *=================================================
+// *
+// * Cabinet Button
+// *
+// *=================================================
+
+interface CabinetButtonCreateInfo {
+    base_color: THREE.ColorRepresentation;
+    light_color?: THREE.ColorRepresentation;
+    face_decal?: File;
+}
+
+class CabinetButton {
+    private base_color: THREE.Color;
+
+    private has_light: boolean;
+    private light_color: THREE.Color;
+
+    private has_face_decal: boolean;
+    private face_decal: THREE.Texture;
+
+    constructor(create_info: CabinetButtonCreateInfo, texture_loader: THREE.TextureLoader) {
+        this.base_color = new THREE.Color(create_info.base_color);
+
+        this.has_light = create_info.light_color !== undefined;
+        this.light_color = new THREE.Color(
+            create_info.light_color !== undefined
+            ? create_info.light_color
+            : 0xffffff
+        );
+
+        this.has_face_decal = create_info.face_decal !== undefined;
+        if (create_info.face_decal !== undefined) {
+            this.face_decal = fileToTexture(create_info.face_decal, texture_loader);
+        }
+        else {
+            this.face_decal = new THREE.Texture();
+        }
+    }
+
+    // *=================================================
+    // *
+    // * Public Getters
+    // *
+    // *=================================================
+
+    public getBaseColor(): THREE.Color { return this.base_color.clone(); }
+
+    public hasLight(): boolean { return this.has_light; }
+    public getLightColor(): THREE.Color { return this.light_color.clone(); }
+
+    public hasFaceDecal(): boolean { return this.has_face_decal; }
+    public getFaceDecal(): THREE.Texture { return this.face_decal.clone(); }
+
+    // *=================================================
+    // *
+    // * Public Setters
+    // *
+    // *=================================================
+
+    public setBaseColor(color: THREE.ColorRepresentation): void { this.base_color.set(color); }
+
+    public setLightEnabled(enabled: boolean): void { this.has_light = enabled; }
+    public setLightColor(color: THREE.ColorRepresentation): void { this.light_color.set(color); }
+
+    public setFaceDecalEnabled(enabled: boolean): void { this.has_face_decal = enabled; }
+    public setFaceDecal(image_file: File, texture_loader: THREE.TextureLoader): void {
+        this.face_decal = fileToTexture(image_file, texture_loader);
+    }
+}
+
+// *=================================================
+// *
+// * Cabinet Player
+// *
+// *=================================================
+
+interface CabinetPlayerCreateInfo {
+    min_buttons: number;
+    max_buttons: number;
+    joystick?: {
+        origin: CabinetControlOrigin;
+        ball_shape: JoystickBallShape;
+        ball_color: THREE.ColorRepresentation;
+    };
+    buttons_origin: CabinetControlOrigin;
+    button_create_infos: CabinetButtonCreateInfo[];
+}
+
+class CabinetPlayer {
+    private MIN_BUTTONS: number;
+    private MAX_BUTTONS: number;
+
+    private has_joystick: boolean;
+    private joystick_origin: CabinetControlOrigin;
+    private joystick_ball_shape: JoystickBallShape;
+    private joystick_ball_color: THREE.Color;
+
+    private button_count: number;
+    private buttons_origin: CabinetControlOrigin;
+    private button_data: CabinetButton[];
+
+    constructor(create_info: CabinetPlayerCreateInfo, texture_loader: THREE.TextureLoader) {
+        if (create_info.min_buttons > create_info.max_buttons) {
+            throw new Error(`Button count boundaries must have non-zero size: [${create_info.min_buttons}, ${create_info.max_buttons}]!`);
+        }
+
+        this.MIN_BUTTONS = create_info.min_buttons;
+        this.MAX_BUTTONS = create_info.max_buttons;
+
+        this.has_joystick = create_info.joystick !== undefined;
+        if (create_info.joystick !== undefined) {
+            this.joystick_origin = create_info.joystick.origin;
+            this.joystick_ball_shape = create_info.joystick.ball_shape;
+            this.joystick_ball_color = new THREE.Color(create_info.joystick.ball_color);
+
+            if (this.joystick_origin === create_info.buttons_origin) {
+                throw new Error(`Cannot instantiate cabinet player with matching joystick and buttons origin!`);
+            }
+        }
+        else {
+            this.joystick_origin = (
+                create_info.buttons_origin === CabinetControlOrigin.LEFT
+                ? CabinetControlOrigin.RIGHT
+                : CabinetControlOrigin.LEFT
+            );
+            this.joystick_ball_shape = JoystickBallShape.SPHERE;
+            this.joystick_ball_color = new THREE.Color(0xff0000);
+        }
+
+        this.button_count = create_info.button_create_infos.length;
+        this.buttons_origin = create_info.buttons_origin;
+
+        if (this.button_count < this.MIN_BUTTONS || this.button_count > this.MAX_BUTTONS) {
+            throw new Error(`Attempting to instantiate player with invalid button count ${this.button_count}! Must be in range [${this.MIN_BUTTONS}, ${this.MAX_BUTTONS}]!`);
+        }
+
+        this.button_data = new Array(this.MAX_BUTTONS) as CabinetButton[];
+
+        let idx: number = 0;
+        for (; idx < this.button_count; ++idx) {
+            this.button_data[idx] = new CabinetButton(create_info.button_create_infos[idx], texture_loader);
+        }
+
+        for (; idx < this.MAX_BUTTONS; ++idx) {
+            this.button_data[idx] = new CabinetButton({
+                base_color: 0xffffff,
+                light_color: undefined,
+                face_decal: undefined
+            }, texture_loader);
+        }
+    }
+
+    // *=================================================
+    // *
+    // * Public Getters
+    // *
+    // *=================================================
+
+    public hasJoystick(): boolean { return this.has_joystick; }
+    public getJoystickOrigin(): CabinetControlOrigin { return this.joystick_origin; }
+    public getJoystickBallShape(): JoystickBallShape { return this.joystick_ball_shape; }
+    public getJoystickBallColor(): THREE.Color { return this.joystick_ball_color.clone(); }
+
+    public getButtonCount(): number { return this.button_count; }
+    public getButtonsOrigin(): CabinetControlOrigin { return this.buttons_origin; }
+    public getButton(index: number): CabinetButton {
+        if (index < 0 || index >= this.button_count) {
+            throw new Error(`Cabinet button index ${index} out of bounds for size of ${this.button_count}!`);
+        }
+
+        return this.button_data[index];
+    }
+
+    // *=================================================
+    // *
+    // * Public Setters
+    // *
+    // *=================================================
+
+    public setJoystickEnabled(enabled: boolean): void { this.has_joystick = enabled; }
+    public setJoystickOrigin(origin: CabinetControlOrigin): void {
+        this.joystick_origin = origin;
+
+        if (this.joystick_origin === this.buttons_origin) {
+            this.buttons_origin = (
+                this.joystick_origin === CabinetControlOrigin.LEFT
+                ? CabinetControlOrigin.RIGHT
+                : CabinetControlOrigin.LEFT
+            );
+        }
+    }
+
+    public setJoystickBallShape(shape: JoystickBallShape): void { this.joystick_ball_shape = shape; }
+    public setJoystickBallColor(color: THREE.ColorRepresentation): void { this.joystick_ball_color.set(color); }
+
+    public setButtonCount(count: number): void {
+        if (count < this.MIN_BUTTONS || count > this.MAX_BUTTONS) {
+            throw new Error(`Cannot set button count to ${count}! Falls outside range [${this.MIN_BUTTONS}, ${this.MAX_BUTTONS}]!`);
+        }
+
+        this.button_count = count;
+    }
+
+    public setButtonsOrigin(origin: CabinetControlOrigin): void {
+        this.buttons_origin = origin;
+
+        if (this.buttons_origin === this.joystick_origin) {
+            this.joystick_origin = (
+                this.buttons_origin === CabinetControlOrigin.LEFT
+                ? CabinetControlOrigin.RIGHT
+                : CabinetControlOrigin.LEFT
+            );
+        }
+    }
+}
+
+// *=================================================
+// *
+// * Cabinet Model
+// *
+// *=================================================
+
+interface CabinetModelCreateInfo {
+    min_players: number;
+    max_players: number;
+    base_color: THREE.ColorRepresentation;
+    trim_color: THREE.ColorRepresentation;
+    left_panel_decal?: File;
+    right_panel_decal?: File;
+    front_panel_decal?: File;
+    sign?: {
+        decal: File;
+        light_color: THREE.ColorRepresentation;
+    }
+    under_light_color?: THREE.ColorRepresentation;
+    has_coin_slot: boolean;
+    player_create_infos: CabinetPlayerCreateInfo[];
+}
+
+class CabinetModel {
+    private MIN_PLAYERS: number;
+    private MAX_PLAYERS: number;
+
+    private base_color: THREE.Color;
+    private trim_color: THREE.Color;
+
+    private has_left_panel_decal: boolean;
+    private has_right_panel_decal: boolean;
+    private has_front_panel_decal: boolean;
+
+    private left_panel_decal: THREE.Texture;
+    private right_panel_decal: THREE.Texture;
+    private front_panel_decal: THREE.Texture;
+
+    private has_sign: boolean;
+    private sign_decal: THREE.Texture;
+    private sign_light_color: THREE.Color;
+
+    private has_under_light: boolean;
+    private under_light_color: THREE.Color;
+
+    private has_coin_slot: boolean;
+
+    private player_count: number;
+    private player_data: CabinetPlayer[];
+
+    constructor(create_info: CabinetModelCreateInfo, texture_loader: THREE.TextureLoader) {
+        if (create_info.min_players > create_info.max_players) {
+            throw new Error(`Player count boundaries must have non-zero size: [${create_info.min_players}, ${create_info.max_players}]!`);
+        }
+
+        this.MIN_PLAYERS = create_info.min_players;
+        this.MAX_PLAYERS = create_info.max_players;
+
+        this.base_color = new THREE.Color(create_info.base_color);
+        this.trim_color = new THREE.Color(create_info.trim_color);
+
+        this.has_left_panel_decal = create_info.left_panel_decal !== undefined;
+        this.has_right_panel_decal = create_info.right_panel_decal !== undefined;
+        this.has_front_panel_decal = create_info.front_panel_decal !== undefined;
+
+        if (create_info.left_panel_decal !== undefined) {
+            this.left_panel_decal = fileToTexture(create_info.left_panel_decal, texture_loader);
+        }
+        else {
+            this.left_panel_decal = new THREE.Texture();
+        }
+
+        if (create_info.right_panel_decal !== undefined) {
+            this.right_panel_decal = fileToTexture(create_info.right_panel_decal, texture_loader);
+        }
+        else {
+            this.right_panel_decal = new THREE.Texture();
+        }
+
+        if (create_info.front_panel_decal !== undefined) {
+            this.front_panel_decal = fileToTexture(create_info.front_panel_decal, texture_loader);
+        }
+        else {
+            this.front_panel_decal = new THREE.Texture();
+        }
+
+        this.has_sign = create_info.sign !== undefined;
+
+        if (create_info.sign !== undefined) {
+            this.sign_decal = fileToTexture(create_info.sign.decal, texture_loader);
+            this.sign_light_color = new THREE.Color(create_info.sign.light_color);
+        }
+        else {
+            this.sign_decal = new THREE.Texture();
+            this.sign_light_color = new THREE.Color(0xffffff);
+        }
+
+        this.has_under_light = create_info.under_light_color !== undefined;
+        this.under_light_color = new THREE.Color(
+            create_info.under_light_color !== undefined
+            ? create_info.under_light_color
+            : 0xffffff
+        );
+
+        this.has_coin_slot = create_info.has_coin_slot;
+
+        this.player_count = create_info.player_create_infos.length;
+
+        if (this.player_count < this.MIN_PLAYERS || this.player_count > this.MAX_PLAYERS) {
+            throw new Error(`Attempting to instantiate cabinet with invalid player count ${this.player_count}! Must be in range [${this.MIN_PLAYERS}, ${this.MAX_PLAYERS}]!`);
+        }
+
+        this.player_data = new Array(this.player_count) as CabinetPlayer[];
+
+        let idx = 0;
+        for (; idx < this.player_count; ++idx) {
+            this.player_data[idx] = new CabinetPlayer(create_info.player_create_infos[idx], texture_loader);
+        }
+
+        for (; idx < this.MAX_PLAYERS; ++idx) {
+            this.player_data[idx] = new CabinetPlayer({
+                min_buttons: DEFAULT_MIN_BUTTONS,
+                max_buttons: DEFAULT_MAX_BUTTONS,
+                joystick: undefined,
+                buttons_origin: CabinetControlOrigin.RIGHT,
+                button_create_infos: []
+            }, texture_loader);
+        }
+    }
+
+    // *=================================================
+    // *
+    // * Public Getters
+    // *
+    // *=================================================
+
+    public getBaseColor(): THREE.Color { return this.base_color.clone(); }
+    public getTrimColor(): THREE.Color { return this.trim_color.clone(); }
+
+    public hasLeftPanelDecal(): boolean { return this.has_left_panel_decal; }
+    public hasRightPanelDecal(): boolean { return this.has_right_panel_decal; }
+    public hasFrontPanelDecal(): boolean { return this.has_front_panel_decal; }
+
+    public getLeftPanelDecal(): THREE.Texture { return this.left_panel_decal.clone(); }
+    public getRightPanelDecal(): THREE.Texture { return this.right_panel_decal.clone(); }
+    public getFrontPanelDecal(): THREE.Texture { return this.front_panel_decal.clone(); }
+
+    public hasSign(): boolean { return this.has_sign; }
+    public getSignDecal(): THREE.Texture { return this.sign_decal.clone(); }
+    public getSignLightColor(): THREE.Color { return this.sign_light_color.clone(); }
+
+    public hasUnderLight(): boolean { return this.has_under_light; }
+    public getUnderLightColor(): THREE.Color { return this.under_light_color.clone(); }
+
+    public hasCoinSlot(): boolean { return this.has_coin_slot; }
+
+    public getPlayerCount(): number { return this.player_count; }
+    public getPlayer(index: number): CabinetPlayer {
+        if (index < 0 || index >= this.player_count) {
+            throw new Error(`Cabinet player index ${index} out of bounds for size of ${this.player_count}!`);
+        }
+
+        return this.player_data[index];
+    }
+
+    // *=================================================
+    // *
+    // * Public Setters
+    // *
+    // *=================================================
+
+    public setBaseColor(color: THREE.ColorRepresentation): void { this.base_color.set(color) }
+    public setTrimColor(color: THREE.ColorRepresentation): void { this.trim_color.set(color); }
+
+    public setLeftPanelDecalEnabled(enabled: boolean): void { this.has_left_panel_decal = enabled; }
+    public setRightPanelDecalEnabled(enabled: boolean): void { this.has_right_panel_decal = enabled; }
+    public setFrontPanelDecalEnabled(enabled: boolean): void { this.has_front_panel_decal = enabled; }
+
+    public setLeftPanelDecal(image_file: File, texture_loader: THREE.TextureLoader): void {
+        this.left_panel_decal = fileToTexture(image_file, texture_loader);
+    }
+
+    public setRightPanelDecal(image_file: File, texture_loader: THREE.TextureLoader): void {
+        this.right_panel_decal = fileToTexture(image_file, texture_loader);
+    }
+
+    public setFrontPanelDecal(image_file: File, texture_loader: THREE.TextureLoader): void {
+        this.front_panel_decal = fileToTexture(image_file, texture_loader);
+    }
+
+
+    public setSignEnabled(enabled: boolean): void { this.has_sign = enabled; }
+    public setSignDecal(image_file: File, texture_loader: THREE.TextureLoader): void {
+        this.sign_decal = fileToTexture(image_file, texture_loader);
+    }
+    
+    public setSignLightColor(color: THREE.ColorRepresentation): void { this.sign_light_color.set(color); }
+
+    public setUnderLight(enabled: boolean): void { this.has_under_light = enabled; }
+    public setUnderLightColor(color: THREE.ColorRepresentation): void { this.under_light_color.set(color); }
+
+    public setCoinSlotEnabled(enabled: boolean): void { this.has_coin_slot = enabled; }
+
+    public setPlayerCount(count: number): void {
+        if (count < this.MIN_PLAYERS || count > this.MAX_PLAYERS) {
+            throw new Error(`Cannot set player count to ${count}! Falls outside range [${this.MIN_PLAYERS}, ${this.MAX_PLAYERS}]!`);
+        }
+
+        this.player_count = count;
+    }
+}
+
+export type { CabinetButtonCreateInfo, CabinetPlayerCreateInfo, CabinetModelCreateInfo };
+export { JoystickBallShape, CabinetControlOrigin, CabinetButton, CabinetPlayer };
+export default CabinetModel;
