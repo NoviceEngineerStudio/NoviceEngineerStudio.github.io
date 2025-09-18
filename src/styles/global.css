@@ -53,6 +53,7 @@ a:hover { color: #a3b3ff; }
 .flex-col { flex-direction: column; }
 .flex-wrap { flex-wrap: wrap; }
 .items-center { align-items: center; }
+.items-end { align-items: end; }
 .justify-between { justify-content: space-between; }
 .justify-center { justify-content: center; }
 
@@ -127,9 +128,9 @@ a:hover { color: #a3b3ff; }
 }
 
 /* Font Sizes */
-h1 { font-size: 3.000rem; }
-h2 { font-size: 2.250rem; }
-h3 { font-size: 1.875rem; }
+h1 { font-size: 4.500rem; }
+h2 { font-size: 3.500rem; }
+h3 { font-size: 1.750rem; }
 h4 { font-size: 1.500rem; }
 h5 { font-size: 1.250rem; }
 h6 { font-size: 1.125rem; }
@@ -197,12 +198,11 @@ h6 { font-size: 1.125rem; }
 /* Small Screen Size */
 @media only screen and (min-width: 40rem) {
     /* Font Sizes */
-    h1 { font-size: 3.750rem; }
-    h2 { font-size: 3.000rem; }
-    h3 { font-size: 2.250rem; }
-    h4 { font-size: 1.875rem; }
-    h5 { font-size: 1.500rem; }
-    h6 { font-size: 1.250rem; }
+    h1 { font-size: 5.500rem; }
+    h2 { font-size: 3.500rem; }
+    h3 { font-size: 1.750rem; }
+    h4 { font-size: 1.625rem; }
+    h5 { font-size: 1.375rem; }
 
     /* Margins */
     .m-sm { margin: 1.25rem; }
@@ -266,12 +266,12 @@ h6 { font-size: 1.125rem; }
 /* Medium Screen Size */
 @media only screen and (min-width: 48rem) {
     /* Font Sizes */
-    h1 { font-size: 4.500rem; }
-    h2 { font-size: 3.750rem; }
-    h3 { font-size: 3.000rem; }
-    h4 { font-size: 2.250rem; }
-    h5 { font-size: 1.875rem; }
-    h6 { font-size: 1.500rem; }
+    h1 { font-size: 6.000rem; }
+    h2 { font-size: 4.000rem; }
+    h3 { font-size: 2.000rem; }
+    h4 { font-size: 1.750rem; }
+    h5 { font-size: 1.500rem; }
+    h6 { font-size: 1.250rem; }
 
     /* Margins */
     .m-sm { margin: 1.50rem; }
@@ -335,12 +335,12 @@ h6 { font-size: 1.125rem; }
 /* Large Screen Size */
 @media only screen and (min-width: 64rem) {
     /* Font Sizes */
-    h1 { font-size: 6.000rem; }
+    h1 { font-size: 6.500rem; }
     h2 { font-size: 4.500rem; }
-    h3 { font-size: 3.750rem; }
-    h4 { font-size: 3.000rem; }
-    h5 { font-size: 2.250rem; }
-    h6 { font-size: 1.875rem; }
+    h3 { font-size: 2.500rem; }
+    h4 { font-size: 1.875rem; }
+    h5 { font-size: 1.625rem; }
+    h6 { font-size: 1.375rem; }
     *  { font-size: 1.125rem; }
 
     /* Margins */
@@ -405,12 +405,12 @@ h6 { font-size: 1.125rem; }
 /* Extra Large Screen Size */
 @media only screen and (min-width: 80rem) {
     /* Font Sizes */
-    h1 { font-size: 8.000rem; }
-    h2 { font-size: 6.000rem; }
-    h3 { font-size: 4.500rem; }
-    h4 { font-size: 3.750rem; }
-    h5 { font-size: 3.000rem; }
-    h6 { font-size: 2.250rem; }
+    h1 { font-size: 7.000rem; }
+    h2 { font-size: 5.000rem; }
+    h3 { font-size: 3.000rem; }
+    h4 { font-size: 2.000rem; }
+    h5 { font-size: 1.750rem; }
+    h6 { font-size: 1.500rem; }
     *  { font-size: 1.250rem; }
 
     /* Margins */

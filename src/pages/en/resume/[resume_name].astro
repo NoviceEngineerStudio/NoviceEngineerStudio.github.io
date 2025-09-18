@@ -1,0 +1,185 @@
+---
+import "../../../styles/resume.css";
+import { Image } from "astro:assets";
+import type { GetStaticPaths } from "astro";
+import { Language } from "../../../config/language";
+import NavLayout from "../../../layouts/NavLayout.astro";
+import { type ContactInfo } from "../../../config/contact_info";
+import getResume, { type Resume, type ResumeSkill, type ResumeEducation, type ResumeWork } from "../../../config/resumes/resume";
+
+import bar_graph_icon from "../../../assets/icons/BarGraph.svg";
+import calendar_icon from "../../../assets/icons/Calendar.svg";
+
+export const getStaticPaths = (() => [
+    { params: { resume_name: "skylerriggle" } }
+]) satisfies GetStaticPaths;
+
+const language: Language = Language.ENGLISH;
+const resume: Resume = getResume(Astro.params.resume_name, language);
+---
+
+<NavLayout title={`${resume.name}'s Résumé`} body_class="resume-body">
+    <!-- * Page Line Decoration * -->
+    <div class="resume-decoration-bar" />
+
+    <!-- * Introduction Section * -->
+    <section class="resume-introduction-section">
+        <Image
+            src={resume.profile_picture}
+            alt="Profile"
+            loading="eager"
+            class="resume-profile-picture"
+        />
+
+        <div class="ml-sm">
+            <h1>{resume.name}</h1>
+            {resume.contact_info.map((info: ContactInfo) => (
+                <div class="flex items-center">
+                    <Image
+                        src={info.icon}
+                        alt={`${info.label}-Contact-Icon`}
+                        loading="eager"
+                        style="width: 3rem; height: 3rem;"
+                    />
+                    <div class="blur">
+                        <b>{info.label}</b>
+                        <br/>
+                        <a href={info.href}>{info.text}</a>
+                    </div>
+                </div>
+            ))}
+        </div>
+    </section>
+
+    <!-- * Skills Section * -->
+    <section>
+        <div class="resume-section-title resume-green-border">
+            <div class="resume-green" />
+            <h2>Skills</h2>
+        </div>
+        <div class="resume-content-container flex flex-wrap" style="gap: 1rem;">
+            {resume.skills.map((skill: ResumeSkill) => (
+                <div class="resume-skill-card-container">
+                    <div class="resume-skill-card">
+                        <Image
+                            src={skill.icon}
+                            alt={`${skill.name}-Icon`}
+                            loading="eager"
+                        />
+                        <div class="resume-skill-bar">
+                            <div style={`width: ${(
+                                skill.proficiency * (0.6875 + 0.003125 * skill.proficiency)
+                            ).toFixed(2)}%;`}>
+                                <div />
+                            </div>
+                        </div>
+                    </div>
+                    <span class="resume-skill-title">{skill.name}&nbsp;({Math.round(skill.proficiency).toString()}%)</span>
+                </div>
+            ))}
+        </div>
+    </section>
+
+    <!-- * Education Section * -->
+    <section>
+        <div class="resume-section-title resume-blue-border">
+            <div class="resume-blue" />
+            <h2>Education</h2>
+        </div>
+        <div class="resume-content-container flex flex-col" style="gap: 4rem;">
+            {resume.education.map((experience: ResumeEducation) => (
+                <div class="flex flex-col" style="gap: 0.5rem;">
+                    <div class="flex items-center">
+                        <Image
+                            src={experience.logo}
+                            alt={`${experience.institution}-Logo`}
+                            loading="lazy"
+                            style="width: 4rem; height: 4rem;"
+                        />
+                        <div style="margin-left: 0.5rem;">
+                            <h3>{experience.institution}</h3>
+                            <span>{experience.degree}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-end">
+                        <Image
+                            src={calendar_icon}
+                            alt={`${experience.institution}-Calendar`}
+                            loading="lazy"
+                            style="width: 1.5rem; height: 1.5rem;"
+                        />
+                        <span style="margin-left: 0.5rem;">
+                            {experience.start_year}
+                            &nbsp;-&nbsp;
+                            {experience.end_year === undefined
+                                ? <span class="resume-current-label resume-blue">Current</span>
+                                : experience.end_year
+                            }
+                        </span>
+                    </div>
+                    <div class="flex items-end">
+                        <Image
+                            src={bar_graph_icon}
+                            alt={`${experience.institution}-GPA`}
+                            loading="lazy"
+                            style="width: 1.5rem; height: 1.5rem;"
+                        />
+                        <span style="margin-left: 0.5rem;">{experience.gpa.toFixed(2)}</span>
+                    </div>
+                    <ul style="margin-left: 1.5rem;">
+                        {experience.accolades.map((accolade: string) => (
+                            <li style="margin-top: 0.5rem;">{accolade}</li>
+                        ))}
+                    </ul>
+                </div>
+            ))}
+        </div>
+    </section>
+
+    <!-- * Work Experience Section * -->
+    <section>
+        <div class="resume-section-title resume-yellow-border">
+            <div class="resume-yellow" />
+            <h2>Work</h2>
+        </div>
+        <div class="resume-content-container flex flex-col" style="gap: 4rem;">
+            {resume.work.map((experience: ResumeWork) => (
+                <div class="flex flex-col" style="gap: 0.5rem;">
+                    <div class="flex items-end">
+                        <Image
+                            src={experience.logo}
+                            alt={`${experience.company}-Logo`}
+                            loading="lazy"
+                            style="width: 4rem; height: 4rem;"
+                        />
+                        <div style="margin-left: 0.5rem;">
+                            <h3>{experience.company}</h3>
+                            <span>{experience.position}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-end">
+                        <Image
+                            src={calendar_icon}
+                            alt={`${experience.company}-Calendar`}
+                            loading="lazy"
+                            style="width: 1.5rem; height: 1.5rem;"
+                        />
+                        <span style="margin-left: 0.5rem;">
+                            {experience.start_year}
+                            &nbsp;-&nbsp;
+                            {experience.end_year === undefined
+                                ? <span class="resume-current-label resume-yellow">Current</span>
+                                : experience.end_year
+                            }
+                        </span>
+                    </div>
+                    <ul style="margin-left: 1.5rem;">
+                        {experience.accolades.map((accolade: string) => (
+                            <li style="margin-top: 0.5rem;">{accolade}</li>
+                        ))}
+                    </ul>
+                </div>
+            ))}
+        </div>
+    </section>
+</NavLayout>

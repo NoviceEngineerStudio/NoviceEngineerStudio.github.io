@@ -1,0 +1,174 @@
+.resume-body {
+    position: relative;
+
+    padding: 4rem 1rem 0 1rem;
+}
+
+.resume-body section {
+    margin-bottom: 8rem;
+}
+
+.resume-introduction-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.resume-profile-picture {
+    width: 12rem;
+    height: 12rem;
+
+    border-radius: 50%;
+    border: 0.5rem solid #fb2c36;
+}
+
+.resume-decoration-bar {
+    width: 0.5rem;
+    height: calc(100% - 2rem);
+
+    display: none;
+
+    position: absolute;
+    top: 10rem;
+    left: 7.75rem;
+    z-index: -10;
+
+    background-color: #312c85;
+}
+
+.resume-content-container {
+    padding-left: 0rem;
+}
+
+.resume-section-title {
+    width: 100%;
+
+    padding: 0.25rem 0.5rem 0.25rem 0.5rem;
+    margin-left: 0rem;
+    margin-bottom: 4rem;
+
+    position: relative;
+
+    background-color: #000000;
+    border-radius: 1rem;
+}
+
+.resume-section-title div {
+    width: 3rem;
+    height: 3rem;
+
+    border-radius: 50%;
+
+    display: none;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%);
+}
+
+.resume-green { background-color: #00c950; }
+.resume-blue { background-color: #2b7fff; }
+.resume-yellow { background-color: #f0b100; }
+
+.resume-green-border { border: 0.25rem solid #00c950; box-shadow: 0.5rem 0.5rem 0 #008235; }
+.resume-blue-border { border: 0.25rem solid #2b7fff; box-shadow: 0.5rem 0.5rem 0 #1447e6; }
+.resume-yellow-border { border: 0.25rem solid #f0b100; box-shadow: 0.5rem 0.5rem 0 #a65f00; }
+
+@keyframes resume-bar-pulse {
+    0% { transform: translateX(-100%); }
+    75% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.resume-skill-card-container {
+    width: 10rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.resume-skill-card {
+    width: fit-content;
+
+    overflow: hidden;
+
+    background-color: #1d293d;
+    border: 0.125rem solid #00c950;
+    border-radius: 0.25rem;
+
+    box-shadow: inset 0 0 1rem 0.25rem #00000077;
+}
+
+.resume-skill-card img {
+    width: 6rem;
+    height: 6rem;
+
+    margin: 0.75rem;
+}
+
+.resume-skill-bar {
+    width: 100%;
+    height: 0.5rem;
+
+    background-color: #032e15;
+}
+
+.resume-skill-bar div {
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    background-color: #008235;
+}
+
+.resume-skill-bar div div {
+    width: 100%;
+    height: 100%;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    background-image: linear-gradient(90deg, #008235, #00c950, #008235);
+    animation: resume-bar-pulse 2s linear 0s infinite normal forwards;
+}
+
+.resume-skill-title {
+    width: 100%;
+    text-align: center;
+    display: block;
+    margin-top: 0.75rem;
+}
+
+.resume-current-label {
+    padding: 0.125rem 0.25rem 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-weight: bold;
+}
+
+@media only screen and (min-width: 40rem) {
+    .resume-introduction-section {
+        flex-direction: row;
+    }
+
+    .resume-decoration-bar {
+        display: block;
+    }
+
+    .resume-body {
+        padding: 4rem 2rem 0 2rem;
+    }
+
+    .resume-content-container {
+        padding-left: 8rem;
+    }
+
+    .resume-section-title {
+        width: fit-content;
+        padding: 0.5rem 1rem 0.5rem 1rem;
+        margin-left: 5.75rem;
+    }
+
+    .resume-section-title div {
+        display: block;
+    }
+}
