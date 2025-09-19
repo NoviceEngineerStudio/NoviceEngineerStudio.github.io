@@ -1,8 +1,5 @@
 import * as THREE from "three";
 
-const DEFAULT_MIN_BUTTONS: number = 2;
-const DEFAULT_MAX_BUTTONS: number = 6;
-
 enum JoystickBallShape {
     SPHERE,
     TEARDROP
@@ -13,6 +10,12 @@ enum CabinetControlOrigin {
     CENTER,
     RIGHT
 }
+
+// *=================================================
+// *
+// * Helper Methods
+// *
+// *=================================================
 
 function fileToTexture(image_file: File, texture_loader: THREE.TextureLoader): THREE.Texture {
     return texture_loader.load(URL.createObjectURL(image_file));
@@ -96,8 +99,6 @@ class CabinetButton {
 // *=================================================
 
 interface CabinetPlayerCreateInfo {
-    min_buttons: number;
-    max_buttons: number;
     joystick?: {
         origin: CabinetControlOrigin;
         ball_shape: JoystickBallShape;
@@ -107,9 +108,13 @@ interface CabinetPlayerCreateInfo {
     button_create_infos: CabinetButtonCreateInfo[];
 }
 
+interface CabinetPlayerConstraints {
+    min_buttons: number;
+    max_buttons: number;
+}
+
 class CabinetPlayer {
-    private MIN_BUTTONS: number;
-    private MAX_BUTTONS: number;
+    private constraints: CabinetPlayerConstraints;
 
     private has_joystick: boolean;
     private joystick_origin: CabinetControlOrigin;
@@ -120,13 +125,12 @@ class CabinetPlayer {
     private buttons_origin: CabinetControlOrigin;
     private button_data: CabinetButton[];
 
-    constructor(create_info: CabinetPlayerCreateInfo, texture_loader: THREE.TextureLoader) {
-        if (create_info.min_buttons > create_info.max_buttons) {
-            throw new Error(`Button count boundaries must have non-zero size: [${create_info.min_buttons}, ${create_info.max_buttons}]!`);
+    constructor(create_info: CabinetPlayerCreateInfo, constraints: CabinetPlayerConstraints, texture_loader: THREE.TextureLoader) {
+        if (constraints.min_buttons > constraints.max_buttons) {
+            throw new Error(`Button count boundaries must have non-zero size: [${constraints.min_buttons}, ${constraints.max_buttons}]!`);
         }
 
-        this.MIN_BUTTONS = create_info.min_buttons;
-        this.MAX_BUTTONS = create_info.max_buttons;
+        this.constraints = structuredClone(constraints);
 
         this.has_joystick = create_info.joystick !== undefined;
         if (create_info.joystick !== undefined) {
@@ -151,18 +155,18 @@ class CabinetPlayer {
         this.button_count = create_info.button_create_infos.length;
         this.buttons_origin = create_info.buttons_origin;
 
-        if (this.button_count < this.MIN_BUTTONS || this.button_count > this.MAX_BUTTONS) {
-            throw new Error(`Attempting to instantiate player with invalid button count ${this.button_count}! Must be in range [${this.MIN_BUTTONS}, ${this.MAX_BUTTONS}]!`);
+        if (this.button_count < constraints.min_buttons || this.button_count > constraints.max_buttons) {
+            throw new Error(`Attempting to instantiate player with invalid button count ${this.button_count}! Must be in range [${constraints.min_buttons}, ${constraints.max_buttons}]!`);
         }
 
-        this.button_data = new Array(this.MAX_BUTTONS) as CabinetButton[];
+        this.button_data = new Array(constraints.max_buttons) as CabinetButton[];
 
         let idx: number = 0;
         for (; idx < this.button_count; ++idx) {
             this.button_data[idx] = new CabinetButton(create_info.button_create_infos[idx], texture_loader);
         }
 
-        for (; idx < this.MAX_BUTTONS; ++idx) {
+        for (; idx < constraints.max_buttons; ++idx) {
             this.button_data[idx] = new CabinetButton({
                 base_color: 0xffffff,
                 light_color: undefined,
@@ -176,6 +180,8 @@ class CabinetPlayer {
     // * Public Getters
     // *
     // *=================================================
+
+    public getConstraints(): CabinetPlayerConstraints { return structuredClone(this.constraints); }
 
     public hasJoystick(): boolean { return this.has_joystick; }
     public getJoystickOrigin(): CabinetControlOrigin { return this.joystick_origin; }
@@ -198,6 +204,32 @@ class CabinetPlayer {
     // *
     // *=================================================
 
+    public setConstraints(constraints: CabinetPlayerConstraints): void {
+        if (constraints.min_buttons > constraints.max_buttons) {
+            throw new Error(`Button count boundaries must have non-zero size: [${constraints.min_buttons}, ${constraints.max_buttons}]!`);
+        }
+
+        this.button_count = Math.max(constraints.min_buttons, Math.min(constraints.max_buttons, this.button_count));
+        
+        const old_buttons: CabinetButton[] = this.button_data;
+        this.button_data = new Array(constraints.max_buttons) as CabinetButton[];
+
+        let idx: number = 0;
+        for (; idx < this.button_count; ++idx) {
+            this.button_data[idx] = old_buttons[idx];
+        }
+
+        for (; idx < constraints.max_buttons; ++idx) {
+            this.button_data[idx] = new CabinetButton({
+                base_color: 0xffffff,
+                light_color: undefined,
+                face_decal: undefined
+            }, {} as THREE.TextureLoader);
+        }
+
+        this.constraints = structuredClone(constraints);
+    }
+
     public setJoystickEnabled(enabled: boolean): void { this.has_joystick = enabled; }
     public setJoystickOrigin(origin: CabinetControlOrigin): void {
         this.joystick_origin = origin;
@@ -215,8 +247,8 @@ class CabinetPlayer {
     public setJoystickBallColor(color: THREE.ColorRepresentation): void { this.joystick_ball_color.set(color); }
 
     public setButtonCount(count: number): void {
-        if (count < this.MIN_BUTTONS || count > this.MAX_BUTTONS) {
-            throw new Error(`Cannot set button count to ${count}! Falls outside range [${this.MIN_BUTTONS}, ${this.MAX_BUTTONS}]!`);
+        if (count < this.constraints.min_buttons || count > this.constraints.max_buttons) {
+            throw new Error(`Cannot set button count to ${count}! Falls outside range [${this.constraints.min_buttons}, ${this.constraints.max_buttons}]!`);
         }
 
         this.button_count = count;
@@ -242,8 +274,6 @@ class CabinetPlayer {
 // *=================================================
 
 interface CabinetModelCreateInfo {
-    min_players: number;
-    max_players: number;
     base_color: THREE.ColorRepresentation;
     trim_color: THREE.ColorRepresentation;
     left_panel_decal?: File;
@@ -258,9 +288,14 @@ interface CabinetModelCreateInfo {
     player_create_infos: CabinetPlayerCreateInfo[];
 }
 
+interface CabinetModelConstraints {
+    min_players: number;
+    max_players: number;
+    player_constraints: CabinetPlayerConstraints;
+}
+
 class CabinetModel {
-    private MIN_PLAYERS: number;
-    private MAX_PLAYERS: number;
+    private constraints: CabinetModelConstraints;
 
     private base_color: THREE.Color;
     private trim_color: THREE.Color;
@@ -285,13 +320,12 @@ class CabinetModel {
     private player_count: number;
     private player_data: CabinetPlayer[];
 
-    constructor(create_info: CabinetModelCreateInfo, texture_loader: THREE.TextureLoader) {
-        if (create_info.min_players > create_info.max_players) {
-            throw new Error(`Player count boundaries must have non-zero size: [${create_info.min_players}, ${create_info.max_players}]!`);
+    constructor(create_info: CabinetModelCreateInfo, constraints: CabinetModelConstraints, texture_loader: THREE.TextureLoader) {
+        if (constraints.min_players > constraints.max_players) {
+            throw new Error(`Player count boundaries must have non-zero size: [${constraints.min_players}, ${constraints.max_players}]!`);
         }
 
-        this.MIN_PLAYERS = create_info.min_players;
-        this.MAX_PLAYERS = create_info.max_players;
+        this.constraints = structuredClone(constraints);
 
         this.base_color = new THREE.Color(create_info.base_color);
         this.trim_color = new THREE.Color(create_info.trim_color);
@@ -343,25 +377,23 @@ class CabinetModel {
 
         this.player_count = create_info.player_create_infos.length;
 
-        if (this.player_count < this.MIN_PLAYERS || this.player_count > this.MAX_PLAYERS) {
-            throw new Error(`Attempting to instantiate cabinet with invalid player count ${this.player_count}! Must be in range [${this.MIN_PLAYERS}, ${this.MAX_PLAYERS}]!`);
+        if (this.player_count < constraints.min_players || this.player_count > constraints.max_players) {
+            throw new Error(`Attempting to instantiate cabinet with invalid player count ${this.player_count}! Must be in range [${constraints.min_players}, ${constraints.max_players}]!`);
         }
 
         this.player_data = new Array(this.player_count) as CabinetPlayer[];
 
-        let idx = 0;
+        let idx: number = 0;
         for (; idx < this.player_count; ++idx) {
-            this.player_data[idx] = new CabinetPlayer(create_info.player_create_infos[idx], texture_loader);
+            this.player_data[idx] = new CabinetPlayer(create_info.player_create_infos[idx], constraints.player_constraints, texture_loader);
         }
 
-        for (; idx < this.MAX_PLAYERS; ++idx) {
+        for (; idx < constraints.max_players; ++idx) {
             this.player_data[idx] = new CabinetPlayer({
-                min_buttons: DEFAULT_MIN_BUTTONS,
-                max_buttons: DEFAULT_MAX_BUTTONS,
                 joystick: undefined,
                 buttons_origin: CabinetControlOrigin.RIGHT,
                 button_create_infos: []
-            }, texture_loader);
+            }, constraints.player_constraints, texture_loader);
         }
     }
 
@@ -370,6 +402,8 @@ class CabinetModel {
     // * Public Getters
     // *
     // *=================================================
+
+    public getConstraints(): CabinetModelConstraints { return structuredClone(this.constraints); }
 
     public getBaseColor(): THREE.Color { return this.base_color.clone(); }
     public getTrimColor(): THREE.Color { return this.trim_color.clone(); }
@@ -406,6 +440,32 @@ class CabinetModel {
     // *
     // *=================================================
 
+    public setConstraints(constraints: CabinetModelConstraints): void {
+        if (constraints.min_players > constraints.max_players) {
+            throw new Error(`Player count boundaries must have non-zero size: [${constraints.min_players}, ${constraints.max_players}]!`);
+        }
+
+        this.player_count = Math.max(constraints.min_players, Math.min(constraints.max_players, this.player_count));
+        
+        const old_players: CabinetPlayer[] = this.player_data;
+        this.player_data = new Array(constraints.max_players) as CabinetPlayer[];
+
+        let idx: number = 0;
+        for (; idx < this.player_count; ++idx) {
+            this.player_data[idx] = old_players[idx];
+        }
+
+        for (; idx < constraints.max_players; ++idx) {
+            this.player_data[idx] = new CabinetPlayer({
+                joystick: undefined,
+                buttons_origin: CabinetControlOrigin.RIGHT,
+                button_create_infos: []
+            }, constraints.player_constraints, {} as THREE.TextureLoader);
+        }
+
+        this.constraints = structuredClone(constraints);
+    }
+
     public setBaseColor(color: THREE.ColorRepresentation): void { this.base_color.set(color) }
     public setTrimColor(color: THREE.ColorRepresentation): void { this.trim_color.set(color); }
 
@@ -430,7 +490,7 @@ class CabinetModel {
     public setSignDecal(image_file: File, texture_loader: THREE.TextureLoader): void {
         this.sign_decal = fileToTexture(image_file, texture_loader);
     }
-    
+
     public setSignLightColor(color: THREE.ColorRepresentation): void { this.sign_light_color.set(color); }
 
     public setUnderLight(enabled: boolean): void { this.has_under_light = enabled; }
@@ -439,14 +499,14 @@ class CabinetModel {
     public setCoinSlotEnabled(enabled: boolean): void { this.has_coin_slot = enabled; }
 
     public setPlayerCount(count: number): void {
-        if (count < this.MIN_PLAYERS || count > this.MAX_PLAYERS) {
-            throw new Error(`Cannot set player count to ${count}! Falls outside range [${this.MIN_PLAYERS}, ${this.MAX_PLAYERS}]!`);
+        if (count < this.constraints.min_players || count > this.constraints.max_players) {
+            throw new Error(`Cannot set player count to ${count}! Falls outside range [${this.constraints.min_players}, ${this.constraints.max_players}]!`);
         }
 
         this.player_count = count;
     }
 }
 
-export type { CabinetButtonCreateInfo, CabinetPlayerCreateInfo, CabinetModelCreateInfo };
+export type { CabinetPlayerConstraints, CabinetModelConstraints, CabinetButtonCreateInfo, CabinetPlayerCreateInfo, CabinetModelCreateInfo };
 export { JoystickBallShape, CabinetControlOrigin, CabinetButton, CabinetPlayer };
 export default CabinetModel;

@@ -1,8 +1,15 @@
 ---
+import { Language } from "../../../../config/language";
 import NavLayout from "../../../../layouts/NavLayout.astro";
 
+const language: Language = Language.ENGLISH;
 ---
 
 <NavLayout title="MyArcade">
-    
+    <my-arcade-cabinet_controller
+        style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;"
+        data-language={language}
+    />
 </NavLayout>
+
+<script src="../../../../components/my_arcade/CabinetController.ts" />
