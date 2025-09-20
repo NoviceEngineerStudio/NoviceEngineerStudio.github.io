@@ -6,10 +6,113 @@ const language: Language = Language.ENGLISH;
 ---
 
 <NavLayout title="MyArcade">
-    <my-arcade-cabinet_controller
-        style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;"
-        data-language={language}
-    />
+    <my-arcade-cabinet-controller data-language={language}>
+        <!-- * Render Parent * -->
+        <div class="my-arcade-render-parent" />
+
+        <!-- * UI Parent * -->
+        <div class="my-arcade-ui-parent">
+            <div class="my-arcade-ui-panel my-arcade-cabinet-panel">
+                <button class="my-arcade-ui-panel-button">
+                    Cabinet
+                </button>
+            </div>
+
+            <div class="my-arcade-ui-panel my-arcade-details-panel">
+                <button class="my-arcade-ui-panel-button">
+                    Details
+                </button>
+            </div>
+
+            <div class="my-arcade-ui-panel my-arcade-controls-panel">
+                <button class="my-arcade-ui-panel-button">
+                    Controls
+                </button>
+            </div>
+        </div>
+    </my-arcade-cabinet-controller>
 </NavLayout>
+
+<style>
+    my-arcade-cabinet-controller {
+        position: fixed;
+        top: 0;
+        left: 0;
+
+        width: 100vw;
+        height: 100vh;
+
+        display: flex;
+        flex-direction: column;
+    }
+
+    .my-arcade-render-parent {
+        width: 100%;
+        height: calc(100% - 24rem);
+    }
+
+    .my-arcade-ui-parent {
+        width: 100%;
+        height: 24rem;
+
+        overflow-y: auto;
+
+        padding-top: 1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+
+        background-color: #ffffff;
+        color: #000000;
+
+        box-shadow: 0 0 0.25rem 0 #00000077;
+    }
+
+    .my-arcade-ui-panel {
+        max-height: 2.125rem;
+        overflow: hidden;
+
+        margin-bottom: 1rem;
+
+        border: 0.125rem solid #000000;
+        border-radius: 0.5rem;
+    }
+
+    .my-arcade-ui-panel-button {
+        width: 100%;
+        height: 2rem;
+
+        padding: 0rem 1rem 0rem 1rem;
+
+        text-align: left;
+
+        background-color: #c6d2ff;
+        border: none;
+        cursor: pointer;
+
+        transition: background-color 150ms ease-in-out 0s;
+    }
+
+    .my-arcade-ui-panel-button:hover {
+        background-color: #a3b3ff;
+    }
+
+    @media only screen and (min-width: 64rem) {
+        my-arcade-cabinet-controller {
+            flex-direction: row;
+        }
+
+        .my-arcade-render-parent {
+            width: calc(100% - 24rem);
+            height: 100%;
+        }
+
+        .my-arcade-ui-parent {
+            width: 24rem;
+            height: 100%;
+
+            padding-top: 6rem;
+        }
+    }
+</style>
 
 <script src="../../../../components/my_arcade/CabinetController.ts" />

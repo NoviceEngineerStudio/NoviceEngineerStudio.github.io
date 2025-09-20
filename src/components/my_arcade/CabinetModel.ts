@@ -11,21 +11,29 @@ enum CabinetControlOrigin {
     RIGHT
 }
 
+export { JoystickBallShape, CabinetControlOrigin };
+
+// !-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-! //
 // *=================================================
 // *
 // * Helper Methods
 // *
 // *=================================================
+// !-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-! //
 
 function fileToTexture(image_file: File, texture_loader: THREE.TextureLoader): THREE.Texture {
     return texture_loader.load(URL.createObjectURL(image_file));
 }
 
+export { fileToTexture };
+
+// !-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-! //
 // *=================================================
 // *
 // * Cabinet Button
 // *
 // *=================================================
+// !-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-! //
 
 interface CabinetButtonCreateInfo {
     base_color: THREE.ColorRepresentation;
@@ -33,7 +41,19 @@ interface CabinetButtonCreateInfo {
     face_decal?: File;
 }
 
+interface CabinetButtonCosts {
+    minimum: number;
+    lighting: number;
+    face_decal: number;
+}
+
+interface CabinetButtonConstraints {
+    costs: CabinetButtonCosts;
+}
+
 class CabinetButton {
+    private constraints: CabinetButtonConstraints;
+
     private base_color: THREE.Color;
 
     private has_light: boolean;
@@ -42,7 +62,9 @@ class CabinetButton {
     private has_face_decal: boolean;
     private face_decal: THREE.Texture;
 
-    constructor(create_info: CabinetButtonCreateInfo, texture_loader: THREE.TextureLoader) {
+    constructor(create_info: CabinetButtonCreateInfo, constraints: CabinetButtonConstraints, texture_loader: THREE.TextureLoader) {
+        this.constraints = structuredClone(constraints);
+
         this.base_color = new THREE.Color(create_info.base_color);
 
         this.has_light = create_info.light_color !== undefined;
@@ -67,6 +89,8 @@ class CabinetButton {
     // *
     // *=================================================
 
+    public getConstraints(): CabinetButtonConstraints { return structuredClone(this.constraints); }
+
     public getBaseColor(): THREE.Color { return this.base_color.clone(); }
 
     public hasLight(): boolean { return this.has_light; }
@@ -75,11 +99,24 @@ class CabinetButton {
     public hasFaceDecal(): boolean { return this.has_face_decal; }
     public getFaceDecal(): THREE.Texture { return this.face_decal.clone(); }
 
+    public getCost(): number {
+        let cost: number = this.constraints.costs.minimum;
+
+        if (this.has_light) cost += this.constraints.costs.lighting;
+        if (this.has_face_decal) cost += this.constraints.costs.face_decal;
+
+        return cost;
+    }
+
     // *=================================================
     // *
     // * Public Setters
     // *
     // *=================================================
+
+    public setConstraints(constraints: CabinetButtonConstraints): void {
+        this.constraints = structuredClone(constraints);
+    }
 
     public setBaseColor(color: THREE.ColorRepresentation): void { this.base_color.set(color); }
 
@@ -92,11 +129,15 @@ class CabinetButton {
     }
 }
 
+export { CabinetButton, type CabinetButtonCreateInfo, type CabinetButtonCosts, type CabinetButtonConstraints };
+
+// !-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-! //
 // *=================================================
 // *
 // * Cabinet Player
 // *
 // *=================================================
+// !-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-! //
 
 interface CabinetPlayerCreateInfo {
     joystick?: {
@@ -108,9 +149,16 @@ interface CabinetPlayerCreateInfo {
     button_create_infos: CabinetButtonCreateInfo[];
 }
 
+interface CabinetPlayerCosts {
+    minimum: number;
+    joystick: number;
+}
+
 interface CabinetPlayerConstraints {
     min_buttons: number;
     max_buttons: number;
+    costs: CabinetPlayerCosts;
+    button_constraints: CabinetButtonConstraints;
 }
 
 class CabinetPlayer {
@@ -163,7 +211,11 @@ class CabinetPlayer {
 
         let idx: number = 0;
         for (; idx < this.button_count; ++idx) {
-            this.button_data[idx] = new CabinetButton(create_info.button_create_infos[idx], texture_loader);
+            this.button_data[idx] = new CabinetButton(
+                create_info.button_create_infos[idx],
+                constraints.button_constraints,
+                texture_loader
+            );
         }
 
         for (; idx < constraints.max_buttons; ++idx) {
@@ -171,7 +223,7 @@ class CabinetPlayer {
                 base_color: 0xffffff,
                 light_color: undefined,
                 face_decal: undefined
-            }, texture_loader);
+            }, constraints.button_constraints, texture_loader);
         }
     }
 
@@ -197,6 +249,18 @@ class CabinetPlayer {
 
         return this.button_data[index];
     }
+    
+    public getCost(): number {
+        let cost: number = this.constraints.costs.minimum;
+
+        if (this.has_joystick) cost += this.constraints.costs.joystick;
+
+        for (let idx = 0; idx < this.button_count; ++idx) {
+            cost += this.button_data[idx].getCost();
+        }
+
+        return cost;
+    }
 
     // *=================================================
     // *
@@ -217,6 +281,7 @@ class CabinetPlayer {
         let idx: number = 0;
         for (; idx < this.button_count; ++idx) {
             this.button_data[idx] = old_buttons[idx];
+            this.button_data[idx].setConstraints(constraints.button_constraints);
         }
 
         for (; idx < constraints.max_buttons; ++idx) {
@@ -224,7 +289,7 @@ class CabinetPlayer {
                 base_color: 0xffffff,
                 light_color: undefined,
                 face_decal: undefined
-            }, {} as THREE.TextureLoader);
+            }, constraints.button_constraints, {} as THREE.TextureLoader);
         }
 
         this.constraints = structuredClone(constraints);
@@ -267,11 +332,15 @@ class CabinetPlayer {
     }
 }
 
+export { CabinetPlayer, type CabinetPlayerCreateInfo, type CabinetPlayerConstraints, type CabinetPlayerCosts };
+
+// !-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-! //
 // *=================================================
 // *
 // * Cabinet Model
 // *
 // *=================================================
+// !-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-! //
 
 interface CabinetModelCreateInfo {
     base_color: THREE.ColorRepresentation;
@@ -288,9 +357,20 @@ interface CabinetModelCreateInfo {
     player_create_infos: CabinetPlayerCreateInfo[];
 }
 
+interface CabinetModelCosts {
+    minimum: number;
+    left_panel_decal: number;
+    right_panel_decal: number;
+    front_panel_decal: number;
+    sign: number;
+    under_light: number;
+    coin_slot: number;
+}
+
 interface CabinetModelConstraints {
     min_players: number;
     max_players: number;
+    costs: CabinetModelCosts;
     player_constraints: CabinetPlayerConstraints;
 }
 
@@ -385,14 +465,22 @@ class CabinetModel {
 
         let idx: number = 0;
         for (; idx < this.player_count; ++idx) {
-            this.player_data[idx] = new CabinetPlayer(create_info.player_create_infos[idx], constraints.player_constraints, texture_loader);
+            this.player_data[idx] = new CabinetPlayer(
+                create_info.player_create_infos[idx],
+                constraints.player_constraints,
+                texture_loader
+            );
         }
 
         for (; idx < constraints.max_players; ++idx) {
             this.player_data[idx] = new CabinetPlayer({
                 joystick: undefined,
                 buttons_origin: CabinetControlOrigin.RIGHT,
-                button_create_infos: []
+                button_create_infos: Array.from({ length: constraints.player_constraints.min_buttons }).map(() => ({
+                    base_color: 0xff0000,
+                    light_color: undefined,
+                    face_decal: undefined
+                }))
             }, constraints.player_constraints, texture_loader);
         }
     }
@@ -434,6 +522,23 @@ class CabinetModel {
         return this.player_data[index];
     }
 
+    public getCost(): number {
+        let cost: number = this.constraints.costs.minimum;
+
+        if (this.has_left_panel_decal) cost += this.constraints.costs.left_panel_decal;
+        if (this.has_right_panel_decal) cost += this.constraints.costs.right_panel_decal;
+        if (this.has_front_panel_decal) cost += this.constraints.costs.front_panel_decal;
+        if (this.has_sign) cost += this.constraints.costs.sign;
+        if (this.has_under_light) cost += this.constraints.costs.under_light;
+        if (this.has_coin_slot) cost += this.constraints.costs.coin_slot;
+
+        for (let idx = 0; idx < this.player_count; ++idx) {
+            cost += this.player_data[idx].getCost();
+        }
+
+        return cost;
+    }
+
     // *=================================================
     // *
     // * Public Setters
@@ -453,6 +558,7 @@ class CabinetModel {
         let idx: number = 0;
         for (; idx < this.player_count; ++idx) {
             this.player_data[idx] = old_players[idx];
+            this.player_data[idx].setConstraints(constraints.player_constraints);
         }
 
         for (; idx < constraints.max_players; ++idx) {
@@ -507,6 +613,5 @@ class CabinetModel {
     }
 }
 
-export type { CabinetPlayerConstraints, CabinetModelConstraints, CabinetButtonCreateInfo, CabinetPlayerCreateInfo, CabinetModelCreateInfo };
-export { JoystickBallShape, CabinetControlOrigin, CabinetButton, CabinetPlayer };
+export type { CabinetModelConstraints, CabinetModelCreateInfo };
 export default CabinetModel;

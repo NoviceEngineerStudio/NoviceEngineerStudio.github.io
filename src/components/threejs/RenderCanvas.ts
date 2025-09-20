@@ -17,5 +17,5 @@ class RenderCanvas extends RootCanvas {
     }
 }
 
-export { type RootCanvasCreateInfo };
+export { type RenderCanvasCreateInfo };
 export default RenderCanvas;
