@@ -352,8 +352,6 @@ interface CabinetModelCreateInfo {
         decal: File;
         light_color: THREE.ColorRepresentation;
     }
-    under_light_color?: THREE.ColorRepresentation;
-    has_coin_slot: boolean;
     player_create_infos: CabinetPlayerCreateInfo[];
 }
 
@@ -363,8 +361,6 @@ interface CabinetModelCosts {
     right_panel_decal: number;
     front_panel_decal: number;
     sign: number;
-    under_light: number;
-    coin_slot: number;
 }
 
 interface CabinetModelConstraints {
@@ -391,11 +387,6 @@ class CabinetModel {
     private has_sign: boolean;
     private sign_decal: THREE.Texture;
     private sign_light_color: THREE.Color;
-
-    private has_under_light: boolean;
-    private under_light_color: THREE.Color;
-
-    private has_coin_slot: boolean;
 
     private player_count: number;
     private player_data: CabinetPlayer[];
@@ -445,15 +436,6 @@ class CabinetModel {
             this.sign_decal = new THREE.Texture();
             this.sign_light_color = new THREE.Color(0xffffff);
         }
-
-        this.has_under_light = create_info.under_light_color !== undefined;
-        this.under_light_color = new THREE.Color(
-            create_info.under_light_color !== undefined
-            ? create_info.under_light_color
-            : 0xffffff
-        );
-
-        this.has_coin_slot = create_info.has_coin_slot;
 
         this.player_count = create_info.player_create_infos.length;
 
@@ -508,11 +490,6 @@ class CabinetModel {
     public getSignDecal(): THREE.Texture { return this.sign_decal.clone(); }
     public getSignLightColor(): THREE.Color { return this.sign_light_color.clone(); }
 
-    public hasUnderLight(): boolean { return this.has_under_light; }
-    public getUnderLightColor(): THREE.Color { return this.under_light_color.clone(); }
-
-    public hasCoinSlot(): boolean { return this.has_coin_slot; }
-
     public getPlayerCount(): number { return this.player_count; }
     public getPlayer(index: number): CabinetPlayer {
         if (index < 0 || index >= this.player_count) {
@@ -529,8 +506,6 @@ class CabinetModel {
         if (this.has_right_panel_decal) cost += this.constraints.costs.right_panel_decal;
         if (this.has_front_panel_decal) cost += this.constraints.costs.front_panel_decal;
         if (this.has_sign) cost += this.constraints.costs.sign;
-        if (this.has_under_light) cost += this.constraints.costs.under_light;
-        if (this.has_coin_slot) cost += this.constraints.costs.coin_slot;
 
         for (let idx = 0; idx < this.player_count; ++idx) {
             cost += this.player_data[idx].getCost();
@@ -598,11 +573,6 @@ class CabinetModel {
     }
 
     public setSignLightColor(color: THREE.ColorRepresentation): void { this.sign_light_color.set(color); }
-
-    public setUnderLight(enabled: boolean): void { this.has_under_light = enabled; }
-    public setUnderLightColor(color: THREE.ColorRepresentation): void { this.under_light_color.set(color); }
-
-    public setCoinSlotEnabled(enabled: boolean): void { this.has_coin_slot = enabled; }
 
     public setPlayerCount(count: number): void {
         if (count < this.constraints.min_players || count > this.constraints.max_players) {

@@ -133,7 +133,7 @@ function getResumeSkylerRiggle(language: Language): Resume {
             undergrad_ed.institution = "The University of Oklahoma";
             undergrad_ed.degree = "B.S. Computer Science / Math Minor";
             undergrad_ed.accolades.push(
-                "GDA (Game Developers Association) President, Vice. President, and Engineering Director.",
+                "GDA (Game Developers Association) President, Vice President, and Engineering Director.",
                 "Performed club administrative, finance, technology, and educational activities for GDA.",
                 "Hacklahoma Technology Coordinator and Finance Officer.",
                 "Gathered corporate sponsorships, developed registration site, and created Discord moderation bot for Hacklahoma.",

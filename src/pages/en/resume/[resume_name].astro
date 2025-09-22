@@ -32,7 +32,7 @@ const resume: Resume = getResume(Astro.params.resume_name, language);
         />
 
         <div class="ml-sm">
-            <h1>{resume.name}</h1>
+            <h1 class="text-3xl">{resume.name}</h1>
             {resume.contact_info.map((info: ContactInfo) => (
                 <div class="flex items-center">
                     <Image
@@ -55,7 +55,7 @@ const resume: Resume = getResume(Astro.params.resume_name, language);
     <section>
         <div class="resume-section-title resume-green-border">
             <div class="resume-green" />
-            <h2>Skills</h2>
+            <h2 class="text-2xl">Skills</h2>
         </div>
         <div class="resume-content-container flex flex-wrap" style="gap: 1rem;">
             {resume.skills.map((skill: ResumeSkill) => (
@@ -84,7 +84,7 @@ const resume: Resume = getResume(Astro.params.resume_name, language);
     <section>
         <div class="resume-section-title resume-blue-border">
             <div class="resume-blue" />
-            <h2>Education</h2>
+            <h2 class="text-2xl">Education</h2>
         </div>
         <div class="resume-content-container flex flex-col" style="gap: 4rem;">
             {resume.education.map((experience: ResumeEducation) => (
@@ -126,7 +126,7 @@ const resume: Resume = getResume(Astro.params.resume_name, language);
                         />
                         <span style="margin-left: 0.5rem;">{experience.gpa.toFixed(2)}</span>
                     </div>
-                    <ul style="margin-left: 1.5rem;">
+                    <ul style="margin-left: 1.5rem; max-width: 45rem;">
                         {experience.accolades.map((accolade: string) => (
                             <li style="margin-top: 0.5rem;">{accolade}</li>
                         ))}
@@ -140,7 +140,7 @@ const resume: Resume = getResume(Astro.params.resume_name, language);
     <section>
         <div class="resume-section-title resume-yellow-border">
             <div class="resume-yellow" />
-            <h2>Work</h2>
+            <h2 class="text-2xl">Work</h2>
         </div>
         <div class="resume-content-container flex flex-col" style="gap: 4rem;">
             {resume.work.map((experience: ResumeWork) => (
@@ -173,7 +173,7 @@ const resume: Resume = getResume(Astro.params.resume_name, language);
                             }
                         </span>
                     </div>
-                    <ul style="margin-left: 1.5rem;">
+                    <ul style="margin-left: 1.5rem; max-width: 45rem;">
                         {experience.accolades.map((accolade: string) => (
                             <li style="margin-top: 0.5rem;">{accolade}</li>
                         ))}

@@ -10,6 +10,7 @@ interface RootCanvasCreateInfo {
         clear_color: number;
         clear_alpha: number;
         tone_mapping: THREE.ToneMapping;
+        shadow_map?: THREE.ShadowMapType;
     }
 }
 
@@ -32,6 +33,11 @@ abstract class RootCanvas {
         const clear_color: THREE.Color = new THREE.Color(create_info.renderer.clear_color);
         this.renderer.setClearColor(clear_color, create_info.renderer.clear_alpha);
         this.renderer.toneMapping = create_info.renderer.tone_mapping;
+
+        if (create_info.renderer.shadow_map !== undefined) {
+            this.renderer.shadowMap.enabled = true;
+            this.renderer.shadowMap.type = create_info.renderer.shadow_map;
+        }
 
         this.renderer.domElement.style.width = "100%";
         this.renderer.domElement.style.height = "100%";

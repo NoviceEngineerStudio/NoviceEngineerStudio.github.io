@@ -128,13 +128,15 @@ a:hover { color: #a3b3ff; }
 }
 
 /* Font Sizes */
-h1 { font-size: 4.500rem; }
-h2 { font-size: 3.500rem; }
-h3 { font-size: 1.750rem; }
-h4 { font-size: 1.500rem; }
-h5 { font-size: 1.250rem; }
-h6 { font-size: 1.125rem; }
-*  { font-size: 1.000rem; }
+.text-3xl { font-size: 4.500rem; }
+.text-2xl { font-size: 3.500rem; }
+.text-xl  { font-size: 2.250rem; }
+.text-lg  { font-size: 1.750rem; }
+.text-md  { font-size: 1.250rem; }
+.text-sm  { font-size: 1.000rem; }
+.text-xs  { font-size: 0.750rem; }
+
+* { font-size: 1.000rem; }
 
 /* Margins */
 .m-sm { margin: 1.00rem; }
@@ -198,11 +200,10 @@ h6 { font-size: 1.125rem; }
 /* Small Screen Size */
 @media only screen and (min-width: 40rem) {
     /* Font Sizes */
-    h1 { font-size: 5.500rem; }
-    h2 { font-size: 3.500rem; }
-    h3 { font-size: 1.750rem; }
-    h4 { font-size: 1.625rem; }
-    h5 { font-size: 1.375rem; }
+    .text-3xl { font-size: 5.500rem; }
+    .text-2xl { font-size: 3.500rem; }
+    .text-xl  { font-size: 2.500rem; }
+    .text-lg  { font-size: 1.875rem; }
 
     /* Margins */
     .m-sm { margin: 1.25rem; }
@@ -266,12 +267,10 @@ h6 { font-size: 1.125rem; }
 /* Medium Screen Size */
 @media only screen and (min-width: 48rem) {
     /* Font Sizes */
-    h1 { font-size: 6.000rem; }
-    h2 { font-size: 4.000rem; }
-    h3 { font-size: 2.000rem; }
-    h4 { font-size: 1.750rem; }
-    h5 { font-size: 1.500rem; }
-    h6 { font-size: 1.250rem; }
+    .text-3xl { font-size: 6.000rem; }
+    .text-2xl { font-size: 4.000rem; }
+    .text-xl  { font-size: 2.750rem; }
+    .text-lg  { font-size: 2.000rem; }
 
     /* Margins */
     .m-sm { margin: 1.50rem; }
@@ -335,13 +334,15 @@ h6 { font-size: 1.125rem; }
 /* Large Screen Size */
 @media only screen and (min-width: 64rem) {
     /* Font Sizes */
-    h1 { font-size: 6.500rem; }
-    h2 { font-size: 4.500rem; }
-    h3 { font-size: 2.500rem; }
-    h4 { font-size: 1.875rem; }
-    h5 { font-size: 1.625rem; }
-    h6 { font-size: 1.375rem; }
-    *  { font-size: 1.125rem; }
+    .text-3xl { font-size: 6.500rem; }
+    .text-2xl { font-size: 4.500rem; }
+    .text-xl  { font-size: 2.875rem; }
+    .text-lg  { font-size: 2.125rem; }
+    .text-md  { font-size: 1.375rem; }
+    .text-sm  { font-size: 1.125rem; }
+    .text-xs  { font-size: 0.875rem; }
+    
+    * { font-size: 1.125rem; }
 
     /* Margins */
     .m-sm { margin: 1.75rem; }
@@ -405,13 +406,15 @@ h6 { font-size: 1.125rem; }
 /* Extra Large Screen Size */
 @media only screen and (min-width: 80rem) {
     /* Font Sizes */
-    h1 { font-size: 7.000rem; }
-    h2 { font-size: 5.000rem; }
-    h3 { font-size: 3.000rem; }
-    h4 { font-size: 2.000rem; }
-    h5 { font-size: 1.750rem; }
-    h6 { font-size: 1.500rem; }
-    *  { font-size: 1.250rem; }
+    .text-3xl { font-size: 7.000rem; }
+    .text-2xl { font-size: 5.000rem; }
+    .text-xl  { font-size: 3.000rem; }
+    .text-lg  { font-size: 2.250rem; }
+    .text-md  { font-size: 1.500rem; }
+    .text-sm  { font-size: 1.250rem; }
+    .text-xs  { font-size: 1.000rem; }
+    
+    * { font-size: 1.250rem; }
 
     /* Margins */
     .m-sm { margin: 2.00rem; }

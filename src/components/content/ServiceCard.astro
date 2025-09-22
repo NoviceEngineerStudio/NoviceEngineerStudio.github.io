@@ -66,7 +66,7 @@ switch (Astro.props.language) {
     <div class="flex items-center justify-between flex-wrap" style="margin-bottom: 1rem;">
         <div class="flex items-center mr-sm">
             <div class="service-index-icon">{Astro.props.index}</div>
-            <h4>{Astro.props.tier.title}</h4>
+            <h4 class="text-lg">{Astro.props.tier.title}</h4>
         </div>
 
         <span>{price_text}</span>
@@ -110,12 +110,12 @@ switch (Astro.props.language) {
                 <div class="service-example-card text-shadow-none">
                     <div class="service-example-card-preview" style={`background-image: url("${example.preview_image.src}");`} />
                     
-                    <div class="service-example-card-title">
+                    <div class="service-example-card-title text-md">
                         {example.title}
                     </div>
 
                     <div class="service-example-card-content">
-                        <p style="font-style: italic;">"{example.description}"</p>
+                        <p class="text-xs" style="font-style: italic;">"{example.description}"</p>
                         <a class="teal-button" href={example.href}>View Here</a>
                     </div>
                 </div>
