@@ -1,7 +1,7 @@
 import { Language } from "../language";
 import type { ServiceExample, ServiceTier } from "./service_tier";
 
-import map_maker_preview from "../../assets/previews/global_hero.webp";
+import map_maker_preview from "../../assets/previews/map_maker.webp";
 
 function buildAdeptTier(language: Language): ServiceTier {
     const map_maker: ServiceExample = {
@@ -39,7 +39,7 @@ function buildAdeptTier(language: Language): ServiceTier {
             tier.interaction_tag = "Complex camera controls and UI inputs.";
             tier.support_tag = "2-3 revision rounds with minor integration support.";
 
-            map_maker.description = "TO BE WRITTEN...";
+            map_maker.description = "Map-Maker is a perlin-noise based terrain generator with adjustable parameters for frequency, amplitude, persistence, and more. Users can customize the terrain generation process to create unique textured landscapes.";
             
             break;
     }

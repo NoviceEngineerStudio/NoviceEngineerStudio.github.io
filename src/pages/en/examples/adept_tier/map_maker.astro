@@ -18,28 +18,19 @@ import download_icon from "../../../../assets/icons/Download.svg";
             <hr/>
         </div>
 
-        <div>
-            <label for="map-maker-grid-width">Grid Width</label>
-            <br/>
-            <small class="text-xs">*Number of sample point columns</small>
-            <br/>
-            <input type="number" id="map-maker-grid-width" />
+        <div class="map-maker-number-input">
+            <label class="text-xs" for="map-maker-grid-width">Grid Width</label>
+            <input type="number" id="map-maker-grid-width" class="text-xs" step="1" />
         </div>
 
-        <div>
-            <label for="map-maker-grid-height">Grid Height</label>
-            <br/>
-            <small class="text-xs">*Number of sample point rows</small>
-            <br/>
-            <input type="number" id="map-maker-grid-height" />
+        <div class="map-maker-number-input">
+            <label class="text-xs" for="map-maker-grid-height">Grid Height</label>
+            <input type="number" id="map-maker-grid-height" class="text-xs" step="1" />
         </div>
 
-        <div>
-            <label for="map-maker-point-spacing">Point Spacing</label>
-            <br/>
-            <small class="text-xs">*Distance between sample points</small>
-            <br/>
-            <input type="number" id="map-maker-point-spacing" />
+        <div class="map-maker-number-input">
+            <label class="text-xs" for="map-maker-point-spacing">Point Spacing (m)</label>
+            <input type="number" id="map-maker-point-spacing" class="text-xs" step="0.1" />
         </div>
 
         <!-- * Height Parameters * -->
@@ -48,28 +39,19 @@ import download_icon from "../../../../assets/icons/Download.svg";
             <hr/>
         </div>
 
-        <div>
-            <label for="map-maker-min-height">Min. Height</label>
-            <br/>
-            <small class="text-xs">*Minimum terrain height</small>
-            <br/>
-            <input type="number" id="map-maker-min-height" />
+        <div class="map-maker-number-input">
+            <label class="text-xs" for="map-maker-min-height">Min. Height (m)</label>
+            <input type="number" id="map-maker-min-height" class="text-xs" step="0.1" />
         </div>
 
-        <div>
-            <label for="map-maker-max-height">Max. Height</label>
-            <br/>
-            <small class="text-xs">*Maximum terrain height</small>
-            <br/>
-            <input type="number" id="map-maker-max-height" />
+        <div class="map-maker-number-input">
+            <label class="text-xs" for="map-maker-max-height">Max. Height (m)</label>
+            <input type="number" id="map-maker-max-height" class="text-xs" step="0.1" />
         </div>
 
-        <div>
-            <label for="map-maker-height-scale">Height Scale</label>
-            <br/>
-            <small class="text-xs">*Height multiplier applied to noise [0,1]</small>
-            <br/>
-            <input type="number" id="map-maker-height-scale" />
+        <div class="map-maker-number-input">
+            <label class="text-xs" for="map-maker-height-scale">Height Scale (m)</label>
+            <input type="number" id="map-maker-height-scale" class="text-xs" step="0.1" />
         </div>
 
         <!-- * Noise Parameters * -->
@@ -78,60 +60,39 @@ import download_icon from "../../../../assets/icons/Download.svg";
             <hr/>
         </div>
 
-        <div>
-            <label for="map-maker-initial-amplitude">Initial Amplitude</label>
-            <br/>
-            <small class="text-xs">*Amplitude applied to the first noise layer</small>
-            <br/>
-            <input type="number" id="map-maker-initial-amplitude" />
+        <div class="map-maker-number-input">
+            <label class="text-xs" class="text-xs" for="map-maker-initial-amplitude">Amplitude</label>
+            <input type="number" id="map-maker-initial-amplitude" class="text-xs" step="0.1" />
         </div>
 
-        <div>
-            <label for="map-maker-amplitude-persistence">Amplitude Persistence</label>
-            <br/>
-            <small class="text-xs">*Multiplier applied to amplitude between each layer</small>
-            <br/>
-            <input type="number" id="map-maker-amplitude-persistence" />
+        <div class="map-maker-number-input">
+            <label class="text-xs" for="map-maker-amplitude-persistence">Amp. Persistence</label>
+            <input type="number" id="map-maker-amplitude-persistence" class="text-xs" step="0.1" />
         </div>
 
-        <div>
-            <label for="map-maker-initial-frequency">Initial Frequency</label>
-            <br/>
-            <small class="text-xs">*Frequency applied to the first noise layer</small>
-            <br/>
-            <input type="number" id="map-maker-initial-frequency" />
+        <div class="map-maker-number-input">
+            <label class="text-xs" for="map-maker-initial-frequency">Frequency</label>
+            <input type="number" id="map-maker-initial-frequency" class="text-xs" step="0.1" />
         </div>
 
-        <div>
-            <label for="map-maker-frequency-persistence">Frequency Persistence</label>
-            <br/>
-            <small class="text-xs">*Multiplier applied to frequency between each layer</small>
-            <br/>
-            <input type="number" id="map-maker-frequency-persistence" />
+        <div class="map-maker-number-input">
+            <label class="text-xs" for="map-maker-frequency-persistence">Freq. Persistence</label>
+            <input type="number" id="map-maker-frequency-persistence" class="text-xs" step="0.1" />
         </div>
 
-        <div>
-            <label for="map-maker-carve-amplitude">Carve Amplitude</label>
-            <br/>
-            <small class="text-xs">*Amplitude of the carving noise (think rivers)</small>
-            <br/>
-            <input type="number" id="map-maker-carve-amplitude" />
+        <div class="map-maker-number-input">
+            <label class="text-xs" for="map-maker-carve-amplitude">Carve Amplitude</label>
+            <input type="number" id="map-maker-carve-amplitude" class="text-xs" step="0.1" />
         </div>
 
-        <div>
-            <label for="map-maker-carve-frequency">Carve Frequency</label>
-            <br/>
-            <small class="text-xs">*Frequency of the carving noise (think rivers)</small>
-            <br/>
-            <input type="number" id="map-maker-carve-frequency" />
+        <div class="map-maker-number-input">
+            <label class="text-xs" for="map-maker-carve-frequency">Carve Frequency</label>
+            <input type="number" id="map-maker-carve-frequency" class="text-xs" step="0.1" />
         </div>
 
-        <div>
-            <label for="map-maker-noise-octaves">Noise Octaves</label>
-            <br/>
-            <small class="text-xs">*Number of noise layers applied</small>
-            <br/>
-            <input type="number" id="map-maker-noise-octaves" />
+        <div class="map-maker-number-input">
+            <label class="text-xs" for="map-maker-noise-octaves">Noise Octaves</label>
+            <input type="number" id="map-maker-noise-octaves" class="text-xs" step="1" />
         </div>
 
         <!-- * Texture Parameters * -->
@@ -204,8 +165,21 @@ import download_icon from "../../../../assets/icons/Download.svg";
         gap: 1rem;
     }
 
-    .map-maker-config-panel  input {
-        /* TODO: Input CSS Class */
+    .map-maker-number-input {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .map-maker-number-input input {
+        padding: 0.125rem 0.5rem 0.125rem 0.5rem;
+
+        background-color: #1f1f1f;
+        color: #ffffff;
+
+        border: 0.125rem solid #615fff;
+        border-radius: 0.5rem;
     }
 
     map-maker-canvas {
@@ -288,6 +262,7 @@ import download_icon from "../../../../assets/icons/Download.svg";
     import snow_color from "../../../../assets/materials/map_maker/Snow.jpg";
     import stone_color from "../../../../assets/materials/map_maker/Stone.jpg";
     import water_color from "../../../../assets/materials/map_maker/Water.jpg";
+import { min } from "three/src/nodes/TSL.js";
 
     class MapMakerCanvas extends HTMLElement {
         private canvas: RenderCanvas;
@@ -322,7 +297,7 @@ import download_icon from "../../../../assets/icons/Download.svg";
 
                 random_seed: 32702,
 
-                min_height: 4.0,
+                min_height: 4.9,
                 max_height: 40.0,
                 terrain_scale: 100.0,
                 start_amplitude: 1.0,
@@ -373,12 +348,95 @@ import download_icon from "../../../../assets/icons/Download.svg";
             this.orbit_controls = new OrbitControls(this.canvas.getCamera(), this.canvas.getDomElement());
             this.orbit_controls.saveState();
 
+            // ? View Buttons
+
             const home_button: HTMLElement | null = document.getElementById("map-maker-home-button");
             home_button?.addEventListener("click", this.onHomeButton.bind(this));
             const wireframe_button: HTMLElement | null = document.getElementById("map-maker-wireframe-button");
             wireframe_button?.addEventListener("click", this.onWireframeButton.bind(this));
             const download_button: HTMLElement | null = document.getElementById("map-maker-download-button");
             download_button?.addEventListener("click", this.onDownloadButton.bind(this));
+
+            // ? Grid Inputs
+
+            const grid_width_input: HTMLInputElement | null = document.getElementById("map-maker-grid-width") as HTMLInputElement;
+            grid_width_input!.value = this.terrain_generator.getWidth().toString();
+
+            const grid_height_input: HTMLInputElement | null = document.getElementById("map-maker-grid-height") as HTMLInputElement;
+            grid_height_input!.value = this.terrain_generator.getHeight().toString();
+
+            const point_spacing_input: HTMLInputElement | null = document.getElementById("map-maker-point-spacing") as HTMLInputElement;
+            point_spacing_input!.value = this.terrain_generator.getSpacing().toString();
+
+            const onGridChange = () => {
+                this.onGridInputChange(
+                    grid_width_input as HTMLInputElement,
+                    grid_height_input as HTMLInputElement,
+                    point_spacing_input as HTMLInputElement
+                );
+            };
+
+            grid_width_input?.addEventListener("change", onGridChange);
+            grid_height_input?.addEventListener("change", onGridChange);
+            point_spacing_input?.addEventListener("change", onGridChange);
+
+            // ? Noise Inputs
+
+            const min_height_input: HTMLInputElement | null = document.getElementById("map-maker-min-height") as HTMLInputElement;
+            min_height_input!.value = this.terrain_generator.getMinHeight().toString();
+
+            const max_height_input: HTMLInputElement | null = document.getElementById("map-maker-max-height") as HTMLInputElement;
+            max_height_input!.value = this.terrain_generator.getMaxHeight().toString();
+
+            const height_scale_input: HTMLInputElement | null = document.getElementById("map-maker-height-scale") as HTMLInputElement;
+            height_scale_input!.value = this.terrain_generator.getTerrainScale().toString();
+
+            const initial_amplitude_input: HTMLInputElement | null = document.getElementById("map-maker-initial-amplitude") as HTMLInputElement;
+            initial_amplitude_input!.value = this.terrain_generator.getStartAmplitude().toString();
+
+            const amplitude_persistence_input: HTMLInputElement | null = document.getElementById("map-maker-amplitude-persistence") as HTMLInputElement;
+            amplitude_persistence_input!.value = this.terrain_generator.getPersistence().toString();
+
+            const initial_frequency_input: HTMLInputElement | null = document.getElementById("map-maker-initial-frequency") as HTMLInputElement;
+            initial_frequency_input!.value = this.terrain_generator.getStartFrequency().toString();
+
+            const frequency_persistence_input: HTMLInputElement | null = document.getElementById("map-maker-frequency-persistence") as HTMLInputElement;
+            frequency_persistence_input!.value = this.terrain_generator.getLacunarity().toString();
+
+            const carve_amplitude_input: HTMLInputElement | null = document.getElementById("map-maker-carve-amplitude") as HTMLInputElement;
+            carve_amplitude_input!.value = this.terrain_generator.getCarveAmplitude().toString();
+
+            const carve_frequency_input: HTMLInputElement | null = document.getElementById("map-maker-carve-frequency") as HTMLInputElement;
+            carve_frequency_input!.value = this.terrain_generator.getCarveFrequency().toString();
+
+            const noise_octaves_input: HTMLInputElement | null = document.getElementById("map-maker-noise-octaves") as HTMLInputElement;
+            noise_octaves_input!.value = this.terrain_generator.getOctaves().toString();
+
+            const onNoiseChange = () => {
+                this.onNoiseInputChange(
+                    min_height_input as HTMLInputElement,
+                    max_height_input as HTMLInputElement,
+                    height_scale_input as HTMLInputElement,
+                    initial_amplitude_input as HTMLInputElement,
+                    amplitude_persistence_input as HTMLInputElement,
+                    initial_frequency_input as HTMLInputElement,
+                    frequency_persistence_input as HTMLInputElement,
+                    carve_amplitude_input as HTMLInputElement,
+                    carve_frequency_input as HTMLInputElement,
+                    noise_octaves_input as HTMLInputElement
+                );
+            }
+
+            min_height_input?.addEventListener("change", onNoiseChange);
+            max_height_input?.addEventListener("change", onNoiseChange);
+            height_scale_input?.addEventListener("change", onNoiseChange);
+            initial_amplitude_input?.addEventListener("change", onNoiseChange);
+            amplitude_persistence_input?.addEventListener("change", onNoiseChange);
+            initial_frequency_input?.addEventListener("change", onNoiseChange);
+            frequency_persistence_input?.addEventListener("change", onNoiseChange);
+            carve_amplitude_input?.addEventListener("change", onNoiseChange);
+            carve_frequency_input?.addEventListener("change", onNoiseChange);
+            noise_octaves_input?.addEventListener("change", onNoiseChange);
         }
 
         private onUpdate(delta_time: number): void {
@@ -396,6 +454,143 @@ import download_icon from "../../../../assets/icons/Download.svg";
 
         private onDownloadButton(): void {
             this.terrain_generator.downloadOBJ();
+        }
+
+        private onGridInputChange(
+            width_input: HTMLInputElement,
+            height_input: HTMLInputElement,
+            spacing_input: HTMLInputElement
+        ): void {
+            let width: number = parseInt(width_input.value);
+            let height: number = parseInt(height_input.value);
+            let spacing: number = parseFloat(spacing_input.value);
+
+            if (width < 2) {
+                width_input.value = "2";
+                width = 2;
+            }
+
+            if (height < 2) {
+                height_input.value = "2";
+                height = 2;
+            }
+
+            if (spacing <= 0.1) {
+                spacing_input.value = "0.1";
+                spacing = 0.1;
+            }
+
+            if (width === this.terrain_generator.getWidth() &&
+                height === this.terrain_generator.getHeight() &&
+                spacing === this.terrain_generator.getSpacing()) {
+                return;
+            }
+
+            this.terrain_generator.regenerateTerrainGeometry(
+                width,
+                height,
+                spacing
+            );
+        }
+
+        private onNoiseInputChange(
+            min_height_input: HTMLInputElement,
+            max_height_input: HTMLInputElement,
+            height_scale_input: HTMLInputElement,
+            initial_amplitude_input: HTMLInputElement,
+            amplitude_persistence_input: HTMLInputElement,
+            initial_frequency_input: HTMLInputElement,
+            frequency_persistence_input: HTMLInputElement,
+            carve_amplitude_input: HTMLInputElement,
+            carve_frequency_input: HTMLInputElement,
+            noise_octaves_input: HTMLInputElement
+        ): void {
+            let min_height: number = parseFloat(min_height_input.value);
+            let max_height: number = parseFloat(max_height_input.value);
+            let height_scale: number = parseFloat(height_scale_input.value);
+            let initial_amplitude: number = parseFloat(initial_amplitude_input.value);
+            let amplitude_persistence: number = parseFloat(amplitude_persistence_input.value);
+            let initial_frequency: number = parseFloat(initial_frequency_input.value);
+            let frequency_persistence: number = parseFloat(frequency_persistence_input.value);
+            let carve_amplitude: number = parseFloat(carve_amplitude_input.value);
+            let carve_frequency: number = parseFloat(carve_frequency_input.value);
+            let noise_octaves: number = parseInt(noise_octaves_input.value);
+
+            if (min_height < 0.0) {
+                min_height_input.value = "0.0";
+                min_height = 0.0;
+            }
+
+            if (max_height <= min_height) {
+                max_height_input.value = min_height.toString();
+                max_height = min_height;
+            }
+
+            if (height_scale <= 0.0) {
+                height_scale_input.value = "0.0";
+                height_scale = 0.0;
+            }
+
+            if (initial_amplitude <= 0.0) {
+                initial_amplitude_input.value = "0.0";
+                initial_amplitude = 0.0;
+            }
+
+            if (amplitude_persistence < 0.0) {
+                amplitude_persistence_input.value = "0.0";
+                amplitude_persistence = 0.0;
+            }
+
+            if (initial_frequency <= 0.0) {
+                initial_frequency_input.value = "0.0";
+                initial_frequency = 0.0;
+            }
+
+            if (frequency_persistence < 0.0) {
+                frequency_persistence_input.value = "0.0";
+                frequency_persistence = 0.0;
+            }
+
+            if (carve_amplitude < 0.0) {
+                carve_amplitude_input.value = "0.0";
+                carve_amplitude = 0.0;
+            }
+
+            if (carve_frequency <= 0.0) {
+                carve_frequency_input.value = "0.0";
+                carve_frequency = 0.0;
+            }
+
+            if (noise_octaves < 1) {
+                noise_octaves_input.value = "1";
+                noise_octaves = 1;
+            }
+
+            if (min_height === this.terrain_generator.getMinHeight() &&
+                max_height === this.terrain_generator.getMaxHeight() &&
+                height_scale === this.terrain_generator.getTerrainScale() &&
+                initial_amplitude === this.terrain_generator.getStartAmplitude() &&
+                amplitude_persistence === this.terrain_generator.getPersistence() &&
+                initial_frequency === this.terrain_generator.getStartFrequency() &&
+                frequency_persistence === this.terrain_generator.getLacunarity() &&
+                carve_amplitude === this.terrain_generator.getCarveAmplitude() &&
+                carve_frequency === this.terrain_generator.getCarveFrequency() &&
+                noise_octaves === this.terrain_generator.getOctaves()) {
+                return;
+            }
+
+            this.terrain_generator.regenerateTerrainNoise(
+                min_height,
+                max_height,
+                height_scale,
+                initial_amplitude,
+                initial_frequency,
+                carve_frequency,
+                carve_amplitude,
+                noise_octaves,
+                amplitude_persistence,
+                frequency_persistence
+            );
         }
     }
 

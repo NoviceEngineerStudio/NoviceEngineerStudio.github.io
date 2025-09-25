@@ -145,6 +145,7 @@ const FRAGMENT_SHADER: string = `
 class TerrainGenerator extends THREE.Mesh {
     private width: number = 0.0;
     private height: number = 0.0;
+    private spacing: number = 0.0;
 
     private morph_time: number;
 
@@ -226,6 +227,23 @@ class TerrainGenerator extends THREE.Mesh {
         this.updateGeometry(create_info.width, create_info.height, create_info.spacing);
     }
 
+    public getWidth(): number { return this.width; }
+    public getHeight(): number { return this.height; }
+    public getSpacing(): number { return this.spacing; }
+
+    public getMinHeight(): number { return this.min_height; }
+    public getMaxHeight(): number { return this.max_height; }
+    public getTerrainScale(): number { return this.terrain_scale; }
+
+    public getStartAmplitude(): number { return this.start_amplitude; }
+    public getStartFrequency(): number { return this.start_frequency; }
+    public getCarveFrequency(): number { return this.carve_frequency; }
+    public getCarveAmplitude(): number { return this.carve_amplitude; }
+    public getOctaves(): number { return this.octaves; }
+
+    public getPersistence(): number { return this.persistence; }
+    public getLacunarity(): number { return this.lacunarity; }
+
     private computeNoise(x: number, z: number): number {
         let amplitude: number = this.start_amplitude;
         let total_amplitude: number = 0.0;
@@ -252,6 +270,8 @@ class TerrainGenerator extends THREE.Mesh {
     }
 
     private async updateGeometry(width: number, height: number, spacing: number): Promise<void> {
+        this.perlin.resetSeedCounter();
+
         // ? Compute Prior Heights List
 
         const prior_heights: Float32Array = new Float32Array(width * height);
@@ -280,7 +300,10 @@ class TerrainGenerator extends THREE.Mesh {
 
         this.width = width;
         this.height = height;
+        this.spacing = spacing;
 
+        this.geometry.dispose();
+        this.geometry = new THREE.BufferGeometry();
         this.geometry.setAttribute(PRIOR_HEIGHT_ATTRIBUTE, new THREE.BufferAttribute(prior_heights, 1));
 
         // ? Compute New Vertex Positions
@@ -358,6 +381,70 @@ class TerrainGenerator extends THREE.Mesh {
         download_link.click();
 
         URL.revokeObjectURL(download_link.href);
+    }
+
+    public async regenerateTerrainGeometry(width: number, height: number, spacing: number): Promise<void> {
+        (this.material as THREE.ShaderMaterial).uniforms[ANIMATION_PROGRESS_UNIFORM].value = 0.0;
+
+        await this.updateGeometry(width, height, spacing);
+    }
+
+    public async regenerateTerrainNoise(
+        min_height: number,
+        max_height: number,
+        terrain_scale: number,
+        start_amplitude: number,
+        start_frequency: number,
+        carve_frequency: number,
+        carve_amplitude: number,
+        octaves: number,
+        persistence: number,
+        lacunarity: number
+    ): Promise<void> {
+        this.min_height = min_height;
+        this.max_height = max_height;
+        this.terrain_scale = terrain_scale;
+        this.start_amplitude = start_amplitude;
+        this.start_frequency = start_frequency;
+        this.carve_frequency = carve_frequency;
+        this.carve_amplitude = carve_amplitude;
+        this.octaves = octaves;
+        this.persistence = persistence;
+        this.lacunarity = lacunarity;
+
+        (this.material as THREE.ShaderMaterial).uniforms[ANIMATION_PROGRESS_UNIFORM].value = 0.0;
+
+        this.perlin.resetSeedCounter();
+
+        const positions: THREE.BufferAttribute | THREE.InterleavedBufferAttribute | undefined = this.geometry.getAttribute(GRID_POSITION_ATTRIBUTE);
+        const prior_heights: THREE.BufferAttribute | THREE.InterleavedBufferAttribute | undefined = this.geometry.getAttribute(PRIOR_HEIGHT_ATTRIBUTE);
+        
+        if (positions === undefined) {
+            throw new Error("Positions attribute is undefined when regenerating terrain noise.");
+        }
+
+        if (prior_heights === undefined) {
+            throw new Error("Prior heights attribute is undefined when regenerating terrain noise.");
+        }
+
+        for (let idx = 0; idx < prior_heights.array.length; ++idx) {
+            prior_heights.array[idx] = positions.array[(idx * 3) + 1];
+        }
+
+        for (let idx = 0; idx < prior_heights.array.length; ++idx) {
+            const x_position: number = positions.array[(idx * 3)];
+            const z_position: number = positions.array[(idx * 3) + 2];
+
+            positions.array[(idx * 3) + 1] = this.computeNoise(x_position, z_position);
+        }
+
+        positions.needsUpdate = true;
+        prior_heights.needsUpdate = true;
+
+        this.geometry.computeVertexNormals();
+        this.geometry.attributes.normal.needsUpdate = true;
+
+        this.position.setY(-0.5 * (this.max_height - this.min_height));
     }
 }
 

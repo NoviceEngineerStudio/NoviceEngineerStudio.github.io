@@ -94,6 +94,10 @@ class Perlin {
             ];
         }
     }
+
+    public resetSeedCounter(): void {
+        this.seed_counter = 0;
+    }
 }
 
 export default Perlin;
