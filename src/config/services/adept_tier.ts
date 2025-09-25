@@ -1,14 +1,14 @@
 import { Language } from "../language";
 import type { ServiceExample, ServiceTier } from "./service_tier";
 
-import my_arcade_preview from "../../assets/previews/global_hero.webp";
+import map_maker_preview from "../../assets/previews/global_hero.webp";
 
 function buildAdeptTier(language: Language): ServiceTier {
-    const my_arcade: ServiceExample = {
-        title: "MyArcade",
+    const map_maker: ServiceExample = {
+        title: "MapMaker",
         description: "",
-        href: `/${language}/examples/adept_tier/my_arcade`,
-        preview_image: my_arcade_preview
+        href: `/${language}/examples/adept_tier/map_maker`,
+        preview_image: map_maker_preview
     }
 
     const tier: ServiceTier = {
@@ -22,7 +22,7 @@ function buildAdeptTier(language: Language): ServiceTier {
             max_days: 7,
         },
         examples: [
-            my_arcade
+            map_maker
         ],
         scene_tag: "",
         animation_tag: "",
@@ -39,7 +39,7 @@ function buildAdeptTier(language: Language): ServiceTier {
             tier.interaction_tag = "Complex camera controls and UI inputs.";
             tier.support_tag = "2-3 revision rounds with minor integration support.";
 
-            my_arcade.description = "TO BE WRITTEN...";
+            map_maker.description = "TO BE WRITTEN...";
             
             break;
     }

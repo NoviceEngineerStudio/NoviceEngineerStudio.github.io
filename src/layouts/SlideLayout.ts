@@ -1,5 +1,7 @@
 type SlideDeckOrientation = "vertical" | "horizontal";
 
+const SCROLL_TIMEOUT_MS: number = 600;
+
 class SlideDeck extends HTMLElement {
     private scroll_behavior: ScrollBehavior;
     private orientation: SlideDeckOrientation;
@@ -93,6 +95,7 @@ class PageMap extends HTMLElement {
     private map_nodes: HTMLElement[];
 
     private swipe_start: number;
+    private is_transitioning: boolean;
 
     constructor() {
         super();
@@ -101,6 +104,7 @@ class PageMap extends HTMLElement {
         this.onChangeCallbacks = [];
         this.map_nodes = [];
         this.swipe_start = 0;
+        this.is_transitioning = false;
 
         const parent_element: HTMLElement | null = this.parentElement;
         if (parent_element === null) return;
@@ -153,6 +157,8 @@ class PageMap extends HTMLElement {
         this.map_nodes[slide_index].click();
 
         window.addEventListener("wheel", (wheel_event: WheelEvent) => {
+            if (this.is_transitioning) return;
+
             const scroll_delta: number = wheel_event.deltaY;
 
             if (!slide_deck.canScrollTransition(scroll_delta)) return;
@@ -166,7 +172,9 @@ class PageMap extends HTMLElement {
             );
 
             if (new_index >= 0 && new_index < this.map_nodes.length) {
+                this.is_transitioning = true;
                 this.map_nodes[new_index].click();
+                setTimeout(() => { this.is_transitioning = false; }, SCROLL_TIMEOUT_MS);
             }
         }, { passive: false });
 
@@ -175,6 +183,8 @@ class PageMap extends HTMLElement {
         });
 
         window.addEventListener("touchmove", (touch_event: TouchEvent) => {
+            if (this.is_transitioning) return;
+
             const scroll_delta: number = this.swipe_start - touch_event.touches[0].clientY;
 
             if (!slide_deck.canScrollTransition(scroll_delta)) return;
@@ -188,7 +198,9 @@ class PageMap extends HTMLElement {
             );
 
             if (new_index >= 0 && new_index < this.map_nodes.length) {
+                this.is_transitioning = true;
                 this.map_nodes[new_index].click();
+                setTimeout(() => { this.is_transitioning = false; }, SCROLL_TIMEOUT_MS);
             }
         }, { passive: false });
     }

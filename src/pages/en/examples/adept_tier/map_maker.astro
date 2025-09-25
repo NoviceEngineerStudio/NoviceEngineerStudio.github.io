@@ -1,0 +1,403 @@
+---
+import { Image } from "astro:assets";
+import NavLayout from "../../../../layouts/NavLayout.astro";
+
+import home_icon from "../../../../assets/icons/House.svg";
+import wireframe_icon from "../../../../assets/icons/Grid.svg";
+import download_icon from "../../../../assets/icons/Download.svg";
+---
+
+<NavLayout title="MapMaker" body_class="map-maker-body">
+    <!-- * Map Configuration Panel * -->
+    <div class="map-maker-config-panel">
+        <h1 class="text-lg">Map Maker</h1>
+
+        <!-- * Grid Parameters * -->
+        <div>
+            <h2 class="text-md">Grid</h2>
+            <hr/>
+        </div>
+
+        <div>
+            <label for="map-maker-grid-width">Grid Width</label>
+            <br/>
+            <small class="text-xs">*Number of sample point columns</small>
+            <br/>
+            <input type="number" id="map-maker-grid-width" />
+        </div>
+
+        <div>
+            <label for="map-maker-grid-height">Grid Height</label>
+            <br/>
+            <small class="text-xs">*Number of sample point rows</small>
+            <br/>
+            <input type="number" id="map-maker-grid-height" />
+        </div>
+
+        <div>
+            <label for="map-maker-point-spacing">Point Spacing</label>
+            <br/>
+            <small class="text-xs">*Distance between sample points</small>
+            <br/>
+            <input type="number" id="map-maker-point-spacing" />
+        </div>
+
+        <!-- * Height Parameters * -->
+        <div>
+            <h2 class="text-md">Terrain Height</h2>
+            <hr/>
+        </div>
+
+        <div>
+            <label for="map-maker-min-height">Min. Height</label>
+            <br/>
+            <small class="text-xs">*Minimum terrain height</small>
+            <br/>
+            <input type="number" id="map-maker-min-height" />
+        </div>
+
+        <div>
+            <label for="map-maker-max-height">Max. Height</label>
+            <br/>
+            <small class="text-xs">*Maximum terrain height</small>
+            <br/>
+            <input type="number" id="map-maker-max-height" />
+        </div>
+
+        <div>
+            <label for="map-maker-height-scale">Height Scale</label>
+            <br/>
+            <small class="text-xs">*Height multiplier applied to noise [0,1]</small>
+            <br/>
+            <input type="number" id="map-maker-height-scale" />
+        </div>
+
+        <!-- * Noise Parameters * -->
+        <div>
+            <h2 class="text-md">Noise</h2>
+            <hr/>
+        </div>
+
+        <div>
+            <label for="map-maker-initial-amplitude">Initial Amplitude</label>
+            <br/>
+            <small class="text-xs">*Amplitude applied to the first noise layer</small>
+            <br/>
+            <input type="number" id="map-maker-initial-amplitude" />
+        </div>
+
+        <div>
+            <label for="map-maker-amplitude-persistence">Amplitude Persistence</label>
+            <br/>
+            <small class="text-xs">*Multiplier applied to amplitude between each layer</small>
+            <br/>
+            <input type="number" id="map-maker-amplitude-persistence" />
+        </div>
+
+        <div>
+            <label for="map-maker-initial-frequency">Initial Frequency</label>
+            <br/>
+            <small class="text-xs">*Frequency applied to the first noise layer</small>
+            <br/>
+            <input type="number" id="map-maker-initial-frequency" />
+        </div>
+
+        <div>
+            <label for="map-maker-frequency-persistence">Frequency Persistence</label>
+            <br/>
+            <small class="text-xs">*Multiplier applied to frequency between each layer</small>
+            <br/>
+            <input type="number" id="map-maker-frequency-persistence" />
+        </div>
+
+        <div>
+            <label for="map-maker-carve-amplitude">Carve Amplitude</label>
+            <br/>
+            <small class="text-xs">*Amplitude of the carving noise (think rivers)</small>
+            <br/>
+            <input type="number" id="map-maker-carve-amplitude" />
+        </div>
+
+        <div>
+            <label for="map-maker-carve-frequency">Carve Frequency</label>
+            <br/>
+            <small class="text-xs">*Frequency of the carving noise (think rivers)</small>
+            <br/>
+            <input type="number" id="map-maker-carve-frequency" />
+        </div>
+
+        <div>
+            <label for="map-maker-noise-octaves">Noise Octaves</label>
+            <br/>
+            <small class="text-xs">*Number of noise layers applied</small>
+            <br/>
+            <input type="number" id="map-maker-noise-octaves" />
+        </div>
+
+        <!-- * Texture Parameters * -->
+        <div>
+            <h2 class="text-md">Texture Layers</h2>
+            <hr/>
+        </div>
+
+        <!-- TODO: Texture Layer Editor -->
+    </div>
+
+    <!-- * Map 3D Renderer * -->
+    <map-maker-canvas>
+        <button
+            id="map-maker-home-button"
+            class="map-maker-overlay-button map-maker-overlay-tl"
+        >
+            <Image
+                src={home_icon}
+                alt="Home-Orientation-Icon"
+                loading="eager"
+            />
+        </button>
+
+        <div class="map-maker-overlay-br">
+            <button
+                id="map-maker-wireframe-button"
+                class="map-maker-overlay-button"
+            >
+                <Image
+                    src={wireframe_icon}
+                    alt="Wireframe-Icon"
+                    loading="eager"
+                />
+            </button>
+
+            <button
+                id="map-maker-download-button"
+                class="map-maker-overlay-button"
+            >
+                <Image
+                    src={download_icon}
+                    alt="Download-Icon"
+                    loading="eager"
+                />
+            </button>
+        </div>
+    </map-maker-canvas>
+</NavLayout>
+
+<style is:global>
+    .map-maker-body {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .map-maker-config-panel {
+        width: 28rem;
+        height: 100vh;
+
+        padding: 1rem;
+
+        overflow-y: auto;
+
+        background-color: #282828;
+        border-right: 0.125rem solid #5e5e5e;
+
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .map-maker-config-panel  input {
+        /* TODO: Input CSS Class */
+    }
+
+    map-maker-canvas {
+        width: calc(100vw - 28rem);
+        height: 100vh;
+
+        display: block;
+        position: relative;
+    }
+
+    .map-maker-overlay-tl {
+        position: absolute;
+        top: 2rem;
+        left: 2rem;
+    }
+
+    .map-maker-overlay-br {
+        position: absolute;
+        bottom: 2rem;
+        left: 2rem;
+
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .map-maker-overlay-button {
+        width: 3rem;
+        height: 3rem;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        background-color: #000000;
+        border: 0.125rem solid #615fff;
+        border-radius: 0.5rem;
+
+        cursor: pointer;
+    }
+
+    .map-maker-overlay-button:hover {
+        background-color: #372aac;
+    }
+
+    .map-maker-overlay-button > img {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+
+    @media only screen and (max-width: 56rem) {
+        .map-maker-body {
+            flex-direction: column-reverse;
+        }
+
+        .map-maker-config-panel {
+            width: 100vw;
+            height: 28rem;
+            max-height: 50vh;
+
+            border-top: 0.125rem solid #5e5e5e;
+            border-right: none;
+        }
+
+        map-maker-canvas {
+            width: 100vw;
+            height: calc(100vh - 28rem);
+            min-height: 50vh;
+        }
+    }
+</style>
+
+<script>
+    import * as THREE from "three";
+    import { OrbitControls } from "three/examples/jsm/Addons.js";
+    import RenderCanvas from "../../../../components/threejs/RenderCanvas";
+    import TerrainGenerator from "../../../../components/threejs/TerrainGenerator";
+
+    import dirt_color from "../../../../assets/materials/map_maker/Dirt.jpg";
+    import sand_color from "../../../../assets/materials/map_maker/Sand.jpg";
+    import snow_color from "../../../../assets/materials/map_maker/Snow.jpg";
+    import stone_color from "../../../../assets/materials/map_maker/Stone.jpg";
+    import water_color from "../../../../assets/materials/map_maker/Water.jpg";
+
+    class MapMakerCanvas extends HTMLElement {
+        private canvas: RenderCanvas;
+        private terrain_generator: TerrainGenerator;
+
+        private orbit_controls: OrbitControls;
+
+        constructor() {
+            super();
+
+            this.canvas = new RenderCanvas({
+                camera: {
+                    fov: 70.0,
+                    near: 0.1,
+                    far: 5000.0
+                },
+                renderer: {
+                    antialias: true,
+                    clear_color: 0x000000,
+                    clear_alpha: 1.0,
+                    tone_mapping: THREE.ACESFilmicToneMapping
+                }
+            });
+
+            this.terrain_generator = new TerrainGenerator({
+                width: 100,
+                height: 100,
+                spacing: 1.0,
+
+                wireframe_enabled: false,
+                morph_time: 0.25,
+
+                random_seed: 32702,
+
+                min_height: 4.0,
+                max_height: 40.0,
+                terrain_scale: 100.0,
+                start_amplitude: 1.0,
+                start_frequency: 0.06,
+
+                carve_frequency: 0.008,
+                carve_amplitude: 0.95,
+
+                octaves: 6,
+                persistence: 0.45,
+                lacunarity: 2.0,
+
+                texture_layers: [
+                    {
+                        texture_src: water_color.src,
+                        min_height: 0.0,
+                        max_height: 5.0,
+                        tile_size: 2.0
+                    }, {
+                        texture_src: sand_color.src,
+                        min_height: 5.0,
+                        max_height: 7.0,
+                        tile_size: 2.0
+                    }, {
+                        texture_src: dirt_color.src,
+                        min_height: 7.0,
+                        max_height: 12.0,
+                        tile_size: 2.0
+                    }, {
+                        texture_src: stone_color.src,
+                        min_height: 12.0,
+                        max_height: 20.0,
+                        tile_size: 2.0
+                    }, {
+                        texture_src: snow_color.src,
+                        min_height: 20.0,
+                        max_height: 40.0,
+                        tile_size: 2.0
+                    },
+                ],
+            });
+
+            this.canvas.registerUpdateCallback(this.onUpdate.bind(this));
+            this.canvas.setCameraPosition(75.0, 75.0, 75.0);
+            this.canvas.add(this.terrain_generator);
+            this.canvas.setParent(this);
+
+            this.orbit_controls = new OrbitControls(this.canvas.getCamera(), this.canvas.getDomElement());
+            this.orbit_controls.saveState();
+
+            const home_button: HTMLElement | null = document.getElementById("map-maker-home-button");
+            home_button?.addEventListener("click", this.onHomeButton.bind(this));
+            const wireframe_button: HTMLElement | null = document.getElementById("map-maker-wireframe-button");
+            wireframe_button?.addEventListener("click", this.onWireframeButton.bind(this));
+            const download_button: HTMLElement | null = document.getElementById("map-maker-download-button");
+            download_button?.addEventListener("click", this.onDownloadButton.bind(this));
+        }
+
+        private onUpdate(delta_time: number): void {
+            this.orbit_controls.update(delta_time);
+            this.terrain_generator.onUpdate(delta_time);
+        }
+
+        private onHomeButton(): void {
+            this.orbit_controls.reset();
+        }
+
+        private onWireframeButton(): void {
+            this.terrain_generator.toggleWireframeMode();
+        }
+
+        private onDownloadButton(): void {
+            this.terrain_generator.downloadOBJ();
+        }
+    }
+
+    customElements.define("map-maker-canvas", MapMakerCanvas);
+</script>
