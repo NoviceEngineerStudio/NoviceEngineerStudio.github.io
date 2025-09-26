@@ -18,19 +18,19 @@ import download_icon from "../../../../assets/icons/Download.svg";
             <hr/>
         </div>
 
-        <div class="map-maker-number-input">
+        <div class="map-maker-number-container">
             <label class="text-xs" for="map-maker-grid-width">Grid Width</label>
-            <input type="number" id="map-maker-grid-width" class="text-xs" step="1" />
+            <input type="number" id="map-maker-grid-width" class="text-xs map-maker-number-input" step="1" />
         </div>
 
-        <div class="map-maker-number-input">
+        <div class="map-maker-number-container">
             <label class="text-xs" for="map-maker-grid-height">Grid Height</label>
-            <input type="number" id="map-maker-grid-height" class="text-xs" step="1" />
+            <input type="number" id="map-maker-grid-height" class="text-xs map-maker-number-input" step="1" />
         </div>
 
-        <div class="map-maker-number-input">
+        <div class="map-maker-number-container">
             <label class="text-xs" for="map-maker-point-spacing">Point Spacing (m)</label>
-            <input type="number" id="map-maker-point-spacing" class="text-xs" step="0.1" />
+            <input type="number" id="map-maker-point-spacing" class="text-xs map-maker-number-input" step="0.1" />
         </div>
 
         <!-- * Height Parameters * -->
@@ -39,19 +39,19 @@ import download_icon from "../../../../assets/icons/Download.svg";
             <hr/>
         </div>
 
-        <div class="map-maker-number-input">
+        <div class="map-maker-number-container">
             <label class="text-xs" for="map-maker-min-height">Min. Height (m)</label>
-            <input type="number" id="map-maker-min-height" class="text-xs" step="0.1" />
+            <input type="number" id="map-maker-min-height" class="text-xs map-maker-number-input" step="0.1" />
         </div>
 
-        <div class="map-maker-number-input">
+        <div class="map-maker-number-container">
             <label class="text-xs" for="map-maker-max-height">Max. Height (m)</label>
-            <input type="number" id="map-maker-max-height" class="text-xs" step="0.1" />
+            <input type="number" id="map-maker-max-height" class="text-xs map-maker-number-input" step="0.1" />
         </div>
 
-        <div class="map-maker-number-input">
+        <div class="map-maker-number-container">
             <label class="text-xs" for="map-maker-height-scale">Height Scale (m)</label>
-            <input type="number" id="map-maker-height-scale" class="text-xs" step="0.1" />
+            <input type="number" id="map-maker-height-scale" class="text-xs map-maker-number-input" step="0.1" />
         </div>
 
         <!-- * Noise Parameters * -->
@@ -60,39 +60,39 @@ import download_icon from "../../../../assets/icons/Download.svg";
             <hr/>
         </div>
 
-        <div class="map-maker-number-input">
+        <div class="map-maker-number-container">
             <label class="text-xs" class="text-xs" for="map-maker-initial-amplitude">Amplitude</label>
-            <input type="number" id="map-maker-initial-amplitude" class="text-xs" step="0.1" />
+            <input type="number" id="map-maker-initial-amplitude" class="text-xs map-maker-number-input" step="0.1" />
         </div>
 
-        <div class="map-maker-number-input">
+        <div class="map-maker-number-container">
             <label class="text-xs" for="map-maker-amplitude-persistence">Amp. Persistence</label>
-            <input type="number" id="map-maker-amplitude-persistence" class="text-xs" step="0.1" />
+            <input type="number" id="map-maker-amplitude-persistence" class="text-xs map-maker-number-input" step="0.1" />
         </div>
 
-        <div class="map-maker-number-input">
+        <div class="map-maker-number-container">
             <label class="text-xs" for="map-maker-initial-frequency">Frequency</label>
-            <input type="number" id="map-maker-initial-frequency" class="text-xs" step="0.1" />
+            <input type="number" id="map-maker-initial-frequency" class="text-xs map-maker-number-input" step="0.1" />
         </div>
 
-        <div class="map-maker-number-input">
+        <div class="map-maker-number-container">
             <label class="text-xs" for="map-maker-frequency-persistence">Freq. Persistence</label>
-            <input type="number" id="map-maker-frequency-persistence" class="text-xs" step="0.1" />
+            <input type="number" id="map-maker-frequency-persistence" class="text-xs map-maker-number-input" step="0.1" />
         </div>
 
-        <div class="map-maker-number-input">
+        <div class="map-maker-number-container">
             <label class="text-xs" for="map-maker-carve-amplitude">Carve Amplitude</label>
-            <input type="number" id="map-maker-carve-amplitude" class="text-xs" step="0.1" />
+            <input type="number" id="map-maker-carve-amplitude" class="text-xs map-maker-number-input" step="0.1" />
         </div>
 
-        <div class="map-maker-number-input">
+        <div class="map-maker-number-container">
             <label class="text-xs" for="map-maker-carve-frequency">Carve Frequency</label>
-            <input type="number" id="map-maker-carve-frequency" class="text-xs" step="0.1" />
+            <input type="number" id="map-maker-carve-frequency" class="text-xs map-maker-number-input" step="0.1" />
         </div>
 
-        <div class="map-maker-number-input">
+        <div class="map-maker-number-container">
             <label class="text-xs" for="map-maker-noise-octaves">Noise Octaves</label>
-            <input type="number" id="map-maker-noise-octaves" class="text-xs" step="1" />
+            <input type="number" id="map-maker-noise-octaves" class="text-xs map-maker-number-input" step="1" />
         </div>
 
         <!-- * Texture Parameters * -->
@@ -101,7 +101,12 @@ import download_icon from "../../../../assets/icons/Download.svg";
             <hr/>
         </div>
 
-        <!-- TODO: Texture Layer Editor -->
+        <div class="map-maker-texture-layers">
+            <div id="map-maker-texture-layers-container" />
+            <button id="map-maker-add-texture-layer-button">
+                +
+            </button>
+        </div>
     </div>
 
     <!-- * Map 3D Renderer * -->
@@ -153,7 +158,7 @@ import download_icon from "../../../../assets/icons/Download.svg";
         width: 28rem;
         height: 100vh;
 
-        padding: 1rem;
+        padding: 2rem;
 
         overflow-y: auto;
 
@@ -165,14 +170,17 @@ import download_icon from "../../../../assets/icons/Download.svg";
         gap: 1rem;
     }
 
-    .map-maker-number-input {
+    .map-maker-number-container {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
     }
 
-    .map-maker-number-input input {
+    .map-maker-number-input {
+        width: 100%;
+        max-width: 8rem;
+
         padding: 0.125rem 0.5rem 0.125rem 0.5rem;
 
         background-color: #1f1f1f;
@@ -229,6 +237,74 @@ import download_icon from "../../../../assets/icons/Download.svg";
         height: 1.5rem;
     }
 
+    .map-maker-texture-layers {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #map-maker-add-texture-layer-button {
+        color: #ffffff;
+        background-color: #1f1f1f;
+        border: 0.125rem solid #615fff;
+        border-radius: 0.5rem;
+
+        cursor: pointer;
+        padding: 0.5rem;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+        transition: background-color 150ms ease-in-out 0s;
+    }
+
+    #map-maker-add-texture-layer-button:hover {
+        background-color: #615fff;
+    }
+
+    .map-maker-texture-layer-card {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.5rem;
+
+        background-color: #3f3f3f;
+        border: 0.125rem solid #615fff;
+        border-radius: 0.5rem;
+
+        padding: 0.5rem;
+    }
+
+    #map-maker-texture-layers-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .map-maker-texture-layer-remove-button {
+        width: 1.5rem;
+        height: 1.5rem;
+
+        padding: 0.125rem;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        border: none;
+        background-color: #460809;
+        cursor: pointer;
+
+        border-radius: 0.25rem;
+        transition: background-color 150ms ease-in-out 0s;
+    }
+
+    .map-maker-texture-layer-remove-button:hover {
+        background-color: #e7000b;
+    }
+
+    .map-maker-texture-layer-remove-button > img {
+        width: 0.875rem;
+        height: 0.875rem;
+    }
+
     @media only screen and (max-width: 56rem) {
         .map-maker-body {
             flex-direction: column-reverse;
@@ -255,14 +331,17 @@ import download_icon from "../../../../assets/icons/Download.svg";
     import * as THREE from "three";
     import { OrbitControls } from "three/examples/jsm/Addons.js";
     import RenderCanvas from "../../../../components/threejs/RenderCanvas";
-    import TerrainGenerator from "../../../../components/threejs/TerrainGenerator";
+    import TerrainGenerator, { type TerrainTexture } from "../../../../components/threejs/TerrainGenerator";
+
+    import placeholder_texture from "../../../../assets/materials/Placeholder.jpg";
 
     import dirt_color from "../../../../assets/materials/map_maker/Dirt.jpg";
     import sand_color from "../../../../assets/materials/map_maker/Sand.jpg";
     import snow_color from "../../../../assets/materials/map_maker/Snow.jpg";
     import stone_color from "../../../../assets/materials/map_maker/Stone.jpg";
     import water_color from "../../../../assets/materials/map_maker/Water.jpg";
-import { min } from "three/src/nodes/TSL.js";
+
+    import trash_icon from "../../../../assets/icons/Trash.svg";
 
     class MapMakerCanvas extends HTMLElement {
         private canvas: RenderCanvas;
@@ -297,7 +376,7 @@ import { min } from "three/src/nodes/TSL.js";
 
                 random_seed: 32702,
 
-                min_height: 4.9,
+                min_height: 4.5,
                 max_height: 40.0,
                 terrain_scale: 100.0,
                 start_amplitude: 1.0,
@@ -315,27 +394,27 @@ import { min } from "three/src/nodes/TSL.js";
                         texture_src: water_color.src,
                         min_height: 0.0,
                         max_height: 5.0,
-                        tile_size: 2.0
+                        tile_size: 20.0
                     }, {
                         texture_src: sand_color.src,
                         min_height: 5.0,
                         max_height: 7.0,
-                        tile_size: 2.0
+                        tile_size: 20.0
                     }, {
                         texture_src: dirt_color.src,
                         min_height: 7.0,
                         max_height: 12.0,
-                        tile_size: 2.0
+                        tile_size: 20.0
                     }, {
                         texture_src: stone_color.src,
                         min_height: 12.0,
                         max_height: 20.0,
-                        tile_size: 2.0
+                        tile_size: 20.0
                     }, {
                         texture_src: snow_color.src,
                         min_height: 20.0,
                         max_height: 40.0,
-                        tile_size: 2.0
+                        tile_size: 20.0
                     },
                 ],
             });
@@ -351,11 +430,11 @@ import { min } from "three/src/nodes/TSL.js";
             // ? View Buttons
 
             const home_button: HTMLElement | null = document.getElementById("map-maker-home-button");
-            home_button?.addEventListener("click", this.onHomeButton.bind(this));
+            home_button!.addEventListener("click", this.onHomeButton.bind(this));
             const wireframe_button: HTMLElement | null = document.getElementById("map-maker-wireframe-button");
-            wireframe_button?.addEventListener("click", this.onWireframeButton.bind(this));
+            wireframe_button!.addEventListener("click", this.onWireframeButton.bind(this));
             const download_button: HTMLElement | null = document.getElementById("map-maker-download-button");
-            download_button?.addEventListener("click", this.onDownloadButton.bind(this));
+            download_button!.addEventListener("click", this.onDownloadButton.bind(this));
 
             // ? Grid Inputs
 
@@ -376,9 +455,9 @@ import { min } from "three/src/nodes/TSL.js";
                 );
             };
 
-            grid_width_input?.addEventListener("change", onGridChange);
-            grid_height_input?.addEventListener("change", onGridChange);
-            point_spacing_input?.addEventListener("change", onGridChange);
+            grid_width_input.addEventListener("change", onGridChange);
+            grid_height_input.addEventListener("change", onGridChange);
+            point_spacing_input.addEventListener("change", onGridChange);
 
             // ? Noise Inputs
 
@@ -427,16 +506,228 @@ import { min } from "three/src/nodes/TSL.js";
                 );
             }
 
-            min_height_input?.addEventListener("change", onNoiseChange);
-            max_height_input?.addEventListener("change", onNoiseChange);
-            height_scale_input?.addEventListener("change", onNoiseChange);
-            initial_amplitude_input?.addEventListener("change", onNoiseChange);
-            amplitude_persistence_input?.addEventListener("change", onNoiseChange);
-            initial_frequency_input?.addEventListener("change", onNoiseChange);
-            frequency_persistence_input?.addEventListener("change", onNoiseChange);
-            carve_amplitude_input?.addEventListener("change", onNoiseChange);
-            carve_frequency_input?.addEventListener("change", onNoiseChange);
-            noise_octaves_input?.addEventListener("change", onNoiseChange);
+            min_height_input.addEventListener("change", onNoiseChange);
+            max_height_input.addEventListener("change", onNoiseChange);
+            height_scale_input.addEventListener("change", onNoiseChange);
+            initial_amplitude_input.addEventListener("change", onNoiseChange);
+            amplitude_persistence_input.addEventListener("change", onNoiseChange);
+            initial_frequency_input.addEventListener("change", onNoiseChange);
+            frequency_persistence_input.addEventListener("change", onNoiseChange);
+            carve_amplitude_input.addEventListener("change", onNoiseChange);
+            carve_frequency_input.addEventListener("change", onNoiseChange);
+            noise_octaves_input.addEventListener("change", onNoiseChange);
+
+            // ? Texture Layer Editor
+
+            const texture_layers_container: HTMLElement | null = document.getElementById("map-maker-texture-layers-container");
+            const add_texture_layer_button: HTMLElement | null = document.getElementById("map-maker-add-texture-layer-button");
+
+            if (
+                texture_layers_container === null ||
+                add_texture_layer_button === null
+            ) {
+                throw new Error("Failed to initialize Texture Layer Editor");
+            }
+
+            this.terrain_generator.getTextureIds().forEach((id: number) => {
+                this.buildTextureCard(id, texture_layers_container);
+            });
+
+            add_texture_layer_button.addEventListener("click", () => {
+                if (!this.terrain_generator.canAddTextureLayer()) {
+                    alert("Maximum number of texture layers reached.");
+                    return;
+                }
+
+                const id: number = this.terrain_generator.addTextureLayer({
+                    texture_src: placeholder_texture.src,
+                    min_height: 0.0,
+                    max_height: 1.0,
+                    tile_size: 1.0
+                });
+
+                this.buildTextureCard(id, texture_layers_container);
+            });
+        }
+
+        private buildTextureCard(id: number, card_container: HTMLElement): void {
+            const texture: TerrainTexture | null = this.terrain_generator.getTextureLayer(id);
+
+            if (texture === null) {
+                throw new Error(`Failed to retrieve texture layer with ID: ${id}`);
+            }
+
+            const card: HTMLDivElement = document.createElement("div");
+            card.className = "map-maker-texture-layer-card";
+
+            // ? Build the texture preview
+
+            const texture_div: HTMLDivElement = document.createElement("div");
+            const texture_input: HTMLInputElement = document.createElement("input");
+
+            texture_input.style.display = "none";
+            texture_input.id = `map-maker-texture-${id}-texture-image`;
+
+            const texture_preview: HTMLLabelElement = document.createElement("label");
+
+            texture_preview.htmlFor = texture_input.id;
+
+            texture_preview.style.width = "7rem";
+            texture_preview.style.height = "7rem";
+            texture_preview.style.display = "block";
+            texture_preview.style.cursor = "pointer";
+            texture_preview.style.backgroundSize = "cover";
+            texture_preview.style.backgroundPosition = "center";
+            texture_preview.style.border = "solid 0.125rem #615fff"
+            texture_preview.style.boxShadow = "inset 0 0 0.5rem #000000";
+            texture_preview.style.backgroundImage = `url(${texture.texture_src})`;
+
+            texture_input.type = "file";
+            texture_input.accept = "image/*";
+            texture_input.addEventListener("change", () => {
+                if (!texture_input.files || texture_input.files.length === 0) {
+                    return;
+                }
+
+                const file: File = texture_input.files[0];
+                const source: string = URL.createObjectURL(file);
+                this.terrain_generator.editTextureLayerTexture(id, source);
+                texture_preview.style.backgroundImage = `url(${source})`;
+            });
+
+            texture_div.appendChild(texture_preview);
+            texture_div.appendChild(texture_input);
+
+            // ? Build the tile and height inputs
+
+            const input_div: HTMLDivElement = document.createElement("div");
+            input_div.style.display = "flex";
+            input_div.style.flexDirection = "column";
+            input_div.style.justifyContent = "space-between";
+            input_div.style.height = "100%";
+
+            const tile_size_div: HTMLDivElement = document.createElement("div");
+
+            const tile_size_label: HTMLLabelElement = document.createElement("label");
+            tile_size_label.className = "text-xs";
+            tile_size_label.textContent = "Tile Size (m)";
+            tile_size_label.htmlFor = `map-maker-texture-${id}-tile-size`;
+
+            const tile_size_input: HTMLInputElement = document.createElement("input");
+            tile_size_input.id = tile_size_label.htmlFor;
+            tile_size_input.className = "map-maker-number-input";
+            tile_size_input.type = "number";
+            tile_size_input.value = texture.tile_size.toString();
+            tile_size_input.step = "0.1";
+
+            tile_size_input.addEventListener("change", () => {
+                let tile_size: number = parseFloat(tile_size_input.value);
+
+                if (tile_size < 0.1) {
+                    tile_size = 0.1;
+                    tile_size_input.value = "0.1";
+                }
+
+                this.terrain_generator.editTextureLayerTileSize(id, tile_size);
+            });
+
+            tile_size_div.appendChild(tile_size_label);
+            tile_size_div.appendChild(tile_size_input);
+
+            const min_height_div: HTMLDivElement = document.createElement("div");
+
+            const min_height_label: HTMLLabelElement = document.createElement("label");
+            min_height_label.className = "text-xs";
+            min_height_label.textContent = "Min. Height (m)";
+            min_height_label.htmlFor = `map-maker-texture-${id}-min-height`;
+
+            const min_height_input: HTMLInputElement = document.createElement("input");
+            min_height_input.id = min_height_label.htmlFor;
+            min_height_input.className = "map-maker-number-input";
+            min_height_input.type = "number";
+            min_height_input.value = texture.min_height.toString();
+            min_height_input.step = "0.1";
+
+            min_height_div.appendChild(min_height_label);
+            min_height_div.appendChild(min_height_input);
+
+            min_height_input.addEventListener("change", () => {
+                let min_height: number = parseFloat(min_height_input.value);
+                let max_height: number = parseFloat(max_height_input.value);
+
+                if (min_height < 0.0) {
+                    min_height = 0.0;
+                    min_height_input.value = "0";
+                }
+
+                if (max_height < min_height) {
+                    max_height = min_height;
+                    max_height_input.value = min_height.toString();
+                }
+
+                this.terrain_generator.editTextureLayerHeightRange(id, min_height, max_height);
+            });
+
+            const max_height_div: HTMLDivElement = document.createElement("div");
+
+            const max_height_label: HTMLLabelElement = document.createElement("label");
+            max_height_label.className = "text-xs";
+            max_height_label.textContent = "Max. Height (m)";
+            max_height_label.htmlFor = `map-maker-texture-${id}-max-height`;
+
+            const max_height_input: HTMLInputElement = document.createElement("input");
+            max_height_input.id = max_height_label.htmlFor;
+            max_height_input.className = "map-maker-number-input";
+            max_height_input.type = "number";
+            max_height_input.value = texture.max_height.toString();
+            max_height_input.step = "0.1";
+
+            max_height_div.appendChild(max_height_label);
+            max_height_div.appendChild(max_height_input);
+
+            max_height_input.addEventListener("change", () => {
+                const min_height: number = parseFloat(min_height_input.value);
+                let max_height: number = parseFloat(max_height_input.value);
+
+                if (max_height < min_height) {
+                    max_height = min_height;
+                    max_height_input.value = min_height.toString();
+                }
+
+                this.terrain_generator.editTextureLayerHeightRange(id, min_height, max_height);
+            });
+
+            input_div.appendChild(tile_size_div);
+            input_div.appendChild(min_height_div);
+            input_div.appendChild(max_height_div);
+
+            // ? Build the remove button
+
+            const remove_div: HTMLDivElement = document.createElement("div");
+            remove_div.style.height = "100%";
+
+            const remove_button: HTMLButtonElement = document.createElement("button");
+            remove_button.className = "map-maker-texture-layer-remove-button";
+
+            remove_button.addEventListener("click", () => {
+                this.terrain_generator.removeTextureLayer(id);
+                card_container.removeChild(card);
+            });
+
+            const trash_image: HTMLImageElement = document.createElement("img");
+            trash_image.src = trash_icon.src;
+            trash_image.alt = `map-maker-texture-layer-remove-button-${id}`;
+            trash_image.loading = "lazy";
+
+            remove_button.appendChild(trash_image);
+            remove_div.appendChild(remove_button);
+
+            // ? Asseble the card
+
+            card.appendChild(texture_div);
+            card.appendChild(input_div);
+            card.appendChild(remove_div);
+            card_container.appendChild(card);
         }
 
         private onUpdate(delta_time: number): void {

@@ -1,6 +1,8 @@
 import * as THREE from "three";
+import computeNoise from "./TerrainNoise";
 import Perlin from "../../utils/math/Perlin";
 import { OBJExporter } from "three/examples/jsm/Addons.js";
+import type { TerrainWorkerData, TerrainWorkerResponse } from "./TerrainGeneratorGeometryWorker";
 
 interface TerrainTexture {
     texture_src: string,
@@ -45,6 +47,7 @@ const TEXTURE_LAYERS_UNIFORM: string = "u_texture_layers";
 const TEXTURE_LAYER_COUNT_UNIFORM: string = "u_texture_layer_count";
 const TEXTURE_SIZE_UNIFORM: string = "u_texture_tile_size";
 
+const TEXTURE_LAYER_PAD: number = 0.25;
 const MAX_TEXTURE_LAYERS: number = 8;
 
 const VERTEX_SHADER: string = `
@@ -96,11 +99,22 @@ const FRAGMENT_SHADER: string = `
         float h = ${TEXTURE_RANGES_UNIFORM}[idx].x;
         float H = ${TEXTURE_RANGES_UNIFORM}[idx].y;
 
-        float mid = (H + h) * 0.5;
-        float halfRange = (H - h) * 0.5;
-        float dist = abs(v_height - mid) / halfRange;
+        if (v_height >= h && v_height <= H) {
+            return 1.0;
+        }
 
-        return exp(-dist * dist * 4.0);
+        float hL = h - ${TEXTURE_LAYER_PAD};
+        float HL = H + ${TEXTURE_LAYER_PAD};
+
+        if (v_height >= hL && v_height <= h) {
+            return (v_height - hL) / (h - hL);
+        }
+
+        if (v_height >= H && v_height <= HL) {
+            return (v_height - HL) / (H - HL);
+        }
+
+        return 0.0;
     }
 
     void main() {
@@ -143,15 +157,18 @@ const FRAGMENT_SHADER: string = `
 `;
 
 class TerrainGenerator extends THREE.Mesh {
-    private width: number = 0.0;
-    private height: number = 0.0;
-    private spacing: number = 0.0;
+    private width: number;
+    private height: number;
+    private spacing: number;
 
     private morph_time: number;
 
-    private perlin: Perlin;
     private exporter: OBJExporter;
     private texture_loader: THREE.TextureLoader;
+
+    private next_texture_id: number;
+    private texure_id_to_index: Map<number, number>;
+    private texture_layers: TerrainTexture[];
 
     private min_height: number
     private max_height: number;
@@ -166,8 +183,14 @@ class TerrainGenerator extends THREE.Mesh {
     private persistence: number;
     private lacunarity: number;
 
+    private random_seed: number;
+
+    private worker: Worker | null = null;
+
     constructor(create_info: TerrainGeneratorCreateInfo) {
         const texture_loader: THREE.TextureLoader = new THREE.TextureLoader();
+
+        create_info.texture_layers = create_info.texture_layers.slice(0, MAX_TEXTURE_LAYERS);
 
         super(
             new THREE.BufferGeometry(),
@@ -205,9 +228,21 @@ class TerrainGenerator extends THREE.Mesh {
 
         this.morph_time = create_info.morph_time;
 
-        this.perlin = new Perlin(create_info.random_seed);
         this.exporter = new OBJExporter();
         this.texture_loader = texture_loader;
+
+        this.next_texture_id = create_info.texture_layers.length;
+
+        this.texure_id_to_index = new Map<number, number>();
+        for (let idx = 0; idx < create_info.texture_layers.length; ++idx) {
+            this.texure_id_to_index.set(idx, idx);
+        }
+
+        this.texture_layers = structuredClone(create_info.texture_layers);
+        
+        this.width = create_info.width;
+        this.height = create_info.height;
+        this.spacing = create_info.spacing;
 
         this.min_height = create_info.min_height;
         this.max_height = create_info.max_height;
@@ -221,6 +256,8 @@ class TerrainGenerator extends THREE.Mesh {
         this.octaves = create_info.octaves;
         this.persistence = create_info.persistence;
         this.lacunarity = create_info.lacunarity;
+
+        this.random_seed = create_info.random_seed;
 
         this.position.setY(-0.5 * (this.max_height - this.min_height));
 
@@ -244,114 +281,190 @@ class TerrainGenerator extends THREE.Mesh {
     public getPersistence(): number { return this.persistence; }
     public getLacunarity(): number { return this.lacunarity; }
 
-    private computeNoise(x: number, z: number): number {
-        let amplitude: number = this.start_amplitude;
-        let total_amplitude: number = 0.0;
+    public canAddTextureLayer(): boolean {
+        return this.texure_id_to_index.size < MAX_TEXTURE_LAYERS;
+    }
 
-        let frequency: number = this.start_frequency;
+    public getTextureIds(): number[] {
+        return Array.from(this.texure_id_to_index.keys());
+    }
+
+    public getTextureLayer(texture_id: number): TerrainTexture | null {
+        const texture_index: number | undefined = this.texure_id_to_index.get(texture_id);
+
+        if (texture_index === undefined) {
+            return null;
+        }
         
-        let value: number = 0.0;
+        return this.texture_layers[texture_index];
+    }
 
-        for (let idx = 0; idx < this.octaves; ++idx) {
-            value += this.perlin.noise(x * frequency, z * frequency) * amplitude;
-            total_amplitude += amplitude;
-
-            amplitude *= this.persistence;
-            frequency *= this.lacunarity;
+    public addTextureLayer(texture: TerrainTexture): number {
+        if (this.texure_id_to_index.size >= MAX_TEXTURE_LAYERS) {
+            throw new Error(`Cannot add more than ${MAX_TEXTURE_LAYERS} texture layers.`);
         }
 
-        const river_noise: number = this.perlin.noise(x * this.carve_frequency, z * this.carve_frequency);
-        const river: number = 1.0 - Math.abs(river_noise * 2.0 - 1.0);
-        value *= 1.0 - river * this.carve_amplitude;
+        const texture_id: number = this.next_texture_id++;
+        const texture_index: number = this.texure_id_to_index.size;
 
-        const height: number = Math.max(0.0, Math.min(value / total_amplitude, 1.0)) * this.terrain_scale;
+        this.texture_layers.push(texture);
 
-        return Math.max(this.min_height, Math.min(height, this.max_height));
+        this.texure_id_to_index.set(texture_id, texture_index);
+
+        const material: THREE.ShaderMaterial = this.material as THREE.ShaderMaterial;
+
+        material.uniforms[TEXTURE_LAYER_COUNT_UNIFORM].value = this.texure_id_to_index.size;
+        material.uniforms[TEXTURE_RANGES_UNIFORM].value[texture_index] = new THREE.Vector2(texture.min_height, texture.max_height);
+        material.uniforms[TEXTURE_LAYERS_UNIFORM].value[texture_index] = this.texture_loader.load(texture.texture_src);
+        material.uniforms[TEXTURE_SIZE_UNIFORM].value[texture_index] = texture.tile_size;
+
+        return texture_id;
+    }
+
+    public editTextureLayerTexture(texture_id: number, texture_src: string): void {
+        const texture_index: number | undefined = this.texure_id_to_index.get(texture_id);
+
+        if (texture_index === undefined) {
+            throw new Error(`Texture ID ${texture_id} does not exist.`);
+        }
+
+        const material: THREE.ShaderMaterial = this.material as THREE.ShaderMaterial;
+        material.uniforms[TEXTURE_LAYERS_UNIFORM].value[texture_index] = this.texture_loader.load(texture_src);
+
+        this.texture_layers[texture_index].texture_src = texture_src;
+    }
+
+    public editTextureLayerHeightRange(texture_id: number, min_height: number, max_height: number): void {
+        const texture_index: number | undefined = this.texure_id_to_index.get(texture_id);
+
+        if (texture_index === undefined) {
+            throw new Error(`Texture ID ${texture_id} does not exist.`);
+        }
+
+        const material: THREE.ShaderMaterial = this.material as THREE.ShaderMaterial;
+        material.uniforms[TEXTURE_RANGES_UNIFORM].value[texture_index] = new THREE.Vector2(min_height, max_height);
+
+        this.texture_layers[texture_index].min_height = min_height;
+        this.texture_layers[texture_index].max_height = max_height;
+    }
+
+    public editTextureLayerTileSize(texture_id: number, tile_size: number): void {
+        const texture_index: number | undefined = this.texure_id_to_index.get(texture_id);
+
+        if (texture_index === undefined) {
+            throw new Error(`Texture ID ${texture_id} does not exist.`);
+        }
+
+        const material: THREE.ShaderMaterial = this.material as THREE.ShaderMaterial;
+        material.uniforms[TEXTURE_SIZE_UNIFORM].value[texture_index] = tile_size;
+
+        this.texture_layers[texture_index].tile_size = tile_size;
+    }
+
+    public removeTextureLayer(texture_id: number): void {
+        const texture_index: number | undefined = this.texure_id_to_index.get(texture_id);
+
+        if (texture_index === undefined) {
+            throw new Error(`Texture ID ${texture_id} does not exist.`);
+        }
+
+        this.texure_id_to_index.delete(texture_id);
+        this.texture_layers.splice(texture_index, 1);
+
+        const material: THREE.ShaderMaterial = this.material as THREE.ShaderMaterial;
+        material.uniforms[TEXTURE_LAYER_COUNT_UNIFORM].value = this.texure_id_to_index.size;
+
+        for (const [id, index] of this.texure_id_to_index) {
+            if (index <= texture_index) {
+                continue;
+            }
+
+            this.texure_id_to_index.set(id, index - 1);
+
+            material.uniforms[TEXTURE_RANGES_UNIFORM].value[index - 1] =
+                material.uniforms[TEXTURE_RANGES_UNIFORM].value[index];
+            material.uniforms[TEXTURE_LAYERS_UNIFORM].value[index - 1] =
+                material.uniforms[TEXTURE_LAYERS_UNIFORM].value[index];
+            material.uniforms[TEXTURE_SIZE_UNIFORM].value[index - 1] =
+                material.uniforms[TEXTURE_SIZE_UNIFORM].value[index];
+        }
+    }
+
+    private computeNoise(x: number, z: number, perlin: Perlin): number {
+        return computeNoise(
+            x,
+            z,
+            this.start_amplitude,
+            this.start_frequency,
+            this.octaves,
+            this.persistence,
+            this.lacunarity,
+            this.carve_amplitude,
+            this.carve_frequency,
+            this.terrain_scale,
+            this.min_height,
+            this.max_height,
+            perlin
+        );
     }
 
     private async updateGeometry(width: number, height: number, spacing: number): Promise<void> {
-        this.perlin.resetSeedCounter();
-
-        // ? Compute Prior Heights List
-
-        const prior_heights: Float32Array = new Float32Array(width * height);
-        const prior_positions: THREE.BufferAttribute | THREE.InterleavedBufferAttribute | undefined = (
-            this.geometry.getAttribute(GRID_POSITION_ATTRIBUTE)
-        );
-
-        if (prior_positions === undefined) {
-            for (let idx = 0; idx < prior_heights.length; ++idx) {
-                prior_heights[idx] = 0.0;
-            }
-        }
-        else {
-            const prior_positions_array: Float32Array = prior_positions.array as Float32Array;
-
-            let idx = 0;
-            const min_length: number = Math.min(this.width * this.height, prior_heights.length);
-            for (; idx < min_length; ++idx) {
-                prior_heights[idx] = prior_positions_array[(idx * 3) + 1];
-            }
-
-            for (; idx < prior_heights.length; ++idx) {
-                prior_heights[idx] = 0.0;
-            }
+        if (this.worker !== null) {
+            this.worker.terminate();
+            this.worker = null;
         }
 
-        this.width = width;
-        this.height = height;
-        this.spacing = spacing;
+        this.worker = new Worker(new URL("./TerrainGeneratorGeometryWorker.ts", import.meta.url), { type: "module" });
 
-        this.geometry.dispose();
-        this.geometry = new THREE.BufferGeometry();
-        this.geometry.setAttribute(PRIOR_HEIGHT_ATTRIBUTE, new THREE.BufferAttribute(prior_heights, 1));
+        const message_data: TerrainWorkerData = {
+            width: width,
+            height: height,
+            spacing: spacing,
+            start_amplitude: this.start_amplitude,
+            start_frequency: this.start_frequency,
+            octaves: this.octaves,
+            persistence: this.persistence,
+            lacunarity: this.lacunarity,
+            carve_amplitude: this.carve_amplitude,
+            carve_frequency: this.carve_frequency,
+            terrain_scale: this.terrain_scale,
+            min_height: this.min_height,
+            max_height: this.max_height,
+            random_seed: this.random_seed,
+            prior_positions: (this.geometry.getAttribute(GRID_POSITION_ATTRIBUTE)?.array as Float32Array) ?? []
+        };
 
-        // ? Compute New Vertex Positions
+        this.worker.postMessage(message_data);
 
-        const positions: Float32Array = new Float32Array(prior_heights.length * 3);
-
-        let position_idx: number = 0;
-        for (let x_idx = 0; x_idx < width; ++x_idx) {
-            const x_position: number = width * spacing * (x_idx / (width - 1.0) - 0.5);
-
-            for (let z_idx = 0; z_idx < height; ++z_idx) {
-                const z_position: number = height * spacing * (z_idx / (height - 1.0) - 0.5);
-
-                positions[position_idx++] = x_position;
-                positions[position_idx++] = this.computeNoise(x_position, z_position),
-                positions[position_idx++] = z_position;
+        new Promise<void>((resolve: () => void): void => {
+            if (this.worker === null) {
+                resolve();
+                return;
             }
-        }
 
-        this.geometry.setAttribute(GRID_POSITION_ATTRIBUTE, new THREE.BufferAttribute(positions, 3));
+            this.worker.onmessage = (ev: MessageEvent) => {
+                const data: TerrainWorkerResponse = ev.data as TerrainWorkerResponse;
 
-        // ? Compute Model Indices
+                this.geometry.dispose();
+                this.geometry = new THREE.BufferGeometry();
+                this.geometry.setAttribute(PRIOR_HEIGHT_ATTRIBUTE, new THREE.BufferAttribute(data.prior_heights, 1));
+                this.geometry.setAttribute(GRID_POSITION_ATTRIBUTE, new THREE.BufferAttribute(data.positions, 3));
+                this.geometry.setIndex(new THREE.BufferAttribute(data.indices, 1));
 
-        const indices: Uint32Array = new Uint32Array((width - 1) * (height - 1) * 6);
+                this.geometry.computeVertexNormals();
 
-        let indices_idx: number = 0;
-        for (let x_idx = 0; x_idx < width - 1; ++x_idx) {
-            const x_offset: number = x_idx * height;
-            const x_offset_p1: number = (x_idx + 1) * height;
+                this.width = width;
+                this.height = height;
+                this.spacing = spacing;
 
-            for (let z_idx = 0; z_idx < height - 1; ++z_idx) {
-                const tl: number = x_offset + z_idx;
-                const bl: number = x_offset_p1 + z_idx;
-                const tr: number = tl + 1;
-                const br: number = bl + 1;
+                this.position.setY(-0.5 * (this.max_height - this.min_height));
 
-                indices[indices_idx++] = tl;
-                indices[indices_idx++] = tr;
-                indices[indices_idx++] = bl;
+                this.worker?.terminate();
+                this.worker = null;
 
-                indices[indices_idx++] = tr;
-                indices[indices_idx++] = br;
-                indices[indices_idx++] = bl;
-            }
-        }
-
-        this.geometry.setIndex(new THREE.BufferAttribute(indices, 1));
-        this.geometry.computeVertexNormals();
+                resolve();
+            };
+        });
     }
 
     public onUpdate(delta_time: number): void {
@@ -414,8 +527,6 @@ class TerrainGenerator extends THREE.Mesh {
 
         (this.material as THREE.ShaderMaterial).uniforms[ANIMATION_PROGRESS_UNIFORM].value = 0.0;
 
-        this.perlin.resetSeedCounter();
-
         const positions: THREE.BufferAttribute | THREE.InterleavedBufferAttribute | undefined = this.geometry.getAttribute(GRID_POSITION_ATTRIBUTE);
         const prior_heights: THREE.BufferAttribute | THREE.InterleavedBufferAttribute | undefined = this.geometry.getAttribute(PRIOR_HEIGHT_ATTRIBUTE);
         
@@ -431,11 +542,13 @@ class TerrainGenerator extends THREE.Mesh {
             prior_heights.array[idx] = positions.array[(idx * 3) + 1];
         }
 
+        const perlin: Perlin = new Perlin(this.random_seed);
+
         for (let idx = 0; idx < prior_heights.array.length; ++idx) {
             const x_position: number = positions.array[(idx * 3)];
             const z_position: number = positions.array[(idx * 3) + 2];
 
-            positions.array[(idx * 3) + 1] = this.computeNoise(x_position, z_position);
+            positions.array[(idx * 3) + 1] = this.computeNoise(x_position, z_position, perlin);
         }
 
         positions.needsUpdate = true;
@@ -448,5 +561,5 @@ class TerrainGenerator extends THREE.Mesh {
     }
 }
 
-export { type TerrainGeneratorCreateInfo, MAX_TEXTURE_LAYERS };
+export { type TerrainGeneratorCreateInfo, type TerrainTexture, MAX_TEXTURE_LAYERS };
 export default TerrainGenerator;
