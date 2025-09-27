@@ -154,9 +154,9 @@ function getResumeSkylerRiggle(language: Language): Resume {
             ta_work.position = "Teaching Assistant";
             ta_work.accolades.push(
                 "Assisted in courses Introduction to Operating Systems (Undergraduate Course) and Computer Graphics (Graduate Course).",
-                "Hosted office hours and tutoring sessions multiple time per week for students.",
+                "Hosted office hours and tutoring sessions multiple times per week for students.",
                 "Taught class sessions for Introduction to Operating Systems and a C Introduction workshop.",
-                "Performed course administrative tasks and grading."
+                "Performed course administrative tasks and graded student assignments."
             );
 
             k20_work.company = "K20 Center";
@@ -165,7 +165,7 @@ function getResumeSkylerRiggle(language: Language): Resume {
                 "Created the Game-Based Learning team's game portal website, both the frontend and backend.",
                 "Performed QA testing and documentation for websites, games, and internal tools.",
                 "Refactored and optimized websites, games, and tool softwares.",
-                "Programmed statistics dashboard and calculations for game portal performance information."
+                "Programmed the statistics dashboard and calculations for game portal performance information."
             );
 
             break;
