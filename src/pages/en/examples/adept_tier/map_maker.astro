@@ -3,6 +3,7 @@ import { Image } from "astro:assets";
 import NavLayout from "../../../../layouts/NavLayout.astro";
 
 import home_icon from "../../../../assets/icons/House.svg";
+import reset_icon from "../../../../assets/icons/Reset.svg";
 import wireframe_icon from "../../../../assets/icons/Grid.svg";
 import download_icon from "../../../../assets/icons/Download.svg";
 ---
@@ -14,7 +15,17 @@ import download_icon from "../../../../assets/icons/Download.svg";
 
         <!-- * Grid Parameters * -->
         <div>
-            <h2 class="text-md">Grid</h2>
+            <div class="flex justify-between items-end">
+                <h2 class="text-md">Grid</h2>
+
+                <button id="map-maker-grid-reset-button" class="map-maker-reset-button">
+                    <Image
+                        src={reset_icon}
+                        alt="map-maker-grid-reset-button"
+                        style="width:1rem;height:1rem;"
+                    />
+                </button>
+            </div>
             <hr/>
         </div>
 
@@ -35,7 +46,17 @@ import download_icon from "../../../../assets/icons/Download.svg";
 
         <!-- * Height Parameters * -->
         <div>
-            <h2 class="text-md">Terrain Height</h2>
+            <div class="flex justify-between items-end">
+                <h2 class="text-md">Terrain Height</h2>
+
+                <button id="map-maker-height-reset-button" class="map-maker-reset-button">
+                    <Image
+                        src={reset_icon}
+                        alt="map-maker-height-reset-button"
+                        style="width:1rem;height:1rem;"
+                    />
+                </button>
+            </div>
             <hr/>
         </div>
 
@@ -51,12 +72,22 @@ import download_icon from "../../../../assets/icons/Download.svg";
 
         <div class="map-maker-number-container">
             <label class="text-xs" for="map-maker-height-scale">Height Scale (m)</label>
-            <input type="number" id="map-maker-height-scale" class="text-xs map-maker-number-input" step="0.1" />
+            <input type="number" id="map-maker-height-scale" class="text-xs map-maker-number-input" step="0.5" />
         </div>
 
         <!-- * Noise Parameters * -->
         <div>
-            <h2 class="text-md">Noise</h2>
+            <div class="flex justify-between items-end">
+                <h2 class="text-md">Noise</h2>
+
+                <button id="map-maker-noise-reset-button" class="map-maker-reset-button">
+                    <Image
+                        src={reset_icon}
+                        alt="map-maker-noise-reset-button"
+                        style="width:1rem;height:1rem;"
+                    />
+                </button>
+            </div>
             <hr/>
         </div>
 
@@ -72,12 +103,12 @@ import download_icon from "../../../../assets/icons/Download.svg";
 
         <div class="map-maker-number-container">
             <label class="text-xs" for="map-maker-initial-frequency">Frequency</label>
-            <input type="number" id="map-maker-initial-frequency" class="text-xs map-maker-number-input" step="0.1" />
+            <input type="number" id="map-maker-initial-frequency" class="text-xs map-maker-number-input" step="0.01" />
         </div>
 
         <div class="map-maker-number-container">
             <label class="text-xs" for="map-maker-frequency-persistence">Freq. Persistence</label>
-            <input type="number" id="map-maker-frequency-persistence" class="text-xs map-maker-number-input" step="0.1" />
+            <input type="number" id="map-maker-frequency-persistence" class="text-xs map-maker-number-input" step="0.01" />
         </div>
 
         <div class="map-maker-number-container">
@@ -87,7 +118,7 @@ import download_icon from "../../../../assets/icons/Download.svg";
 
         <div class="map-maker-number-container">
             <label class="text-xs" for="map-maker-carve-frequency">Carve Frequency</label>
-            <input type="number" id="map-maker-carve-frequency" class="text-xs map-maker-number-input" step="0.1" />
+            <input type="number" id="map-maker-carve-frequency" class="text-xs map-maker-number-input" step="0.01" />
         </div>
 
         <div class="map-maker-number-container">
@@ -97,7 +128,17 @@ import download_icon from "../../../../assets/icons/Download.svg";
 
         <!-- * Texture Parameters * -->
         <div>
-            <h2 class="text-md">Texture Layers</h2>
+            <div class="flex justify-between items-end">
+                <h2 class="text-md">Texture Layers</h2>
+
+                <button id="map-maker-texture-reset-button" class="map-maker-reset-button">
+                    <Image
+                        src={reset_icon}
+                        alt="map-maker-texture-reset-button"
+                        style="width:1rem;height:1rem;"
+                    />
+                </button>
+            </div>
             <hr/>
         </div>
 
@@ -188,6 +229,20 @@ import download_icon from "../../../../assets/icons/Download.svg";
 
         border: 0.125rem solid #615fff;
         border-radius: 0.5rem;
+
+        /* Always show increment/decrement arrows on number inputs */
+        &::-webkit-inner-spin-button,
+        &::-webkit-outer-spin-button {
+            opacity: 1;
+            pointer-events: auto;
+            -webkit-appearance: inner-spin-button;
+        }
+        &::-ms-input-spin-button {
+            opacity: 1;
+        }
+        &::-moz-number-spin-box {
+            opacity: 1;
+        }
     }
 
     map-maker-canvas {
@@ -240,6 +295,27 @@ import download_icon from "../../../../assets/icons/Download.svg";
     .map-maker-texture-layers {
         display: flex;
         flex-direction: column;
+    }
+
+    .map-maker-reset-button {
+        width: 2rem;
+        height: 2rem;
+        margin-bottom: 0.25rem;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        background-color: #1f1f1f;
+        border: 0.125rem solid #615fff;
+        border-radius: 0.5rem;
+
+        cursor: pointer;
+        transition: background-color 150ms ease-in-out 0s;
+    }
+
+    .map-maker-reset-button:hover {
+        background-color: #615fff;
     }
 
     #map-maker-add-texture-layer-button {
@@ -331,7 +407,7 @@ import download_icon from "../../../../assets/icons/Download.svg";
     import * as THREE from "three";
     import { OrbitControls } from "three/examples/jsm/Addons.js";
     import RenderCanvas from "../../../../components/threejs/RenderCanvas";
-    import TerrainGenerator, { type TerrainTexture } from "../../../../components/threejs/TerrainGenerator";
+    import TerrainGenerator, { type TerrainGeneratorCreateInfo, type TerrainTexture } from "../../../../components/threejs/TerrainGenerator";
 
     import placeholder_texture from "../../../../assets/materials/Placeholder.jpg";
 
@@ -342,6 +418,59 @@ import download_icon from "../../../../assets/icons/Download.svg";
     import water_color from "../../../../assets/materials/map_maker/Water.jpg";
 
     import trash_icon from "../../../../assets/icons/Trash.svg";
+
+    const DEFAULT_PARAMETERS: TerrainGeneratorCreateInfo = {
+        width: 100,
+        height: 100,
+        spacing: 1.0,
+
+        wireframe_enabled: false,
+        morph_time: 0.25,
+
+        random_seed: 32702,
+
+        min_height: 4.5,
+        max_height: 40.0,
+        terrain_scale: 100.0,
+        start_amplitude: 1.0,
+        start_frequency: 0.06,
+
+        carve_frequency: 0.008,
+        carve_amplitude: 0.95,
+
+        octaves: 6,
+        persistence: 0.45,
+        lacunarity: 2.0,
+
+        texture_layers: [
+            {
+                texture_src: water_color.src,
+                min_height: 0.0,
+                max_height: 5.0,
+                tile_size: 20.0
+            }, {
+                texture_src: sand_color.src,
+                min_height: 5.0,
+                max_height: 7.0,
+                tile_size: 20.0
+            }, {
+                texture_src: dirt_color.src,
+                min_height: 7.0,
+                max_height: 12.0,
+                tile_size: 20.0
+            }, {
+                texture_src: stone_color.src,
+                min_height: 12.0,
+                max_height: 20.0,
+                tile_size: 20.0
+            }, {
+                texture_src: snow_color.src,
+                min_height: 20.0,
+                max_height: 40.0,
+                tile_size: 20.0
+            },
+        ],
+    };
 
     class MapMakerCanvas extends HTMLElement {
         private canvas: RenderCanvas;
@@ -366,58 +495,7 @@ import download_icon from "../../../../assets/icons/Download.svg";
                 }
             });
 
-            this.terrain_generator = new TerrainGenerator({
-                width: 100,
-                height: 100,
-                spacing: 1.0,
-
-                wireframe_enabled: false,
-                morph_time: 0.25,
-
-                random_seed: 32702,
-
-                min_height: 4.5,
-                max_height: 40.0,
-                terrain_scale: 100.0,
-                start_amplitude: 1.0,
-                start_frequency: 0.06,
-
-                carve_frequency: 0.008,
-                carve_amplitude: 0.95,
-
-                octaves: 6,
-                persistence: 0.45,
-                lacunarity: 2.0,
-
-                texture_layers: [
-                    {
-                        texture_src: water_color.src,
-                        min_height: 0.0,
-                        max_height: 5.0,
-                        tile_size: 20.0
-                    }, {
-                        texture_src: sand_color.src,
-                        min_height: 5.0,
-                        max_height: 7.0,
-                        tile_size: 20.0
-                    }, {
-                        texture_src: dirt_color.src,
-                        min_height: 7.0,
-                        max_height: 12.0,
-                        tile_size: 20.0
-                    }, {
-                        texture_src: stone_color.src,
-                        min_height: 12.0,
-                        max_height: 20.0,
-                        tile_size: 20.0
-                    }, {
-                        texture_src: snow_color.src,
-                        min_height: 20.0,
-                        max_height: 40.0,
-                        tile_size: 20.0
-                    },
-                ],
-            });
+            this.terrain_generator = new TerrainGenerator(DEFAULT_PARAMETERS);
 
             this.canvas.registerUpdateCallback(this.onUpdate.bind(this));
             this.canvas.setCameraPosition(75.0, 75.0, 75.0);
@@ -547,6 +625,83 @@ import download_icon from "../../../../assets/icons/Download.svg";
                 });
 
                 this.buildTextureCard(id, texture_layers_container);
+            });
+
+            // ? Reset Buttons
+
+            const grid_reset_button: HTMLElement | null = document.getElementById("map-maker-grid-reset-button");
+            const height_reset_button: HTMLElement | null = document.getElementById("map-maker-height-reset-button");
+            const noise_reset_button: HTMLElement | null = document.getElementById("map-maker-noise-reset-button");
+            const texture_reset_button: HTMLElement | null = document.getElementById("map-maker-texture-reset-button");
+
+            grid_reset_button!.addEventListener("click", () => {
+                grid_width_input.value = DEFAULT_PARAMETERS.width.toString();
+                grid_height_input.value = DEFAULT_PARAMETERS.height.toString();
+                point_spacing_input.value = DEFAULT_PARAMETERS.spacing.toString();
+
+                this.terrain_generator.regenerateTerrainGeometry(
+                    DEFAULT_PARAMETERS.width,
+                    DEFAULT_PARAMETERS.height,
+                    DEFAULT_PARAMETERS.spacing
+                );
+            });
+
+            height_reset_button!.addEventListener("click", () => {
+                min_height_input.value = DEFAULT_PARAMETERS.min_height.toString();
+                max_height_input.value = DEFAULT_PARAMETERS.max_height.toString();
+                height_scale_input.value = DEFAULT_PARAMETERS.terrain_scale.toString();
+
+                this.terrain_generator.regenerateTerrainNoise(
+                    DEFAULT_PARAMETERS.min_height,
+                    DEFAULT_PARAMETERS.max_height,
+                    DEFAULT_PARAMETERS.terrain_scale,
+                    this.terrain_generator.getStartAmplitude(),
+                    this.terrain_generator.getStartFrequency(),
+                    this.terrain_generator.getCarveFrequency(),
+                    this.terrain_generator.getCarveAmplitude(),
+                    this.terrain_generator.getOctaves(),
+                    this.terrain_generator.getPersistence(),
+                    this.terrain_generator.getLacunarity()
+                );
+            });
+
+            noise_reset_button!.addEventListener("click", () => {
+                initial_amplitude_input.value = DEFAULT_PARAMETERS.start_amplitude.toString();
+                amplitude_persistence_input.value = DEFAULT_PARAMETERS.persistence.toString();
+                initial_frequency_input.value = DEFAULT_PARAMETERS.start_frequency.toString();
+                frequency_persistence_input.value = DEFAULT_PARAMETERS.lacunarity.toString();
+                carve_amplitude_input.value = DEFAULT_PARAMETERS.carve_amplitude.toString();
+                carve_frequency_input.value = DEFAULT_PARAMETERS.carve_frequency.toString();
+                noise_octaves_input.value = DEFAULT_PARAMETERS.octaves.toString();
+
+                this.terrain_generator.regenerateTerrainNoise(
+                    this.terrain_generator.getMinHeight(),
+                    this.terrain_generator.getMaxHeight(),
+                    this.terrain_generator.getTerrainScale(),
+                    DEFAULT_PARAMETERS.start_amplitude,
+                    DEFAULT_PARAMETERS.start_frequency,
+                    DEFAULT_PARAMETERS.carve_frequency,
+                    DEFAULT_PARAMETERS.carve_amplitude,
+                    DEFAULT_PARAMETERS.octaves,
+                    DEFAULT_PARAMETERS.persistence,
+                    DEFAULT_PARAMETERS.lacunarity
+                );
+            });
+
+            texture_reset_button!.addEventListener("click", () => {
+                const current_texture_ids: number[] = this.terrain_generator.getTextureIds();
+                texture_layers_container.innerHTML = "";
+
+                for (let idx = 0; idx < current_texture_ids.length; ++idx) {
+                    this.terrain_generator.removeTextureLayer(current_texture_ids[idx]);
+                }
+
+                for (let idx = 0; idx < DEFAULT_PARAMETERS.texture_layers.length; ++idx) {
+                    const layer: TerrainTexture = DEFAULT_PARAMETERS.texture_layers[idx];
+                    const id: number = this.terrain_generator.addTextureLayer(layer);
+
+                    this.buildTextureCard(id, texture_layers_container);
+                }
             });
         }
 

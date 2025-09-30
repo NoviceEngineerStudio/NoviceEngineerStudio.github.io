@@ -1,6 +1,7 @@
 type SlideDeckOrientation = "vertical" | "horizontal";
 
 const SCROLL_TIMEOUT_MS: number = 600;
+const SWIPE_THRESHOLD_PX: number = 50;
 
 class SlideDeck extends HTMLElement {
     private scroll_behavior: ScrollBehavior;
@@ -94,7 +95,7 @@ class PageMap extends HTMLElement {
 
     private map_nodes: HTMLElement[];
 
-    private swipe_start: number;
+    private swipe_start: number | null;
     private is_transitioning: boolean;
 
     constructor() {
@@ -103,7 +104,7 @@ class PageMap extends HTMLElement {
         this.last_node_active = null;
         this.onChangeCallbacks = [];
         this.map_nodes = [];
-        this.swipe_start = 0;
+        this.swipe_start = null;
         this.is_transitioning = false;
 
         const parent_element: HTMLElement | null = this.parentElement;
@@ -139,6 +140,10 @@ class PageMap extends HTMLElement {
             map_node_text.textContent = slide_deck.getSlideTitle(idx);
 
             map_node_container.addEventListener("click", () => {
+                if (this.is_transitioning) {
+                    return;
+                }
+
                 if (this.last_node_active !== null) {
                     this.last_node_active.style.backgroundColor = "";
                 }
@@ -183,11 +188,17 @@ class PageMap extends HTMLElement {
         });
 
         window.addEventListener("touchmove", (touch_event: TouchEvent) => {
-            if (this.is_transitioning) return;
+            if (this.is_transitioning || this.swipe_start === null) return;
 
             const scroll_delta: number = this.swipe_start - touch_event.touches[0].clientY;
 
-            if (!slide_deck.canScrollTransition(scroll_delta)) return;
+            if (
+                !slide_deck.canScrollTransition(scroll_delta) ||
+                Math.abs(scroll_delta) < SWIPE_THRESHOLD_PX
+            ) {
+                this.swipe_start = null;
+                return;
+            };
 
             if (touch_event.cancelable) {
                 touch_event.preventDefault();
@@ -199,6 +210,7 @@ class PageMap extends HTMLElement {
 
             if (new_index >= 0 && new_index < this.map_nodes.length) {
                 this.is_transitioning = true;
+                this.swipe_start = null;
                 this.map_nodes[new_index].click();
                 setTimeout(() => { this.is_transitioning = false; }, SCROLL_TIMEOUT_MS);
             }
