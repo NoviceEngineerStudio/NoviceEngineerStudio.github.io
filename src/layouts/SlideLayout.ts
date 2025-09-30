@@ -140,10 +140,6 @@ class PageMap extends HTMLElement {
             map_node_text.textContent = slide_deck.getSlideTitle(idx);
 
             map_node_container.addEventListener("click", () => {
-                if (this.is_transitioning) {
-                    return;
-                }
-
                 if (this.last_node_active !== null) {
                     this.last_node_active.style.backgroundColor = "";
                 }
@@ -196,7 +192,6 @@ class PageMap extends HTMLElement {
                 !slide_deck.canScrollTransition(scroll_delta) ||
                 Math.abs(scroll_delta) < SWIPE_THRESHOLD_PX
             ) {
-                this.swipe_start = null;
                 return;
             };
 
@@ -215,6 +210,10 @@ class PageMap extends HTMLElement {
                 setTimeout(() => { this.is_transitioning = false; }, SCROLL_TIMEOUT_MS);
             }
         }, { passive: false });
+
+        window.addEventListener("touchend", () => {
+            this.swipe_start = null;
+        });
     }
 
     public registerChangeCallback(callback: (index: number) => void): void {
