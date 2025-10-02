@@ -1,0 +1,665 @@
+---
+import { Image } from "astro:assets";
+import NavLayout from "../../../../layouts/NavLayout.astro";
+
+import default_decal from "../../../../assets/images/lorem_ipsum_golf_course_logo.png";
+---
+
+<NavLayout title="Golf Decal">
+    <div id="golf-ball-canvas" />
+
+    <div id="settings-panel">
+        <h1 class="text-md" style="font-weight: bold;">3D Golf Ball Preview</h1>
+
+        <input type="file" id="golf-ball-image-input" accept="image/*">
+
+        <div id="image-cropper-preview">
+            <Image
+                src={default_decal}
+                alt={"No Decal Selected..."}
+                id="crop-image"
+                style="width: 100%; height: auto; background-color: #f9fafb; display: block;"
+                loading="eager"
+            />
+            <div id="image-crop-box" style="width: 100%;">
+                <div id="image-crop-box-resizer"></div>
+            </div>
+        </div>
+
+        <h2 style="margin-top: 2rem; font-weight: bold;">Instructions</h2>
+        <ol style="margin: 0 3rem 0 3rem;">
+            <li>Click the "<span style="font-style: italic;">Choose File</span>" button above to select an image file from your device.</li>
+            <br/>
+            <li>Once uploaded, select the section of the image you'd like to display in the above image preview by moving and scaling the dashed box.</li>
+            <br/>
+            <li>The selected image will be applied as a decal on the golf ball in the 3D preview.</li>
+            <br/>
+            <li>Use your mouse or touch gestures to rotate and zoom the golf ball for a better view.</li>
+        </ol>
+    </div>
+
+    <div id="loading-overlay">
+        <div class="load-spinner"></div>
+        <h1 style="margin: 0; color: #ccc;">Loading...</h1>
+    </div>
+</NavLayout>
+
+<style>
+    html, body {
+        color: #000000;
+        background-color: #afafaf;
+        font-family: Arial, Helvetica, sans-serif;
+
+        margin: 0;
+        padding: 0;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        margin: 0.5rem 1.5rem 1rem 0;
+        padding: 0;
+    }
+
+    #golf-ball-image-input {
+        font-size: 0.95rem;
+        padding: 0.5rem;
+        margin-right: 1.5rem;
+        border: 2px solid #ccc;
+        border-radius: 0.5rem;
+        background-color: #f9fafb;
+        color: #111;
+        cursor: pointer;
+    }
+
+    /* Style the button portion */
+    #golf-ball-image-input::file-selector-button {
+        padding: 0.5rem 1rem;
+        margin-right: 1rem;
+        border: none;
+        border-radius: 0.5rem;
+        background: linear-gradient(135deg, #555, #333);
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.2s;
+    }
+
+    #golf-ball-image-input::file-selector-button:hover {
+        background: linear-gradient(135deg, #333, #111);
+    }
+
+    #golf-ball-image-input::file-selector-button:active {
+        transform: scale(0.96);
+    }
+
+    #golf-ball-image-input::-webkit-file-upload-button {
+        padding: 0.5rem 1rem;
+        margin-right: 1rem;
+        border: none;
+        border-radius: 0.5rem;
+        background: linear-gradient(135deg, #555, #333);
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    #image-cropper-preview {
+        position: relative;
+        width: 95%;
+        margin-top: 1.5rem;
+
+        border: 2px solid #ccc;
+        background-color: #ccc;
+    }
+
+    #image-crop-box {
+        position: absolute;
+
+        border: 2px dashed #333;
+        box-sizing: border-box;
+
+        cursor: move;
+    }
+
+    #image-crop-box-resizer {
+        position: absolute;
+        width: 0.75rem;
+        height: 0.75rem;
+
+        bottom: -0.375rem;
+        right: -0.375rem;
+
+        background-color: #333;
+        border: 2px solid #fff;
+        box-sizing: border-box;
+
+        cursor: nwse-resize;
+    }
+
+    #golf-ball-canvas {
+        width: 150vw;
+        height: 100vh;
+
+        position: fixed;
+        top: 0;
+        left: -50vw;
+    }
+
+    #settings-panel {
+        display: flex;
+        flex-direction: column;
+
+        background-color: #ffffff99;
+        box-shadow: 0 0.25rem 0.5rem #00000022;
+
+        max-width: 40vw;
+        max-height: 90vh;
+        padding: 1.5rem 1.5rem 1.5rem 1.5rem;
+        border-radius: 0.5rem;
+
+        position: fixed;
+        z-index: 99;
+        overflow-y: auto;
+
+        top: 50%;
+        transform: translateY(-50%);
+        right: 4rem;
+    }
+
+    canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        min-width: 100%;
+        min-height: 100%;
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    @media only screen and (max-width: 52rem) {
+        #golf-ball-canvas {
+            width: 100vw;
+            height: 75vh;
+
+            top: 0;
+            left: 0;
+        }
+
+        #settings-panel {
+            width: 100vw;
+            height: 25vh;
+            max-width: none;
+
+            border-radius: 0;
+
+            top: 75vh;
+            left: 0;
+            right: auto;
+            transform: none;
+        }
+    }
+
+    #loading-overlay {
+        position: fixed;
+        
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        background-color: #afafaf;
+
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 999;
+    }
+
+    .load-spinner {
+        border: 0.25rem solid #ccc;
+        border-top: 0.25rem solid #333;
+        border-radius: 50%;
+        width: 1.5rem;
+        height: 1.5rem;
+        animation: spin 1s linear infinite;
+        margin-right: 1rem;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<script>
+    import * as THREE from "three";
+    import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+    import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+    import default_decal from "../../../../assets/images/lorem_ipsum_golf_course_logo.png";
+
+    // *=================================================
+    // *
+    // * Application Configuration
+    // *
+    // *=================================================
+
+    const GOLF_BALL_DIAMETER_MM = 42.67;
+    const GOLF_BALL_RADIUS_MM = GOLF_BALL_DIAMETER_MM * 0.5;
+
+    const DEG2RAD = Math.PI / 180.0;
+
+    const config = {
+        camera: { // ? Camera Parameters
+            fov: 70.0, // ! Degrees
+            near: 0.1,
+            far: 1000.0,
+
+            homePosition: new THREE.Vector3(0, 0, 5),
+        },
+        renderer: { // ? Renderer Parameters
+            antialias: true,
+
+            clearColor: 0xafafaf,
+            clearAlpha: 1.0,
+        },
+
+        controls: { // ? OrbitControls Parameters
+            dampingEnabled: true,
+            dampingFactor: 0.05,
+
+            panEnabled: false,
+
+            zoomEnabled: true,
+            minZoomDistance: 1.5,
+            maxZoomDistance: 5.0,
+
+            rotateEnabled: true,
+            minPolarAngle: 0.0 * DEG2RAD,
+            maxPolarAngle: 90.0 * DEG2RAD,
+        },
+
+        decal: { // ? Decal Parameters
+            width: 131.0, // ! Millimeters
+            height: 25.0, // ! Millimeters
+
+            defaultImagePath: default_decal.src,
+        },
+        
+        dom_ids: { // ? DOM Element IDs
+            canvas: "golf-ball-canvas",
+            imageInput: "golf-ball-image-input",
+            loadingOverlay: "loading-overlay",
+            imageCropBox: "image-crop-box",
+            imageCropResizer: "image-crop-box-resizer",
+            imageCropPreview: "image-cropper-preview",
+            cropImage: "crop-image",
+        },
+    };
+
+    // *=================================================
+    // *
+    // * Utility Functions
+    // *
+    // *=================================================
+
+    function clamp(value: number, min: number, max: number) {
+        return Math.min(Math.max(value, min), max);
+    }
+
+    // *=================================================
+    // *
+    // * Three.js Scene Setup
+    // *
+    // *=================================================
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(
+        config.camera.fov, 1.0, config.camera.near, config.camera.far);
+    const renderer = new THREE.WebGLRenderer({ antialias: config.renderer.antialias });
+
+    camera.position.copy(config.camera.homePosition);
+
+    renderer.setPixelRatio(window.devicePixelRatio);
+
+    const clearColor = new THREE.Color(config.renderer.clearColor);
+    renderer.setClearColor(clearColor, config.renderer.clearAlpha);
+
+    // *=================================================
+    // *
+    // * Golf Ball Model Loading and Decal Application
+    // *
+    // *=================================================
+
+    const modelLoader = new GLTFLoader();
+    const textureLoader = new THREE.TextureLoader();
+
+    let golfBallMesh: THREE.Mesh | null = null;
+    let decalShader: THREE.WebGLProgramParametersWithUniforms | null = null;
+
+    modelLoader.load(
+        '/models/golf_decal/golf_ball.glb',
+        (gltf) => {
+            scene.add(gltf.scene);
+            gltf.scene.position.set(0.0, 0.0, 0.0);
+            
+            gltf.scene.traverse((child) => {
+                const mesh: THREE.Mesh = child as THREE.Mesh;
+                if (mesh.isMesh) {
+                    golfBallMesh = mesh;
+                }
+            });
+
+            if (!golfBallMesh) {
+                console.error("No mesh found in GLB!");
+                return;
+            }
+
+            const decalTexture = textureLoader.load(config.decal.defaultImagePath);
+
+            const decalWidth = config.decal.width / GOLF_BALL_RADIUS_MM;
+            const decalDisplacementY = 0.5 * (config.decal.height / GOLF_BALL_RADIUS_MM);
+
+            (golfBallMesh.material as THREE.Material).onBeforeCompile = (shader) => {
+                decalShader = shader;
+
+                shader.uniforms.decalMap = { value: decalTexture };
+
+                shader.uniforms.maxTheta = { value: decalWidth };
+
+                shader.uniforms.minHeight = { value: -decalDisplacementY };
+                shader.uniforms.maxHeight = { value: decalDisplacementY };
+
+                shader.uniforms.minU = { value: 0.0 };
+                shader.uniforms.maxU = { value: 1.0 };
+                shader.uniforms.minV = { value: 0.0 };
+                shader.uniforms.maxV = { value: 1.0 };
+
+                shader.vertexShader = shader.vertexShader.replace(
+                    `#include <common>`,
+                    `#include <common>
+                    varying vec3 vPos;`
+                ).replace(
+                    `#include <begin_vertex>`,
+                    `#include <begin_vertex>
+                    vPos = normalize(position);`
+                );
+
+                shader.fragmentShader = shader.fragmentShader.replace(
+                    `#include <common>`,
+                    `#include <common>
+                    varying vec3 vPos;
+                    uniform sampler2D decalMap;
+                    uniform float maxTheta;
+                    uniform float minHeight;
+                    uniform float maxHeight;
+                    uniform float minU;
+                    uniform float maxU;
+                    uniform float minV;
+                    uniform float maxV;`
+                ).replace(
+                    `#include <map_fragment>`,
+                    `#include <map_fragment>
+
+                    float theta = atan(vPos.z, vPos.x);
+
+                    if (theta < 0.0) {
+                        theta += 2.0 * PI;
+                    }
+
+                    if (
+                        theta <= maxTheta &&
+                        vPos.y >= minHeight &&
+                        vPos.y <= maxHeight
+                    ) {
+                        float phi   = acos(clamp(vPos.y, -1.0, 1.0));
+
+                        float u = 1.0 - (theta / maxTheta);
+                        float v = (vPos.y - minHeight) / (maxHeight - minHeight);
+
+                        if (u >= minU && u <= maxU && v >= minV && v <= maxV) {
+                            vec4 decalColor = texture2D(decalMap, vec2(u, v));
+                            diffuseColor = mix(diffuseColor, decalColor, decalColor.a);
+                        }
+                    }`
+                );
+            };
+        },
+        (xhr) => {
+            console.log(`Loading Model: ${(xhr.loaded / xhr.total * 100).toFixed(2)}%`);
+        },
+        (error) => {
+            console.error('An error happened', error);
+        }
+    );
+
+    // *=================================================
+    // *
+    // * Ground Plane, Lighting, and Fog Setup
+    // *
+    // *=================================================
+
+    const ground_mesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(100.0, 100.0),
+        new THREE.MeshStandardMaterial({ color: 0xffffff })
+    );
+
+    ground_mesh.rotation.x = -Math.PI / 2.0;
+    ground_mesh.position.y = -2.0;
+    scene.add(ground_mesh);
+
+    const ambient_light = new THREE.AmbientLight(0xffffff, 1.0);
+    scene.add(ambient_light);
+
+    const spot_light = new THREE.SpotLight(0xffffff, 2.5, 10, 90.0 * DEG2RAD, 1.0, 0.5);
+    spot_light.position.set(0.0, 0.0, 0.0);
+    spot_light.target = ground_mesh;
+    scene.add(spot_light);
+
+    const directional_light = new THREE.DirectionalLight(0xffffff, 0.5);
+    directional_light.position.set(5, 10, 7.5);
+    scene.add(directional_light);
+
+    scene.fog = new THREE.FogExp2(clearColor, 0.06);
+
+    // *=================================================
+    // *
+    // * OrbitControls Setup
+    // *
+    // *=================================================
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+
+    controls.enableDamping = config.controls.dampingEnabled;
+    controls.dampingFactor = config.controls.dampingFactor;
+
+    controls.enablePan = config.controls.panEnabled;
+
+    controls.enableZoom = config.controls.zoomEnabled;
+    controls.minDistance = config.controls.minZoomDistance;
+    controls.maxDistance = config.controls.maxZoomDistance;
+
+    controls.enableRotate = config.controls.rotateEnabled;
+    controls.minPolarAngle = config.controls.minPolarAngle;
+    controls.maxPolarAngle = config.controls.maxPolarAngle;
+
+    // *=================================================
+    // *
+    // * Canvas and Resize Handling
+    // *
+    // *=================================================
+
+    const canvas = document.getElementById(config.dom_ids.canvas);
+    canvas!.appendChild(renderer.domElement);
+
+    function onResize() {
+        const width = canvas!.clientWidth;
+        const height = canvas!.clientHeight;
+
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(width, height);
+    }
+
+    onResize();
+    window.addEventListener("resize", onResize);
+
+    // *=================================================
+    // *
+    // * Image Upload and Cropping Setup
+    // *
+    // *=================================================
+
+    let cropPosX = 0;
+    let cropPosY = 0;
+    let cropWidth = 0;
+    let cropAspect = config.decal.width / config.decal.height;
+
+    const cropPreview = document.getElementById(config.dom_ids.imageCropPreview);
+    const resizer = document.getElementById(config.dom_ids.imageCropResizer);
+
+    const cropBox = document.getElementById(config.dom_ids.imageCropBox);
+    cropBox!.style.aspectRatio = `${config.decal.width} / ${config.decal.height}`;
+    cropBox!.style.top = `${cropPosX}px`;
+    cropBox!.style.left = `${cropPosY}px`;
+
+    function updateDecalTexture() {
+        if (decalShader === null) return;
+
+        const rect = cropPreview!.getBoundingClientRect();
+
+        decalShader.uniforms.minU.value = cropPosX / rect.width;
+        decalShader.uniforms.maxU.value = cropWidth + (cropPosX / rect.width);
+        decalShader.uniforms.minV.value = 1.0 - (cropPosY / rect.height) - ((cropWidth * rect.width) / (cropAspect * rect.height));
+        decalShader.uniforms.maxV.value = 1.0 - (cropPosY / rect.height);
+    }
+
+    resizer!.addEventListener("mousedown", (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+
+        const moveListener = (moveEv: MouseEvent) => {
+            const rect = cropPreview!.getBoundingClientRect();
+
+            const maxPosX = cropPosX + ((rect.height - cropPosY) * cropAspect);
+            const mouseX = clamp(moveEv.clientX - rect.left, cropPosX, Math.min(maxPosX, rect.width));
+
+            cropWidth = (mouseX - cropPosX) / rect.width;
+            cropBox!.style.width = `${100 * cropWidth}%`;
+            updateDecalTexture();
+        }
+
+        const upListener = () => {
+            window.removeEventListener("mousemove", moveListener);
+            window.removeEventListener("mouseup", upListener);
+        }
+
+        window.addEventListener("mousemove", moveListener);
+        window.addEventListener("mouseup", upListener);
+    });
+
+    cropBox!.addEventListener("mousedown", (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+
+        const startRect = cropPreview!.getBoundingClientRect();
+        const offsetX = ev.clientX - startRect.left - cropPosX;
+        const offsetY = ev.clientY - startRect.top - cropPosY;
+
+        const moveListener = (moveEv: MouseEvent) => {
+            const rect = cropPreview!.getBoundingClientRect();
+
+            const maxPosX = rect.width - (cropWidth * rect.width);
+            const maxPosY = rect.height - (cropWidth * rect.width) / cropAspect;
+
+            cropPosX = clamp(moveEv.clientX - rect.left - offsetX, 0, maxPosX);
+            cropPosY = clamp(moveEv.clientY - rect.top - offsetY, 0, maxPosY);
+
+            cropBox!.style.left = `${cropPosX}px`;
+            cropBox!.style.top = `${cropPosY}px`;
+
+            updateDecalTexture();
+        }
+
+        const upListener = () => {
+            window.removeEventListener("mousemove", moveListener);
+            window.removeEventListener("mouseup", upListener);
+        }
+
+        window.addEventListener("mousemove", moveListener);
+        window.addEventListener("mouseup", upListener);
+    });
+
+    const imageInput = document.getElementById(config.dom_ids.imageInput);
+    const cropImage = document.getElementById(config.dom_ids.cropImage);
+
+    function imageCropRefresh() {
+        cropPosX = 0;
+        cropPosY = 0;
+        cropBox!.style.left = "0px";
+        cropBox!.style.top = "0px";
+        
+        const rect = cropPreview!.getBoundingClientRect();
+
+        const maxPosX = cropPosX + ((rect.height - cropPosY) * cropAspect);
+        const mouseX = clamp(rect.width, cropPosX, Math.min(maxPosX, rect.width));
+
+        cropWidth = (mouseX - cropPosX) / rect.width;
+        cropBox!.style.width = `${100 * cropWidth}%`;
+        
+        updateDecalTexture();
+    }
+
+    cropImage!.onload = imageCropRefresh;
+
+    (imageInput as HTMLInputElement)!.addEventListener('change', () => {
+        const files = (imageInput as HTMLInputElement).files;
+
+        if (files === null) {
+            return;
+        }
+
+        const file = files[0];
+
+        if (file && decalShader !== null) {
+            const url = URL.createObjectURL(file);
+            const newDecalTexture = textureLoader.load(url, () => {
+                URL.revokeObjectURL(url);
+            });
+
+            (cropImage as HTMLImageElement)!.src = url;
+            decalShader.uniforms.decalMap.value = newDecalTexture;
+        }
+    });
+
+    // *=================================================
+    // *
+    // * Application Main Loop
+    // *
+    // *=================================================
+
+    let lastFrameTime = Date.now();
+
+    function mainLoop() {
+        const curFrameTime = Date.now();
+        const deltaTime = (curFrameTime - lastFrameTime) * 0.001;
+        lastFrameTime = curFrameTime;
+
+        controls.update(deltaTime)
+
+        renderer.render(scene, camera);
+        requestAnimationFrame(mainLoop);
+    }
+
+    async function waitForLoad(callback: () => void) {
+        while (golfBallMesh === null) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+
+        document.getElementById(config.dom_ids.loadingOverlay)!.remove();
+        imageCropRefresh();
+        callback();
+    }
+
+    waitForLoad(mainLoop);
+</script>

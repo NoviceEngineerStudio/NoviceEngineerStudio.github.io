@@ -2,6 +2,7 @@ import { Language } from "../language";
 import type { ServiceExample, ServiceTier } from "./service_tier";
 
 import floorplan_viewer_preview from "../../assets/previews/floorplan_viewer.webp";
+import golf_decal_preview from "../../assets/previews/golf_decal.webp";
 
 function buildApprenticeTier(language: Language): ServiceTier {
     const floorplan_viewer: ServiceExample = {
@@ -9,6 +10,13 @@ function buildApprenticeTier(language: Language): ServiceTier {
         description: "",
         href: `/${language}/examples/apprentice_tier/floorplan_viewer`,
         preview_image: floorplan_viewer_preview
+    }
+
+    const golf_decal: ServiceExample = {
+        title: "Golf Decal",
+        description: "",
+        href: `/${language}/examples/apprentice_tier/golf_decal`,
+        preview_image: golf_decal_preview
     }
 
     const tier: ServiceTier = {
@@ -22,7 +30,8 @@ function buildApprenticeTier(language: Language): ServiceTier {
             max_days: 3,
         },
         examples: [
-            floorplan_viewer
+            floorplan_viewer,
+            golf_decal
         ],
         scene_tag: "",
         animation_tag: "",
@@ -40,6 +49,8 @@ function buildApprenticeTier(language: Language): ServiceTier {
             tier.support_tag = "1 revision round.";
 
             floorplan_viewer.description = "Explore a cozy home layout using this 3D architecture viewer. Using the togglable controls, you can get a good look at the design using the orbiting camera, or feel how the space would be at-scale by walking around using the first-person camera. The project also features toggles for the home's roof, the world grid, and a floorplan overlay.";
+
+            golf_decal.description = "Golf Decal is a visualization tool for a golf ball product customizer. Users can upload any image and adjust/crop it to the desired look on the golf ball, rotating the model to preview its appearance.";
             
             break;
     }
