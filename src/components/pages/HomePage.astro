@@ -1,0 +1,12 @@
+---
+import type { Languages } from "../../config/language_config";
+import NavLayout from "../layouts/NavLayout.astro";
+
+interface Props {
+    language: Languages
+};
+---
+
+<NavLayout language={Astro.props.language}>
+    <h1>Hello!</h1>
+</NavLayout>

@@ -1,0 +1,77 @@
+@font-face {
+  font-family: 'Rubik';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/rubik/Rubik-VariableFont_wght.ttf') format('truetype');
+}
+
+:root {
+    --color-text: #c0c0c0;
+    --color-text-bright: #ffffff;
+
+    --color-bg: #171717;
+    --color-bg-dark: #0c0a09;
+    --color-bg-light: #282828;
+
+    --color-primary: #00bc7d;
+    --color-primary-dark: #007a55;
+    --color-primary-light: #5ee9b5;
+
+    --color-secondary: #615fff;
+    --color-secondary-dark: #432dd7;
+    --color-secondary-light: #a3b3ff;
+
+    --text-xl: 3.375rem;
+    --text-lg: 1.500rem;
+    --text-md: 1.000rem;
+    --text-sm: 0.875rem;
+    --text-xs: 0.750rem;
+
+    --text-xl-line-height: calc(calc(0.25rem + var(--text-xl)) / var(--text-xl));
+    --text-lg-line-height: calc(calc(0.25rem + var(--text-xl)) / var(--text-lg));
+    --text-md-line-height: calc(calc(0.25rem + var(--text-xl)) / var(--text-md));
+    --text-sm-line-height: calc(calc(0.25rem + var(--text-xl)) / var(--text-sm));
+    --text-xs-line-height: calc(calc(0.25rem + var(--text-xl)) / var(--text-xs));
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    color: var(--color-text);
+    background-color: var(--color-bg);
+
+    font-size: var(--text-md);
+    font-family: "Rubik", sans-serif;
+    line-height: var(--text-md-line-height);
+}
+
+.bg-dark { background-color: var(--color-bg-dark); }
+.bg-light { background-color: var(--color-bg-light); }
+
+.text-bright { color: var(--color-text-bright); }
+.text-primary { color: var(--color-primary); }
+.text-secondary { color: var(--color-secondary); }
+
+.text-xl { font-size: var(--text-xl); line-height: var(--text-xl-line-height); }
+.text-lg { font-size: var(--text-lg); line-height: var(--text-lg-line-height); }
+.text-md { font-size: var(--text-md); line-height: var(--text-md-line-height); }
+.text-sm { font-size: var(--text-sm); line-height: var(--text-sm-line-height); }
+.text-xs { font-size: var(--text-xs); line-height: var(--text-xs-line-height); }
+
+.text-center { text-align: center; }
+
+.weight-thin { font-weight: lighter; }
+.weight-normal { font-weight: normal; }
+.weight-bold { font-weight: bold; }
+
+.flex { display: flex; }
+.flex-col { display: flex; flex-direction: column; }
+
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+
+.rounded { border-radius: 16px; }
+.rounded-full { border-radius: 50%; }

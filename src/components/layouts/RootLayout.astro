@@ -1,0 +1,57 @@
+---
+import "../../styles/globals.css";
+
+import type { PageLink } from "../../types/PageLink";
+import global_config from "../../config/global_config";
+import translate from "../../utils/content/translation";
+import { Languages } from "../../config/language_config";
+
+interface Props {
+    title?: string;
+    language: Languages;
+    additional_links?: PageLink[];
+
+    id?: string;
+    class?: string;
+    style?: string | astroHTML.JSX.CSSProperties;
+};
+export type RootLayoutProps = Props;
+
+const page_title: string = (
+    Astro.props.title === undefined
+        ? global_config.title
+        : `${Astro.props.title} - ${global_config.title}`
+);
+---
+
+<!DOCTYPE html>
+<html lang={Astro.props.language}>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="description" content={translate(Astro.props.language, "common", "site_description")}>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        {global_config.authors.map((author) => (
+            <meta name="author" content={author}>
+        ))}
+
+        <link rel="shortcut icon" href={global_config.shortcut_icon_href} type="image/x-icon">
+
+        {global_config.icons.map((icon) => (
+            <link rel="icon" href={icon.href} sizes={`${icon.width}x${icon.height}`}>
+        ))}
+
+        {global_config.static_links.map((link) => (
+            <link {...link} />
+        ))}
+
+        {Astro.props.additional_links?.map((link) => (
+            <link {...link} />
+        ))}
+
+        <title>{page_title}</title>
+    </head>
+    <body id={Astro.props.id} class={Astro.props.class} style={Astro.props.style}>
+        <slot/>
+    </body>
+</html>

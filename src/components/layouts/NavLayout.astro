@@ -1,0 +1,9 @@
+---
+import RootLayout, { type RootLayoutProps } from "./RootLayout.astro";
+
+interface Props extends RootLayoutProps {};
+---
+
+<RootLayout {...Astro.props as RootLayoutProps}>
+    <slot />
+</RootLayout>
