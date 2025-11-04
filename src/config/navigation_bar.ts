@@ -1,24 +1,26 @@
+import { type TranslationFileKey } from "../utils/content/translation";
+
 interface NavigationLink {
-    label: string;
+    label: TranslationFileKey["common"];
     href: string;
     is_external: boolean;
 };
 
 const navigation_bar_links: NavigationLink[] = [
     {
-        label: "Home",
+        label: "home_nav_link",
         href: "/",
         is_external: false
     }, {
-        label: "Blog",
+        label: "blog_nav_link",
         href: "/blog/",
         is_external: false
     }, {
-        label: "Games",
+        label: "games_nav_link",
         href: "/games/",
         is_external: false
     }, {
-        label: "Fiverr",
+        label: "fiverr_nav_link",
         href: "https://www.fiverr.com/s/1q9L96z",
         is_external: true
     }

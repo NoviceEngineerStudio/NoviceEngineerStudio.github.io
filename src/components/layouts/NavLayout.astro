@@ -1,6 +1,7 @@
 ---
 import "../../styles/nav_layout.css";
 import Image from "astro/components/Image.astro";
+import translate from "../../utils/content/translation";
 import navigation_bar_links from "../../config/navigation_bar";
 import RootLayout, { type RootLayoutProps } from "./RootLayout.astro";
 import novice_engineer_studio_logo from "../../assets/logos/novice_engineer_studio.webp";
@@ -13,7 +14,6 @@ function isPageMatch(href: string): boolean {
         Astro.url.pathname.replaceAll(/[/\\]/g, "")
     )
 }
-
 ---
 
 <RootLayout {...Astro.props as RootLayoutProps}>
@@ -43,7 +43,7 @@ function isPageMatch(href: string): boolean {
                     class={`nav-link text-lg ${isPageMatch(nav_link.href) ? "text-bright weight-bold" : "text-normal"}`}
                     href={`${nav_link.is_external ? "" : `/${Astro.props.language}`}${nav_link.href}`}
                 >
-                    {nav_link.label}
+                    {translate(Astro.props.language, "common", nav_link.label)}
                 </a>
             ))}
         </div>
@@ -65,7 +65,7 @@ function isPageMatch(href: string): boolean {
                 class={`nav-link text-lg ${isPageMatch(nav_link.href) ? "text-bright weight-bold" : "text-normal"}`}
                 href={`${nav_link.is_external ? "" : `/${Astro.props.language}`}${nav_link.href}`}
             >
-                {nav_link.label}
+                {translate(Astro.props.language, "common", nav_link.label)}
             </a>
         ))}
     </div>

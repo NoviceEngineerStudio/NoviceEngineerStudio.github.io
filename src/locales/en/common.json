@@ -1,3 +1,8 @@
 {
-    "site_description": "Welcome to the Novice Engineering Studio! This website serves as a hub for all of our current and prior projects; A fun place to document our continued growth as a studio, as well as announce what we're up to. Hope to see you there!"
+    "site_description": "Welcome to the Novice Engineering Studio! This website serves as a hub for all of our current and prior projects; A fun place to document our continued growth as a studio, as well as announce what we're up to. Hope to see you there!",
+
+    "home_nav_link": "Home",
+    "blog_nav_link": "Blog",
+    "games_nav_link": "Games",
+    "fiverr_nav_link": "Fiverr"
 }

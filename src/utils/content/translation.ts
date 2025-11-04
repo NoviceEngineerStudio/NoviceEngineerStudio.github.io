@@ -12,8 +12,13 @@ const TRANSLATION_TABLES: Map<Languages, TranslationTable> = new Map<Languages, 
     }]
 ]);
 
+type TranslationTableKey = keyof TranslationTable;
+type TranslationFileKey = {
+    [K in TranslationTableKey]: keyof TranslationTable[K]
+};
+
 function translate<
-    K extends keyof TranslationTable,
+    K extends TranslationTableKey,
     T extends keyof TranslationTable[K]
 >(
     language: Languages,
@@ -34,4 +39,5 @@ function translate<
     return error_message;
 }
 
+export { type TranslationTableKey, type TranslationFileKey };
 export default translate;
