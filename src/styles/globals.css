@@ -48,9 +48,11 @@ html, body {
     line-height: var(--text-md-line-height);
 }
 
+.bg-normal { background-color: var(--color-bg); }
 .bg-dark { background-color: var(--color-bg-dark); }
 .bg-light { background-color: var(--color-bg-light); }
 
+.text-normal { color: var(--color-text); }
 .text-bright { color: var(--color-text-bright); }
 .text-primary { color: var(--color-primary); }
 .text-secondary { color: var(--color-secondary); }
@@ -61,17 +63,9 @@ html, body {
 .text-sm { font-size: var(--text-sm); line-height: var(--text-sm-line-height); }
 .text-xs { font-size: var(--text-xs); line-height: var(--text-xs-line-height); }
 
-.text-center { text-align: center; }
-
 .weight-thin { font-weight: lighter; }
 .weight-normal { font-weight: normal; }
 .weight-bold { font-weight: bold; }
-
-.flex { display: flex; }
-.flex-col { display: flex; flex-direction: column; }
-
-.items-center { align-items: center; }
-.justify-center { justify-content: center; }
 
 .rounded { border-radius: 16px; }
 .rounded-full { border-radius: 50%; }
