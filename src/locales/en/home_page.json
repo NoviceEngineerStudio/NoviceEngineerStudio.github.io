@@ -10,5 +10,13 @@
     "about_title": "About Me",
     "about_subtitle": "Nice to meet you!",
     
-    "about_paragraph": "My name is Skyler Riggle, and I'm a developer who enjoys crafting fun and intuitive experiences through software. I've worked with a wide variety of computer science disciplines, having worked professionally on everything from websites and backend services, to video games and embedded systems work. At the moment, I work as a freelance developer using ThreeJS to build interactive and engaging 3D website experiences. That said, I hope that my passion for this ever-expansive field can be of use to you and your next endeavor!"
+    "about_paragraph": "My name is Skyler Riggle, and I'm a developer who enjoys crafting fun and intuitive experiences through software. I've worked with a wide variety of computer science disciplines, having worked professionally on everything from websites and backend services, to video games and embedded systems work. At the moment, I work as a freelance developer using ThreeJS to build interactive and engaging 3D website experiences. That said, I hope that my passion for this ever-expansive field can be of use to you and your next endeavor!",
+
+    "contact_title": "Let's Make Magic!",
+    "contact_subtitle": "Get in touch to discuss your next project",
+
+    "contact_name_label": "Name",
+    "contact_email_label": "Email",
+    "contact_message_label": "Message",
+    "contact_send_label": "Send Message"
 }

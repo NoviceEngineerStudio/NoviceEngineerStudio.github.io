@@ -3,6 +3,7 @@ import "../../styles/home_page.css";
 import Image from "astro/components/Image.astro";
 import NavLayout from "../layouts/NavLayout.astro";
 import translate from "../../utils/content/translation";
+import contact_details from "../../config/contact_details";
 import type { Languages } from "../../config/language_config";
 
 import SNOW from "../../assets/PLACEHOLDER/SNOW.jpg";
@@ -62,6 +63,87 @@ interface Props {
                 loading="lazy"
             />
         </div>
+    </section>
+
+    <!-- Prior Work Showcase Section -->
+
+    <section></section>
+
+    <!-- Services Section -->
+
+    <section></section>
+
+    <!-- Contact Section -->
+
+    <section class="home-contact-section">
+        <div>
+            <div>
+                <h1 class="text-xl text-bright weight-normal">{translate(Astro.props.language, "home_page", "contact_title")}</h1>
+                <h2 class="text-lg weight-normal">{translate(Astro.props.language, "home_page", "contact_subtitle")}</h2>
+            </div>
+
+            <div class="home-contact-container">
+                {contact_details.map((details) => (
+                    <div class="home-contact-details-container">
+                        <div class="bg-light rounded drop-shadow home-contact-details-icon-container">
+                            <Image
+                                src={details.icon}
+                                alt={`${details.label}-Icon`}
+                                class="home-contact-details-icon"
+                                loading="lazy"
+                            />
+                        </div>
+                        <a
+                            class="text-bright bg-light drop-shadow home-contact-details-label-container"
+                            href={details.href}
+                        >
+                            {details.label}
+                        </a>
+                    </div>
+                ))}
+            </div>
+        </div>
+
+        <form
+            id="home-contact-form"
+            class="bg-light rounded drop-shadow home-contact-form"
+        >
+            <label for="contact-name-input" class="text-bright">
+                {translate(Astro.props.language, "home_page", "contact_name_label")}
+            </label>
+            <input
+                type="text"
+                id="contact-name-input"
+                class="bg-normal inner-shadow home-contact-form-input text-md text-bright"
+                required
+            />
+
+            <label for="contact-email-input" class="text-bright">
+                {translate(Astro.props.language, "home_page", "contact_email_label")}
+            </label>
+            <input
+                type="email"
+                id="contact-email-input"
+                class="bg-normal inner-shadow home-contact-form-input text-md text-bright"
+                required
+            />
+
+            <label for="contact-message-input" class="text-bright">
+                {translate(Astro.props.language, "home_page", "contact_message_label")}
+            </label>
+            <textarea
+                id="contact-message-input"
+                class="bg-normal inner-shadow home-contact-form-input text-md text-bright"
+                style="resize: vertical;"
+                required
+            />
+
+            <input
+                type="submit"
+                class="white-button home-contact-form-button"
+                value={translate(Astro.props.language, "home_page", "contact_send_label")}
+            />
+        </form>
     </section>
 
     <script src="../../scripts/home_page.ts" />
