@@ -12,6 +12,17 @@
     
     "about_paragraph": "My name is Skyler Riggle, and I'm a developer who enjoys crafting fun and intuitive experiences through software. I've worked with a wide variety of computer science disciplines, having worked professionally on everything from websites and backend services, to video games and embedded systems work. At the moment, I work as a freelance developer using ThreeJS to build interactive and engaging 3D website experiences. That said, I hope that my passion for this ever-expansive field can be of use to you and your next endeavor!",
 
+    "dev_services_title": "ThreeJS Service Tiers",
+    "dev_services_subtitle": "Building 3D experiences for the web",
+
+    "dev_services_per_order": "/Order",
+    "dev_services_days_singular": "Day",
+    "dev_services_days_plural": "Days",
+    "dev_services_place_order": "Place Order",
+
+    "dev_services_note_label": "*Note:",
+    "dev_services_note_text": "Please feel free to reach out prior for a free consulation to discuss project scope and tier fit.",
+
     "contact_title": "Let's Make Magic!",
     "contact_subtitle": "Get in touch to discuss your next project",
 

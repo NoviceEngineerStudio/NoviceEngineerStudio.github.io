@@ -92,6 +92,33 @@ home-page-canvas {
     }
 }
 
+/**************************/
+/* ! Services Elements ! */
+/************************/
+
+.home-services-section {
+    margin-left: 8rem;
+    margin-right: 8rem;
+}
+
+.home-services-card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: stretch;
+    gap: 2rem;
+
+    margin-top: 2.5rem;
+    margin-bottom: 2.5rem;
+}
+
+@media (max-width: 56rem) {
+    .home-services-section {
+        margin-left: 2rem;
+        margin-right: 2rem;
+    }
+}
+
 /*************************/
 /* ! Contact Elements ! */
 /***********************/
@@ -101,7 +128,7 @@ home-page-canvas {
     justify-content: space-between;
     gap: 4rem;
 
-    margin: 16rem 8rem 16rem 8rem;
+    margin: 16rem 2rem 16rem 8rem;
 }
 
 .home-contact-container {
@@ -174,9 +201,12 @@ home-page-canvas {
 @media (max-width: 72rem) {
     .home-contact-section {
         flex-direction: column;
+    }
+}
 
+@media (max-width: 56rem) {
+    .home-contact-section {
         margin-left: 2rem;
-        margin-right: 2rem;
     }
 }
 

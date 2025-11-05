@@ -83,9 +83,12 @@ html, body {
     width: fit-content;
     height: fit-content;
     padding: 0.5rem 3rem;
+    display: block;
 
     font-size: var(--text-md);
     font-weight: bolder;
+    text-decoration: none;
+    text-wrap: nowrap;
 
     cursor: pointer;
     transition: color 150ms ease-in-out 0s, background-color 150ms ease-in-out 0s;

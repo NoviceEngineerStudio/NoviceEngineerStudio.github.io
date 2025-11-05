@@ -1,0 +1,69 @@
+---
+import "../../styles/service_card.css";
+import Image from 'astro/components/Image.astro';
+import translate from '../../utils/content/translation';
+import type { DevService } from '../../config/dev_services'
+import calendar_icon from "../../assets/icons/calendar.svg";
+import type { Languages } from '../../config/language_config';
+import checkmark_icon from "../../assets/icons/checkmark.svg";
+
+interface Props {
+    service: DevService;
+    language: Languages;
+    dark_color: string;
+    bright_color: string;
+};
+---
+
+<div
+    class="service-card drop-shadow"
+    style={`--card-color-dark: ${Astro.props.dark_color}; --card-color-bright: ${Astro.props.bright_color};`}
+>
+    <div class="service-card-bubble" />
+
+    <div class="service-card-content-container">
+        <span class="text-bright service-card-title">{translate(Astro.props.language, "dev_services", Astro.props.service.tier_title)}</span>
+
+        <div class="text-bright">
+            <span class="text-xl">${Astro.props.service.usd_cost.toFixed(0)}</span>
+            <span>{translate(Astro.props.language, "home_page", "dev_services_per_order")}</span>
+        </div>
+
+        <span class="text-sm">{translate(Astro.props.language, "dev_services", Astro.props.service.tag_line)}</span>
+
+        <hr class="service-card-divider" />
+
+        <div class="service-card-icon-container">
+            <Image
+                src={calendar_icon}
+                alt="Delivery-Days-Calendar"
+                class="service-card-icon"
+            />
+            <span>
+                {Astro.props.service.days_to_deliver}
+                {Astro.props.service.days_to_deliver > 1
+                    ? translate(Astro.props.language, "home_page", "dev_services_days_plural")
+                    : translate(Astro.props.language, "home_page", "dev_services_days_singular")
+                }
+            </span>
+        </div>
+
+        {Astro.props.service.descriptors.map((descriptor) => (
+            <div class="service-card-icon-container">
+                <Image
+                    src={checkmark_icon}
+                    alt={`${descriptor}-Check`}
+                    class="service-card-icon"
+                />
+                <span>{translate(Astro.props.language, "dev_services", descriptor)}</span>
+            </div>
+        ))}
+
+        <a
+            class="white-button service-card-order-button drop-shadow"
+            href="https://www.fiverr.com/s/1q9L96z"
+        >
+            {translate(Astro.props.language, "home_page", "dev_services_place_order")}
+        </a>
+    </div>
+</div>
