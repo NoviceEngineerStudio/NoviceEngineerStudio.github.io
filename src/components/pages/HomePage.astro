@@ -1,12 +1,68 @@
 ---
+import "../../styles/home_page.css";
+import Image from "astro/components/Image.astro";
 import NavLayout from "../layouts/NavLayout.astro";
+import translate from "../../utils/content/translation";
 import type { Languages } from "../../config/language_config";
+
+import SNOW from "../../assets/PLACEHOLDER/SNOW.jpg";
+import PROFILE from "../../assets/PLACEHOLDER/PROFILE.jpg";
 
 interface Props {
     language: Languages
 };
 ---
 
-<NavLayout language={Astro.props.language}>
-    <h1>Home</h1>
+<NavLayout language={Astro.props.language} style="background-color: transparent;">
+    <!-- 3D Canvas -->
+    <home-page-canvas />
+
+    <!-- Hero Section -->
+
+    <section class="home-hero-section">
+        <div class="weight-bold text-xl">
+            <span class="text-bright">{translate(Astro.props.language, "home_page", "hero_upper_prefix")}</span>
+            <span class="text-primary">{translate(Astro.props.language, "home_page", "hero_upper_primary")}</span>
+            <span class="text-bright">{translate(Astro.props.language, "home_page", "hero_upper_separator")}</span>
+            <span class="text-secondary">{translate(Astro.props.language, "home_page", "hero_upper_secondary")}</span>
+            <span class="text-bright">{translate(Astro.props.language, "home_page", "hero_upper_suffix")}</span>
+        </div>
+
+        <br />
+
+        <span class="text-lg">
+            {translate(Astro.props.language, "home_page", "hero_lower")}
+        </span>
+    </section>
+
+    <!-- About Section -->
+
+    <section class="home-about-section">
+        <div class="home-about-text-container">
+            <div>
+                <h1 class="text-xl text-bright weight-normal">{translate(Astro.props.language, "home_page", "about_title")}</h1>
+                <h2 class="text-lg weight-normal">{translate(Astro.props.language, "home_page", "about_subtitle")}</h2>
+            </div>
+
+            <p>{translate(Astro.props.language, "home_page", "about_paragraph")}</p>
+        </div>
+
+        <div class="home-about-image-container">
+            <Image
+                src={SNOW}
+                alt="About-1"
+                class="rounded home-about-image-1"
+                loading="lazy"
+            />
+
+            <Image
+                src={PROFILE}
+                alt="About-2"
+                class="rounded-full home-about-image-2",
+                loading="lazy"
+            />
+        </div>
+    </section>
+
+    <script src="../../scripts/home_page.ts" />
 </NavLayout>

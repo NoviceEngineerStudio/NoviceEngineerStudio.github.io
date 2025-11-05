@@ -1,0 +1,95 @@
+home-page-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -50;
+    width: 100vw;
+    height: 100vh;
+}
+
+/**********************/
+/* ! Hero Elements ! */
+/********************/
+
+.home-hero-section {
+    height: calc(90vh - 8rem);
+
+    margin-bottom: calc(10vh + 8rem);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+}
+
+/***********************/
+/* ! About Elements ! */
+/*********************/
+
+.home-about-section {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 4rem;
+
+    margin-left: 8rem;
+    margin-right: 8rem;
+}
+
+.home-about-text-container {
+    max-width: 40vw;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2.5rem;
+}
+
+.home-about-image-container {
+    position: relative;
+
+    width: fit-content;
+    height: fit-content;
+}
+
+.home-about-image-1 {
+    width: 35vw;
+    height: 26.25vw;
+}
+
+.home-about-image-2 {
+    width: 10vw;
+    height: 10vw;
+
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    transform: translate(50%, 50%);
+
+    border: 0.5rem solid var(--color-bg);
+}
+
+@media (max-width: 56rem) {
+    .home-about-section {
+        flex-direction: column-reverse;
+
+        margin-left: 2rem;
+        margin-right: 2rem;
+    }
+
+    .home-about-text-container {
+        max-width: none;
+    }
+
+    .home-about-image-1 {
+        width: 75vw;
+        height: 56.25vw;
+    }
+
+    .home-about-image-2 {
+        width: 15vw;
+        height: 15vw;
+    }
+}

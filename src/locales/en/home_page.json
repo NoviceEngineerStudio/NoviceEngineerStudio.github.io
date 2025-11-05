@@ -1,0 +1,14 @@
+{
+    "hero_upper_prefix": "Quality",
+    "hero_upper_primary": "Web",
+    "hero_upper_separator": "&",
+    "hero_upper_secondary": "Game",
+    "hero_upper_suffix": "Experiences",
+
+    "hero_lower": "Creating applications that entertain and captivate audiences!",
+
+    "about_title": "About Me",
+    "about_subtitle": "Nice to meet you!",
+    
+    "about_paragraph": "My name is Skyler Riggle, and I'm a developer who enjoys crafting fun and intuitive experiences through software. I've worked with a wide variety of computer science disciplines, having worked professionally on everything from websites and backend services, to video games and embedded systems work. At the moment, I work as a freelance developer using ThreeJS to build interactive and engaging 3D website experiences. That said, I hope that my passion for this ever-expansive field can be of use to you and your next endeavor!"
+}
