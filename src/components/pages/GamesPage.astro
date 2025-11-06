@@ -8,5 +8,32 @@ interface Props {
 ---
 
 <NavLayout language={Astro.props.language}>
-    <h1>GAMES</h1>
+    <!-- TODO: Temporary Content -->
+
+    <div class="warn-container">
+        <h1 class="warn-title">Under Construction</h1>
+        <p>Games content will be coming soon!</p>
+    </div>
+
+    <style>
+        .warn-container {
+            width: fit-content;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+
+            padding: 1.5rem;
+
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+
+            background-color: var(--color-secondary-dark);
+            border: 0.25rem solid var(--color-secondary);
+            border-radius: 1rem;
+        }
+    </style>
 </NavLayout>

@@ -1,0 +1,43 @@
+.work-card-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    width: calc(100vw - 8rem);
+    max-width: 80vw;
+    overflow: hidden;
+}
+
+.work-card-preview-image {
+    position: relative;
+    background: var(--work-card-image) center/cover no-repeat;
+}
+
+.work-card-preview-image::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, transparent 65%, var(--color-bg-light) 100%);
+    pointer-events: none;
+}
+
+.work-card-content-container {
+    padding: 2.5rem 2rem;
+}
+
+.work-card-description {
+    margin-top: 2rem;
+    margin-bottom: 4rem;
+}
+
+@media (max-width: 40rem) {
+    .work-card-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+
+        width: calc(100vw - 4rem);
+    }
+
+    .work-card-preview-image::after {
+        background: linear-gradient(to bottom, transparent 65%, var(--color-bg-light) 100%);
+    }
+}

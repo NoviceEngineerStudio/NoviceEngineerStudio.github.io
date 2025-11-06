@@ -2,11 +2,13 @@
 import "../../styles/home_page.css";
 import Image from "astro/components/Image.astro";
 import NavLayout from "../layouts/NavLayout.astro";
+import Carousel from "../containers/Carousel.astro";
 import dev_services from "../../config/dev_services";
 import ServiceCard from "../cards/ServiceCard.astro";
-import translate from "../../utils/content/translation";
+import PriorWorkCard from "../cards/PriorWorkCard.astro";
 import contact_details from "../../config/contact_details";
 import type { Languages } from "../../config/language_config";
+import translate, { type TranslationFileKey } from "../../utils/content/translation";
 
 import SNOW from "../../assets/PLACEHOLDER/SNOW.jpg";
 import PROFILE from "../../assets/PLACEHOLDER/PROFILE.jpg";
@@ -18,6 +20,14 @@ interface Props {
 interface DevServiceColor {
     dark_color: string;
     bright_color: string;
+};
+
+interface PriorWorkData {
+    project_preview: ImageMetadata;
+    title: TranslationFileKey["prior_works"];
+    client: string;
+    description: TranslationFileKey["prior_works"];
+    project_href?: string;
 };
 
 const dev_service_colors: DevServiceColor[] = [
@@ -36,6 +46,34 @@ const dev_service_colors: DevServiceColor[] = [
 if (dev_services.length > dev_service_colors.length) {
     throw new Error("Not enough service colors defined!");
 }
+
+const prior_work_data: PriorWorkData[] = [
+    {
+        project_preview: SNOW,
+        title: "view_here",
+        client: "Up your Ass LLC",
+        description: "view_here",
+        project_href: "/"
+    }, {
+        project_preview: SNOW,
+        title: "view_here",
+        client: "Up your Ass LLC",
+        description: "view_here",
+        project_href: "/"
+    }, {
+        project_preview: SNOW,
+        title: "view_here",
+        client: "Up your Ass LLC",
+        description: "view_here",
+        project_href: "/"
+    }, {
+        project_preview: SNOW,
+        title: "view_here",
+        client: "Up your Ass LLC",
+        description: "view_here",
+        project_href: "/"
+    }
+];
 ---
 
 <NavLayout language={Astro.props.language} style="background-color: transparent;">
@@ -91,7 +129,21 @@ if (dev_services.length > dev_service_colors.length) {
 
     <!-- Prior Work Showcase Section -->
 
-    <section></section>
+    <section>
+        <div class="home-work-showcase-title">
+            <h1 class="text-xl text-bright weight-normal">{translate(Astro.props.language, "home_page", "work_showcase_title")}</h1>
+            <h2 class="text-lg weight-normal">{translate(Astro.props.language, "home_page", "work_showcase_subtitle")}</h2>
+        </div>
+
+        <Carousel>
+            {prior_work_data.map((prior_work) => (
+                <PriorWorkCard
+                    language={Astro.props.language}
+                    {...prior_work}
+                />
+            ))}
+        </Carousel>
+    </section>
 
     <!-- Services Section -->
 

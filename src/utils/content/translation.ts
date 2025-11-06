@@ -2,11 +2,13 @@ import { Languages } from "../../config/language_config";
 
 import en_common from "../../locales/en/common.json";
 import en_home_page from "../../locales/en/home_page.json";
+import en_prior_works from "../../locales/en/prior_works.json";
 import en_dev_services from "../../locales/en/dev_services.json";
 
 interface TranslationTable {
     common: typeof en_common;
     home_page: typeof en_home_page;
+    prior_works: typeof en_prior_works;
     dev_services: typeof en_dev_services;
 };
 
@@ -14,6 +16,7 @@ const TRANSLATION_TABLES: Map<Languages, TranslationTable> = new Map<Languages, 
     [Languages.ENGLISH, {
         common: en_common,
         home_page: en_home_page,
+        prior_works: en_prior_works,
         dev_services: en_dev_services
     }]
 ]);

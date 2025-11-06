@@ -1,0 +1,40 @@
+---
+import "../../styles/prior_work_card.css";
+import type { Languages } from "../../config/language_config";
+import translate, { type TranslationFileKey } from '../../utils/content/translation';
+
+interface Props {
+    language: Languages;
+    project_preview: ImageMetadata;
+    title: TranslationFileKey["prior_works"];
+    client: string;
+    description: TranslationFileKey["prior_works"];
+    project_href?: string;
+};
+---
+
+<div class="bg-light rounded drop-shadow work-card-container">
+    <div
+        class="work-card-preview-image"
+        style={`--work-card-image: url('${Astro.props.project_preview.src}');`}
+    />
+
+    <div class="work-card-content-container">
+        <h1 class="weight-normal text-bright text-lg">
+            {translate(Astro.props.language, "prior_works", Astro.props.title)}
+        </h1>
+        <span class="text-sm">{Astro.props.client}</span>
+
+        <!-- TAGS HERE -->
+
+        <p class="work-card-description">
+            {translate(Astro.props.language, "prior_works", Astro.props.description)}
+        </p>
+
+        {Astro.props.project_href !== undefined &&
+            <a class="white-button drop-shadow" href={Astro.props.project_href}>
+                {translate(Astro.props.language, "prior_works", "view_here")}
+            </a>
+        }
+    </div>
+</div>
