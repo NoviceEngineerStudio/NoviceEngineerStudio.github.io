@@ -33,11 +33,7 @@ class Carousel extends HTMLElement {
             this.scroll_dots.push(scroll_dot);
 
             scroll_dot.addEventListener("click", () => {
-                scroll_element.scrollIntoView({
-                    behavior: "smooth",
-                    inline: "center",
-                    block: "nearest"
-                });
+                this.scrollToElement(scroll_element);
             });
         }
 
@@ -49,11 +45,7 @@ class Carousel extends HTMLElement {
 
         this.auto_scroll_interval_id = setInterval(() => {
             this.is_auto_scrolling = true;
-            this.scroll_elements[(this.scroll_index + 1) % this.scroll_dots.length].scrollIntoView({
-                behavior: "smooth",
-                inline: "center",
-                block: "nearest"
-            });
+            this.scrollToElement(this.scroll_elements[(this.scroll_index + 1) % this.scroll_dots.length]);
         }, CAROUSEL_AUTO_SCROLL_TIME_MS);
 
         this.scroll_pane.addEventListener("scrollend", () => {
@@ -86,6 +78,16 @@ class Carousel extends HTMLElement {
 
             this.scroll_index = closest_index;
             this.scroll_dots[this.scroll_index].style.setProperty("background-color", "var(--color-text-bright)", "important");
+        });
+    }
+
+    private scrollToElement(element: HTMLElement): void {
+        const scroll_pane_rect: DOMRect = this.scroll_pane.getBoundingClientRect();
+        const element_rect: DOMRect = element.getBoundingClientRect();
+
+        this.scroll_pane.scrollTo({
+            left: element_rect.left - scroll_pane_rect.left + this.scroll_pane.scrollLeft + 0.5 * (element_rect.width - scroll_pane_rect.width),
+            behavior: "smooth"
         });
     }
 
