@@ -5,7 +5,10 @@ interface DevService {
     usd_cost: number;
     days_to_deliver: number;
     tag_line: TranslationFileKey["dev_services"];
-    descriptors: TranslationFileKey["dev_services"][];    
+    descriptors: TranslationFileKey["dev_services"][];
+
+    dark_color: string;
+    bright_color: string;
 };
 
 const NOVICE_DAYS: number = 2;
@@ -26,7 +29,10 @@ const dev_services: DevService[] = [
             "novice_descriptor_2",
             "novice_descriptor_3",
             "novice_descriptor_4"
-        ]
+        ],
+
+        dark_color: "#F0B100",
+        bright_color: "#FFDF20"
     }, {
         tier_title: "adept_tier",
         usd_cost: Math.ceil(ADEPT_DAYS * HOURS_PER_DAY * COST_PER_HOUR),
@@ -37,7 +43,10 @@ const dev_services: DevService[] = [
             "adept_descriptor_2",
             "adept_descriptor_3",
             "adept_descriptor_4"
-        ]
+        ],
+
+        dark_color: "#615FFF",
+        bright_color: "#A3B3FF"
     }, {
         tier_title: "expert_tier",
         usd_cost: Math.ceil(EXPERT_DAYS * HOURS_PER_DAY * COST_PER_HOUR),
@@ -48,7 +57,10 @@ const dev_services: DevService[] = [
             "expert_descriptor_2",
             "expert_descriptor_3",
             "expert_descriptor_4"
-        ]
+        ],
+
+        dark_color: "#00BC7D",
+        bright_color: "#5EE9B5"
     }
 ];
 

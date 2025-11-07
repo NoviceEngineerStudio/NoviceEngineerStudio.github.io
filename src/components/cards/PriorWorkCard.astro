@@ -1,38 +1,51 @@
 ---
 import "../../styles/prior_work_card.css";
+import Image from "astro/components/Image.astro";
+import translate from '../../utils/content/translation';
+import type { PriorWork } from "../../config/prior_works";
 import type { Languages } from "../../config/language_config";
-import translate, { type TranslationFileKey } from '../../utils/content/translation';
 
 interface Props {
     language: Languages;
-    project_preview: ImageMetadata;
-    title: TranslationFileKey["prior_works"];
-    client: string;
-    description: TranslationFileKey["prior_works"];
-    project_href?: string;
+    work: PriorWork;
 };
 ---
 
 <div class="bg-light rounded drop-shadow work-card-container">
     <div
         class="work-card-preview-image"
-        style={`--work-card-image: url('${Astro.props.project_preview.src}');`}
+        style={`--work-card-image: url('${Astro.props.work.project_preview.src}');`}
     />
 
     <div class="work-card-content-container">
         <h1 class="weight-normal text-bright text-lg">
-            {translate(Astro.props.language, "prior_works", Astro.props.title)}
+            {translate(Astro.props.language, "prior_works", Astro.props.work.title)}
         </h1>
-        <span class="text-sm">{Astro.props.client}</span>
+        <span class="text-sm">{Astro.props.work.client}</span>
 
-        <!-- TAGS HERE -->
+        <div class="work-card-tag-container">
+            {Astro.props.work.tags.map((tag) => (
+                <div class="work-card-tag" style={`--work-card-tag-color: ${tag.color};`}>
+                    {tag.icon !== undefined &&
+                        <Image
+                            src={tag.icon}
+                            alt={`${tag.label}-Emblem`}
+                            class="work-card-tag-icon"
+                        />
+                    }
+                    <span class="text-xs">
+                        {translate(Astro.props.language, "prior_works", tag.label)}
+                    </span>
+                </div>
+            ))}
+        </div>
 
         <p class="work-card-description">
-            {translate(Astro.props.language, "prior_works", Astro.props.description)}
+            {translate(Astro.props.language, "prior_works", Astro.props.work.description)}
         </p>
 
-        {Astro.props.project_href !== undefined &&
-            <a class="white-button drop-shadow" href={Astro.props.project_href}>
+        {Astro.props.work.project_href !== undefined &&
+            <a class="white-button drop-shadow" href={Astro.props.work.project_href}>
                 {translate(Astro.props.language, "prior_works", "view_here")}
             </a>
         }

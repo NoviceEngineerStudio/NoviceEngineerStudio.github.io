@@ -2,78 +2,20 @@
 import "../../styles/home_page.css";
 import Image from "astro/components/Image.astro";
 import NavLayout from "../layouts/NavLayout.astro";
+import prior_works from "../../config/prior_works";
 import Carousel from "../containers/Carousel.astro";
 import dev_services from "../../config/dev_services";
 import ServiceCard from "../cards/ServiceCard.astro";
+import translate from "../../utils/content/translation";
 import PriorWorkCard from "../cards/PriorWorkCard.astro";
 import contact_details from "../../config/contact_details";
 import type { Languages } from "../../config/language_config";
-import translate, { type TranslationFileKey } from "../../utils/content/translation";
 
 import SNOW from "../../assets/PLACEHOLDER/SNOW.jpg";
-import PROFILE from "../../assets/PLACEHOLDER/PROFILE.jpg";
 
 interface Props {
     language: Languages
 };
-
-interface DevServiceColor {
-    dark_color: string;
-    bright_color: string;
-};
-
-interface PriorWorkData {
-    project_preview: ImageMetadata;
-    title: TranslationFileKey["prior_works"];
-    client: string;
-    description: TranslationFileKey["prior_works"];
-    project_href?: string;
-};
-
-const dev_service_colors: DevServiceColor[] = [
-    {
-        dark_color: "#F0B100",
-        bright_color: "#FFDF20"
-    }, {
-        dark_color: "#615FFF",
-        bright_color: "#A3B3FF"
-    }, {
-        dark_color: "#00BC7D",
-        bright_color: "#5EE9B5"
-    }
-];
-
-if (dev_services.length > dev_service_colors.length) {
-    throw new Error("Not enough service colors defined!");
-}
-
-const prior_work_data: PriorWorkData[] = [
-    {
-        project_preview: SNOW,
-        title: "view_here",
-        client: "Up your Ass LLC",
-        description: "view_here",
-        project_href: "/"
-    }, {
-        project_preview: SNOW,
-        title: "view_here",
-        client: "Up your Ass LLC",
-        description: "view_here",
-        project_href: "/"
-    }, {
-        project_preview: SNOW,
-        title: "view_here",
-        client: "Up your Ass LLC",
-        description: "view_here",
-        project_href: "/"
-    }, {
-        project_preview: SNOW,
-        title: "view_here",
-        client: "Up your Ass LLC",
-        description: "view_here",
-        project_href: "/"
-    }
-];
 ---
 
 <NavLayout language={Astro.props.language} style="background-color: transparent;">
@@ -119,7 +61,7 @@ const prior_work_data: PriorWorkData[] = [
             />
 
             <Image
-                src={PROFILE}
+                src={SNOW}
                 alt="About-2"
                 class="rounded-full home-about-image-2",
                 loading="lazy"
@@ -136,10 +78,10 @@ const prior_work_data: PriorWorkData[] = [
         </div>
 
         <Carousel>
-            {prior_work_data.map((prior_work) => (
+            {prior_works.map((prior_work) => (
                 <PriorWorkCard
                     language={Astro.props.language}
-                    {...prior_work}
+                    work={prior_work}
                 />
             ))}
         </Carousel>
@@ -158,8 +100,6 @@ const prior_work_data: PriorWorkData[] = [
                 <ServiceCard
                     service={service}
                     language={Astro.props.language}
-                    dark_color={dev_service_colors[index].dark_color}
-                    bright_color={dev_service_colors[index].bright_color}
                 />
             ))}
         </div>

@@ -10,14 +10,12 @@ import checkmark_icon from "../../assets/icons/checkmark.svg";
 interface Props {
     service: DevService;
     language: Languages;
-    dark_color: string;
-    bright_color: string;
 };
 ---
 
 <div
     class="service-card drop-shadow"
-    style={`--card-color-dark: ${Astro.props.dark_color}; --card-color-bright: ${Astro.props.bright_color};`}
+    style={`--card-color-dark: ${Astro.props.service.dark_color}; --card-color-bright: ${Astro.props.service.bright_color};`}
 >
     <div class="service-card-bubble" />
 

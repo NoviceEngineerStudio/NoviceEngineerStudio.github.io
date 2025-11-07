@@ -22,19 +22,15 @@ const CAMERA_START_Y: number = 0.0;
 const CAMERA_END_Y: number = -50.0;
 
 const VEGETATION_PLACEMENTS: THREE.Vector3[] = [
-    new THREE.Vector3(-4.0, -4.25, 0.0),
-    new THREE.Vector3(-3.0, -4.25, -1.5),
-    new THREE.Vector3(-8.0, -4.5, -1.0),
-    new THREE.Vector3(-3.0, -4.5, 1.5),
-    new THREE.Vector3(-6.0, -4.25, 2.0),
-    new THREE.Vector3(-4.5, -4.25, 1.0),
-
-    new THREE.Vector3(4.0, -4.25, -5.0),
-    new THREE.Vector3(5.0, -4.25, -6.5),
-    new THREE.Vector3(0.0, -4.5, -6.0),
-    new THREE.Vector3(5.0, -4.5, -3.5),
-    new THREE.Vector3(2.0, -4.25, -3.0),
-    new THREE.Vector3(3.5, -4.25, -4.0),
+    new THREE.Vector3(-4.0,  -4.25,  0.0),
+    new THREE.Vector3(-3.0,  -4.25, -1.5),
+    new THREE.Vector3(-8.0,  -4.5,  -1.0),
+    new THREE.Vector3(-3.0,  -4.5,   1.5),
+    new THREE.Vector3(-6.0,  -4.25,  2.0),
+    new THREE.Vector3( 0.0,  -4.5,  -6.0),
+    new THREE.Vector3( 5.0,  -4.5,  -3.5),
+    new THREE.Vector3( 2.0,  -4.25, -3.0),
+    new THREE.Vector3( 3.5,  -4.25, -1.0),
 ];
 
 class HomePageCanvas extends HTMLElement {
