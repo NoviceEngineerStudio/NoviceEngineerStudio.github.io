@@ -22,16 +22,22 @@ const CAMERA_START_Y: number = 0.0;
 const CAMERA_END_Y: number = -50.0;
 
 const VEGETATION_PLACEMENTS: THREE.Vector3[] = [
-    new THREE.Vector3(-4.0,  -4.25,  0.0),
-    new THREE.Vector3(-3.0,  -4.25, -1.5),
-    new THREE.Vector3(-8.0,  -4.5,  -1.0),
-    new THREE.Vector3(-3.0,  -4.5,   1.5),
-    new THREE.Vector3(-6.0,  -4.25,  2.0),
-    new THREE.Vector3( 0.0,  -4.5,  -6.0),
-    new THREE.Vector3( 5.0,  -4.5,  -3.5),
-    new THREE.Vector3( 2.0,  -4.25, -3.0),
-    new THREE.Vector3( 3.5,  -4.25, -1.0),
+    new THREE.Vector3(-4.0,  CAMERA_END_Y - 4.25,  0.0),
+    new THREE.Vector3(-3.0,  CAMERA_END_Y - 4.25, -1.5),
+    new THREE.Vector3(-8.0,  CAMERA_END_Y - 4.5,  -1.0),
+    new THREE.Vector3(-3.0,  CAMERA_END_Y - 4.5,   1.5),
+    new THREE.Vector3(-6.0,  CAMERA_END_Y - 4.25,  2.0),
+    new THREE.Vector3( 0.0,  CAMERA_END_Y - 4.5,  -6.0),
+    new THREE.Vector3( 5.0,  CAMERA_END_Y - 4.5,  -3.5),
+    new THREE.Vector3( 2.0,  CAMERA_END_Y - 4.25, -3.0),
+    new THREE.Vector3( 3.5,  CAMERA_END_Y - 4.25, -1.0),
 ];
+
+const FISH_COUNT: number = 1000;
+
+interface DummyProgram {
+    uniforms: { u_time: { value: number; } };
+};
 
 class HomePageCanvas extends HTMLElement {
     private scene: THREE.Scene = new THREE.Scene();
@@ -52,7 +58,15 @@ class HomePageCanvas extends HTMLElement {
         })
     );
 
-    private ocean_surface_program: THREE.WebGLProgramParametersWithUniforms | null = null;
+    private ocean_surface_program: THREE.WebGLProgramParametersWithUniforms | DummyProgram = {
+        uniforms: { u_time: { value: 0.0 } }
+    };
+
+    private instanced_fish: THREE.InstancedMesh = new THREE.InstancedMesh(
+        new THREE.SphereGeometry(),
+        new THREE.MeshBasicMaterial(),
+        0
+    )
 
     private last_frame_time: number = 0.0;
 
@@ -65,7 +79,7 @@ class HomePageCanvas extends HTMLElement {
         const ocean_floor_material: THREE.Material = new THREE.MeshStandardMaterial({ color: 0xffdb84, wireframe: true });
         const leafy_plant_material: THREE.Material = new THREE.MeshStandardMaterial({ color: 0x8ace53, wireframe: true });
 
-        obj_loader.load(CHEST_MODEL_PATH, (data: THREE.Group<THREE.Object3DEventMap>) => {
+        obj_loader.load(CHEST_MODEL_PATH, (data: THREE.Group<THREE.Object3DEventMap>) => { // Treasure Chest
             data.traverse((child) => {
                 if (child instanceof THREE.Mesh) {
                     child.material = chest_material;
@@ -77,7 +91,7 @@ class HomePageCanvas extends HTMLElement {
             data.position.set(7.0, CAMERA_END_Y - 4.7, -1.0);
         });
 
-        obj_loader.load(OCEAN_FLOOR_MODEL_PATH, (data: THREE.Group<THREE.Object3DEventMap>) => {
+        obj_loader.load(OCEAN_FLOOR_MODEL_PATH, (data: THREE.Group<THREE.Object3DEventMap>) => { // Ocean Floor
             data.traverse((child) => {
                 if (child instanceof THREE.Mesh) {
                     child.material = ocean_floor_material;
@@ -88,24 +102,58 @@ class HomePageCanvas extends HTMLElement {
             data.position.set(0.0, CAMERA_END_Y - 5.0, -30.0);
         });OCEAN_FLOOR_MODEL_PATH
 
-        obj_loader.load(LEAFY_PLANT_MODEL_PATH, (data: THREE.Group<THREE.Object3DEventMap>) => {
+        obj_loader.load(LEAFY_PLANT_MODEL_PATH, (data: THREE.Group<THREE.Object3DEventMap>) => { // Leafy Plants
             data.traverse((child) => {
-                if (child instanceof THREE.Mesh) {
-                    child.material = leafy_plant_material;
+                if (!(child instanceof THREE.Mesh)) {
+                    return;
                 }
-            });
 
-            VEGETATION_PLACEMENTS.forEach((position: THREE.Vector3) => {
-                const plant: THREE.Group<THREE.Object3DEventMap> = data.clone();
-                
-                this.scene.add(plant);
-                plant.position.set(position.x, position.y + CAMERA_END_Y, position.z);
-                plant.rotateY(randFloat(0.0, 2.0 * Math.PI));
+                const plant_mesh: THREE.Mesh = child as THREE.Mesh;
+
+                const instanced_plants: THREE.InstancedMesh = new THREE.InstancedMesh(
+                    plant_mesh.geometry,
+                    leafy_plant_material,
+                    VEGETATION_PLACEMENTS.length
+                );
+
+                this.scene.add(instanced_plants);
+
+                const temp_matrix: THREE.Matrix4 = new THREE.Matrix4();
+                const rotation_axis: THREE.Vector3 = new THREE.Vector3(0.0, 1.0, 0.0);
+                const rotation: THREE.Quaternion = new THREE.Quaternion();
+                const scale: THREE.Vector3 = new THREE.Vector3(1.0, 1.0, 1.0);
+
+                VEGETATION_PLACEMENTS.forEach((position, idx) => {
+                    rotation.setFromAxisAngle(
+                        rotation_axis,
+                        randFloat(0.0, 2.0 * Math.PI)
+                    );
+
+                    temp_matrix.compose(position, rotation, scale);
+                    instanced_plants.setMatrixAt(idx, temp_matrix);
+                });
+
+                instanced_plants.instanceMatrix.needsUpdate = true;
             });
         });
 
-        obj_loader.load(LOW_POLY_FISH_MODEL_PATH, (data: THREE.Group<THREE.Object3DEventMap>) => {
-            // TODO: Create Particle Effect
+        obj_loader.load(LOW_POLY_FISH_MODEL_PATH, (data: THREE.Group<THREE.Object3DEventMap>) => { // Fish Particles
+            data.traverse((child) => {
+                if (!(child instanceof THREE.Mesh) || this.instanced_fish.count > 0) {
+                    return;
+                }
+
+                const fish_mesh: THREE.Mesh = child as THREE.Mesh;
+                this.instanced_fish = new THREE.InstancedMesh(
+                    fish_mesh.geometry,
+                    new THREE.MeshBasicMaterial({ color: 0xffffff }),
+                    FISH_COUNT
+                );
+
+                this.scene.add(this.instanced_fish);
+
+                // TODO: Setup Fish movement and initial placement
+            });
         });
 
         this.camera.position.set(0.0, CAMERA_START_Y, CAMERA_DEPTH);
@@ -183,9 +231,7 @@ class HomePageCanvas extends HTMLElement {
         const delta_time: number = current_frame_time - this.last_frame_time;
         this.last_frame_time = current_frame_time;
 
-        if (this.ocean_surface_program !== null) {
-            this.ocean_surface_program.uniforms.u_time.value += delta_time;
-        }
+        this.ocean_surface_program.uniforms.u_time.value += delta_time;
 
         this.camera.position.y = CAMERA_START_Y + (CAMERA_END_Y - CAMERA_START_Y) * this.getScrollPercentage();
 
