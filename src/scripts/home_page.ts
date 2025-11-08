@@ -11,7 +11,6 @@ import { OBJLoader } from "three/examples/jsm/Addons.js";
 const CHEST_MODEL_PATH: string = "/models/home_page/Chest.obj";
 const OCEAN_FLOOR_MODEL_PATH: string = "/models/home_page/OceanFloor.obj";
 const LEAFY_PLANT_MODEL_PATH: string = "/models/home_page/LeafyPlant.obj";
-const LOW_POLY_FISH_MODEL_PATH: string = "/models/home_page/LowPolyFish.obj";
 
 const CLEAR_COLOR: THREE.ColorRepresentation = 0x171717;
 const OCEAN_COLOR: THREE.ColorRepresentation = 0x00bc7d;
@@ -32,8 +31,6 @@ const VEGETATION_PLACEMENTS: THREE.Vector3[] = [
     new THREE.Vector3( 2.0,  CAMERA_END_Y - 4.25, -3.0),
     new THREE.Vector3( 3.5,  CAMERA_END_Y - 4.25, -1.0),
 ];
-
-const FISH_COUNT: number = 1000;
 
 interface DummyProgram {
     uniforms: { u_time: { value: number; } };
@@ -61,12 +58,6 @@ class HomePageCanvas extends HTMLElement {
     private ocean_surface_program: THREE.WebGLProgramParametersWithUniforms | DummyProgram = {
         uniforms: { u_time: { value: 0.0 } }
     };
-
-    private instanced_fish: THREE.InstancedMesh = new THREE.InstancedMesh(
-        new THREE.SphereGeometry(),
-        new THREE.MeshBasicMaterial(),
-        0
-    )
 
     private last_frame_time: number = 0.0;
 
@@ -137,25 +128,6 @@ class HomePageCanvas extends HTMLElement {
             });
         });
 
-        obj_loader.load(LOW_POLY_FISH_MODEL_PATH, (data: THREE.Group<THREE.Object3DEventMap>) => { // Fish Particles
-            data.traverse((child) => {
-                if (!(child instanceof THREE.Mesh) || this.instanced_fish.count > 0) {
-                    return;
-                }
-
-                const fish_mesh: THREE.Mesh = child as THREE.Mesh;
-                this.instanced_fish = new THREE.InstancedMesh(
-                    fish_mesh.geometry,
-                    new THREE.MeshBasicMaterial({ color: 0xffffff }),
-                    FISH_COUNT
-                );
-
-                this.scene.add(this.instanced_fish);
-
-                // TODO: Setup Fish movement and initial placement
-            });
-        });
-
         this.camera.position.set(0.0, CAMERA_START_Y, CAMERA_DEPTH);
 
         this.scene.fog = new THREE.FogExp2(CLEAR_COLOR, 0.06);
@@ -188,7 +160,7 @@ class HomePageCanvas extends HTMLElement {
         }
 
         this.ocean_surface.position.set(0.0, -4.0, -40.0);
-        this.ocean_surface.rotateX(Math.PI * -0.5)
+        this.ocean_surface.rotateX(Math.PI * -0.5);
         this.scene.add(this.ocean_surface);
 
         this.renderer.setClearColor(CLEAR_COLOR);
