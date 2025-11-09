@@ -11,17 +11,25 @@ interface DevService {
     bright_color: string;
 };
 
-const NOVICE_DAYS: number = 2;
-const ADEPT_DAYS: number = 4;
-const EXPERT_DAYS: number = 8;
+const NOVICE_DAYS: number = 3;
+const ADEPT_DAYS: number = 7;
+const EXPERT_DAYS: number = 14;
 
 const HOURS_PER_DAY: number = 8;
 const COST_PER_HOUR: number = 7.25;
+const ROUND_DOWN_MULTIPLE: number = 5.0;
+
+function serviceCostFormula(days: number): number {
+    const upper_bound: number = Math.ceil(HOURS_PER_DAY * COST_PER_HOUR * days);
+    const multiple_count: number = Math.floor(upper_bound / ROUND_DOWN_MULTIPLE);
+
+    return ROUND_DOWN_MULTIPLE * multiple_count;
+}
 
 const dev_services: DevService[] = [
     {
         tier_title: "novice_tier",
-        usd_cost: Math.ceil(NOVICE_DAYS * HOURS_PER_DAY * COST_PER_HOUR),
+        usd_cost: serviceCostFormula(NOVICE_DAYS),
         days_to_deliver: NOVICE_DAYS,
         tag_line: "novice_tag_line",
         descriptors: [
@@ -35,7 +43,7 @@ const dev_services: DevService[] = [
         bright_color: "#FFDF20"
     }, {
         tier_title: "adept_tier",
-        usd_cost: Math.ceil(ADEPT_DAYS * HOURS_PER_DAY * COST_PER_HOUR),
+        usd_cost: serviceCostFormula(ADEPT_DAYS),
         days_to_deliver: ADEPT_DAYS,
         tag_line: "adept_tag_line",
         descriptors: [
@@ -49,7 +57,7 @@ const dev_services: DevService[] = [
         bright_color: "#A3B3FF"
     }, {
         tier_title: "expert_tier",
-        usd_cost: Math.ceil(EXPERT_DAYS * HOURS_PER_DAY * COST_PER_HOUR),
+        usd_cost: serviceCostFormula(EXPERT_DAYS),
         days_to_deliver: EXPERT_DAYS,
         tag_line: "expert_tag_line",
         descriptors: [
@@ -64,5 +72,5 @@ const dev_services: DevService[] = [
     }
 ];
 
-export { type DevService };
+export { type DevService, serviceCostFormula };
 export default dev_services;

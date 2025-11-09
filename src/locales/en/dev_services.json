@@ -3,22 +3,22 @@
     "adept_tier": "Adept",
     "expert_tier": "Expert",
 
-    "novice_tag_line": "Good for fun 3D site decorations, model viewers, etc.",
-    "adept_tag_line": "Great for product customizers, 3D visualization tools, etc.",
-    "expert_tag_line": "Perfect for businesses looking to create detailed 3D web experiences.",
+    "novice_tag_line": "Good for quick prototypes, simple sites, or new features.",
+    "adept_tag_line": "Great for multi-page sites with lite business logic.",
+    "expert_tag_line": "Perfect for businesses looking to create detailed web experiences.",
 
-    "novice_descriptor_1": "Simple 3D scene",
-    "novice_descriptor_2": "Minor animations & controls",
-    "novice_descriptor_3": "Full project source code",
+    "novice_descriptor_1": "Single page web app",
+    "novice_descriptor_2": "Basic interactivity & animations",
+    "novice_descriptor_3": "Responsive mobile-friendly design",
     "novice_descriptor_4": "1 round of revisions",
 
-    "adept_descriptor_1": "Complex multi-asset scene",
-    "adept_descriptor_2": "Dynamic animations & inputs",
-    "adept_descriptor_3": "Feature integration support",
+    "adept_descriptor_1": "Multi-functional web app",
+    "adept_descriptor_2": "Simple backend integration",
+    "adept_descriptor_3": "Custom UI components & cohesive styling",
     "adept_descriptor_4": "Up to 2 rounds of revisions",
 
-    "expert_descriptor_1": "Fully featured dynamic scene",
-    "expert_descriptor_2": "Highly responsive interactivity",
-    "expert_descriptor_3": "7 days of free mainentance",
+    "expert_descriptor_1": "Fully featured web app",
+    "expert_descriptor_2": "Advanced backend integrations",
+    "expert_descriptor_3": "Optimized performance, SEO, & deployment setup",
     "expert_descriptor_4": "Up to 3 rounds of revisions"
 }
