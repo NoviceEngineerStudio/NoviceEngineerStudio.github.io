@@ -2,7 +2,7 @@
   font-family: 'Rubik';
   font-style: normal;
   font-weight: 400;
-  src: url('/client/fonts/rubik/Rubik-VariableFont_wght.ttf') format('truetype');
+  src: url('/fonts/rubik/Rubik-VariableFont_wght.ttf') format('truetype');
 }
 
 :root {
