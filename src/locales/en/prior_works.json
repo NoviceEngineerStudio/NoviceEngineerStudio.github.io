@@ -1,3 +1,10 @@
 {
-    "view_here": "View Here"
+    "view_here": "View Here",
+
+    "astro_tag": "Astro",
+    "figma_tag": "Figma",
+    "github_pages_tag": "GitHub Pages",
+
+    "work_title_1": "Nail Salon Business Site",
+    "work_description_1": "I designed and developed a static business website for Country Hideaway Nail Salon, giving the salon a polished online presence to attract customers, establish credibility, highlight its services and products, and direct visitors to external booking and community platforms. The design was created in Figma, built with the Astro framework, and deployed via GitHub Pages for a fast and reliable delivery pipeline."
 }
