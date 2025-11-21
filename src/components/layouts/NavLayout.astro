@@ -10,7 +10,7 @@ interface Props extends RootLayoutProps {};
 
 function isPageMatch(href: string): boolean {
     return (
-        `${Astro.props.language}${href.replaceAll(/[/\\]/g, "")}` ===
+        `client${Astro.props.language}${href.replaceAll(/[/\\]/g, "")}` ===
         Astro.url.pathname.replaceAll(/[/\\]/g, "")
     )
 }
@@ -20,7 +20,7 @@ function isPageMatch(href: string): boolean {
     <nav class="nav-bar">
         <!-- Navigation Bar Logo and Title -->
 
-        <a href={`/${Astro.props.language}/`} class="nav-logo-container">
+        <a href={`/client/${Astro.props.language}/`} class="nav-logo-container">
             <Image
                 src={novice_engineer_studio_logo}
                 alt="Nav-Bar-Logo"
@@ -41,7 +41,7 @@ function isPageMatch(href: string): boolean {
             {navigation_bar_links.map((nav_link) => (
                 <a
                     class={`nav-link text-lg ${isPageMatch(nav_link.href) ? "text-bright weight-bold" : "text-normal"}`}
-                    href={`${nav_link.is_external ? "" : `/${Astro.props.language}`}${nav_link.href}`}
+                    href={`${nav_link.is_external ? "" : `/client/${Astro.props.language}`}${nav_link.href}`}
                 >
                     {translate(Astro.props.language, "common", nav_link.label)}
                 </a>
@@ -63,7 +63,7 @@ function isPageMatch(href: string): boolean {
         {navigation_bar_links.map((nav_link, index) => (
             <a
                 class={`nav-link text-lg ${isPageMatch(nav_link.href) ? "text-bright weight-bold" : "text-normal"}`}
-                href={`${nav_link.is_external ? "" : `/${Astro.props.language}`}${nav_link.href}`}
+                href={`${nav_link.is_external ? "" : `/client/${Astro.props.language}`}${nav_link.href}`}
             >
                 {translate(Astro.props.language, "common", nav_link.label)}
             </a>

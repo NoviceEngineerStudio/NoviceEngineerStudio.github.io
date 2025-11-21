@@ -6,4 +6,4 @@ if (!language_config.supported_languages.includes(nav_language)) {
     nav_language = language_config.default_language;
 }
 
-window.location.assign(`/${nav_language}`);
+window.location.assign(`/client/${nav_language}`);

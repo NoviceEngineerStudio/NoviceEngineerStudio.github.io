@@ -8,9 +8,9 @@ import * as THREE from "three";
 import { randFloat } from "three/src/math/MathUtils.js";
 import { OBJLoader } from "three/examples/jsm/Addons.js";
 
-const CHEST_MODEL_PATH: string = "/models/home_page/Chest.obj";
-const OCEAN_FLOOR_MODEL_PATH: string = "/models/home_page/OceanFloor.obj";
-const LEAFY_PLANT_MODEL_PATH: string = "/models/home_page/LeafyPlant.obj";
+const CHEST_MODEL_PATH: string = "/client/models/home_page/Chest.obj";
+const OCEAN_FLOOR_MODEL_PATH: string = "/client/models/home_page/OceanFloor.obj";
+const LEAFY_PLANT_MODEL_PATH: string = "/client/models/home_page/LeafyPlant.obj";
 
 const CLEAR_COLOR: THREE.ColorRepresentation = 0x171717;
 const OCEAN_COLOR: THREE.ColorRepresentation = 0x00bc7d;
@@ -258,7 +258,7 @@ contact_form.addEventListener("submit", async (ev: SubmitEvent) => {
         message: message_value
     };
 
-    const email_result = await fetch("/api/contact", {
+    const email_result = await fetch("/server/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(contact_data)
