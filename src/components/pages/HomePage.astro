@@ -9,9 +9,9 @@ import ServiceCard from "../cards/ServiceCard.astro";
 import translate from "../../utils/content/translation";
 import PriorWorkCard from "../cards/PriorWorkCard.astro";
 import contact_details from "../../config/contact_details";
+import profile_image from "../../assets/images/profile.webp";
 import type { Languages } from "../../config/language_config";
 
-import SNOW from "../../assets/PLACEHOLDER/SNOW.jpg";
 
 interface Props {
     language: Languages
@@ -54,14 +54,14 @@ interface Props {
 
         <div class="home-about-image-container">
             <Image
-                src={SNOW}
+                src={profile_image}
                 alt="About-1"
                 class="rounded home-about-image-1"
                 loading="lazy"
             />
 
             <Image
-                src={SNOW}
+                src={profile_image}
                 alt="About-2"
                 class="rounded-full home-about-image-2",
                 loading="lazy"

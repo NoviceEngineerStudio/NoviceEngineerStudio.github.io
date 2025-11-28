@@ -21,6 +21,9 @@
 }
 
 .work-card-content-container {
+    display: flex;
+    flex-direction: column;
+    
     padding: 2.5rem 2rem;
 }
 
@@ -54,6 +57,10 @@
 .work-card-description {
     margin-top: 2rem;
     margin-bottom: 4rem;
+}
+
+.work-card-view-button {
+    margin-top: auto;
 }
 
 @media (max-width: 40rem) {

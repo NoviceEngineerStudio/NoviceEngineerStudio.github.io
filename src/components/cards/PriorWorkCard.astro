@@ -45,7 +45,7 @@ interface Props {
         </p>
 
         {Astro.props.work.project_href !== undefined &&
-            <a class="white-button drop-shadow" href={Astro.props.work.project_href}>
+            <a class="white-button drop-shadow work-card-view-button" href={Astro.props.work.project_href}>
                 {translate(Astro.props.language, "prior_works", "view_here")}
             </a>
         }

@@ -4,7 +4,11 @@
     "astro_tag": "Astro",
     "figma_tag": "Figma",
     "github_pages_tag": "GitHub Pages",
+    "threejs_tag": "Three.js",
 
     "work_title_1": "Nail Salon Business Site",
-    "work_description_1": "I designed and developed a static business website for Country Hideaway Nail Salon, giving the salon a polished online presence to attract customers, establish credibility, highlight its services and products, and direct visitors to external booking and community platforms. The design was created in Figma, built with the Astro framework, and deployed via GitHub Pages for a fast and reliable delivery pipeline."
+    "work_description_1": "I designed and developed a static business website for Country Hideaway Nail Salon, giving the salon a polished online presence to attract customers, establish credibility, highlight its services and products, and direct visitors to external booking and community platforms. The design was created in Figma, built with the Astro framework, and deployed via GitHub Pages for a fast and reliable delivery pipeline. The site also pulls dynamic pricing information from the owner's Google Sheets.",
+
+    "work_title_2": "Gunsmith's Digital Business Card",
+    "work_description_2": "To be written..."
 }
