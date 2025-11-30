@@ -2,6 +2,7 @@ import astro_icon from "../assets/logos/astro.svg";
 import figma_icon from "../assets/logos/figma.svg";
 import github_icon from "../assets/logos/github.svg";
 import chn_site from "../assets/images/chn_site.webp";
+import threejs_icon from "../assets/logos/threejs.svg";
 import { type TranslationFileKey } from "../utils/content/translation";
 
 interface PriorWorkTag {
@@ -34,6 +35,11 @@ const tags = {
         icon: github_icon,
         label: "github_pages_tag",
         color: "#1dece6"
+    },
+    threejs: {
+        icon: threejs_icon,
+        label: "threejs_tag",
+        color: "#ffffff"
     }
 } as const satisfies Record<string, PriorWorkTag>;
 
@@ -48,6 +54,18 @@ const prior_works: PriorWork[] = [
             tags.github_pages
         ],
         description: "work_description_1",
+        project_href: "https://countryhideawaynails.github.io/"
+    }, {
+        project_preview: chn_site,
+        title: "work_title_2",
+        client: "Bearded B******* Gunsmithing",
+        tags: [
+            tags.figma,
+            tags.astro,
+            tags.github_pages,
+            tags.threejs
+        ],
+        description: "work_description_2",
         project_href: "https://countryhideawaynails.github.io/"
     }
 ];
