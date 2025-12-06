@@ -3,6 +3,7 @@ import figma_icon from "../assets/logos/figma.svg";
 import github_icon from "../assets/logos/github.svg";
 import chn_site from "../assets/images/chn_site.webp";
 import threejs_icon from "../assets/logos/threejs.svg";
+import bbgs_site from "../assets/images/bbgs_site.webp";
 import { type TranslationFileKey } from "../utils/content/translation";
 
 interface PriorWorkTag {
@@ -56,7 +57,7 @@ const prior_works: PriorWork[] = [
         description: "work_description_1",
         project_href: "https://countryhideawaynails.github.io/"
     }, {
-        project_preview: chn_site,
+        project_preview: bbgs_site,
         title: "work_title_2",
         client: "Bearded B******* Gunsmithing",
         tags: [
@@ -66,7 +67,7 @@ const prior_works: PriorWork[] = [
             tags.threejs
         ],
         description: "work_description_2",
-        project_href: "https://countryhideawaynails.github.io/"
+        project_href: "https://bearded-bastards.github.io/"
     }
 ];
 
