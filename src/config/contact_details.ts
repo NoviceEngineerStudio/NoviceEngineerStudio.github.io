@@ -20,7 +20,7 @@ const contact_details: ContactDetail[] = [
     }, {
         icon: fiverr_icon,
         label: "Fiverr",
-        href: "https://www.fiverr.com/s/1q9L96z"
+        href: "https://www.fiverr.com/s/0bmeRra"
     }
 ];
 
