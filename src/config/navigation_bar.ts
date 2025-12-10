@@ -21,7 +21,7 @@ const navigation_bar_links: NavigationLink[] = [
         is_external: false
     }, {
         label: "fiverr_nav_link",
-        href: "https://www.fiverr.com/s/1q9L96z",
+        href: "https://www.fiverr.com/s/0bmeRra",
         is_external: true
     }
 ]
